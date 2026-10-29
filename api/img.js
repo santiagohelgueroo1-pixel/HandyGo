@@ -174,6 +174,62 @@ const P = {
   ]
 };
 
+const T = {
+ "lavandina": "a white plastic bottle of household bleach next to a bucket of diluted water and a measuring cup",
+ "rodillo": "an open roller shutter box above a window showing the horizontal roller tube with the shutter strap wound on it",
+ "llave_paso": "a chrome wall-mounted water shut-off valve with a round handle, set into a tiled bathroom wall, near the floor",
+ "bacha": "a white ceramic bathroom washbasin with a chrome tap, seen from slightly above",
+ "rejilla": "a square stainless steel floor drain grate with small holes, set into bathroom floor tiles",
+ "manija": "a chrome cross-head tap handle with a small blue cap in the center, close-up",
+ "cuerito": "a small black rubber tap washer the size of a small coin, next to the brass tap stem it fits on",
+ "llave_francesa": "a steel adjustable wrench with its knurled adjusting wheel visible",
+ "tuerca": "three hexagonal metal nuts of different sizes",
+ "cisterna": "a white ceramic toilet with its tank behind the bowl, the tank lid slightly lifted",
+ "flotante": "inside an open toilet tank: a plastic float valve with its round float sitting on the water surface",
+ "teflon": "a small roll of white PTFE thread seal tape next to a threaded brass pipe fitting",
+ "rebalse": "inside an open toilet tank: the vertical plastic overflow tube in the middle, its open top above the water",
+ "sifon": "a white plastic U-shaped sink drain trap under a sink, with its two screw nuts",
+ "junta": "two black rubber O-ring gaskets of different sizes",
+ "flor_ducha": "a round chrome shower head with many small water nozzles",
+ "sarro": "close-up of a shower head nozzle face covered in white limescale deposits",
+ "bisagra": "a metal door hinge with its screws, mounted on the edge of a wooden door",
+ "cola": "a white bottle of PVA wood glue with a nozzle, a small drop of white glue",
+ "lija": "a sheet of sandpaper wrapped around a small wooden sanding block",
+ "termica": "an open home electrical panel with a row of small circuit breaker switches",
+ "buscapolo": "a voltage tester screwdriver with a transparent handle and a small neon light inside",
+ "frente_enchufe": "a white wall power outlet with its front cover plate removed, showing the socket mechanism behind",
+ "portalamparas": "an empty ceramic light bulb socket hanging from a ceiling cord",
+ "rosca": "two LED light bulbs side by side, one with a large E27 screw base and one with a small E14 screw base",
+ "rueditas": "a black plastic office chair caster wheel with its metal stem, next to the chair base",
+ "eje": "close-up of a caster wheel axle with hair and lint tangled around it",
+ "lubricante": "a blue and yellow spray can of multi-purpose lubricant with a thin red straw nozzle",
+ "trincheta": "a yellow utility knife with a retractable snap-off blade",
+ "guias": "a pair of metal drawer slide rails mounted inside a wooden cabinet",
+ "silicona_aer": "a white spray can of silicone lubricant spray",
+ "allen": "a set of L-shaped hexagonal Allen keys of different sizes fanned out",
+ "regaton": "round felt furniture pads and rubber leg caps, one stuck under a wooden chair leg",
+ "escuadra": "a small metal L-shaped corner bracket with screw holes and screws",
+ "nivel": "a spirit level tool with a green bubble vial centered",
+ "mecha": "a masonry drill bit with a wide carbide tip, next to a drill",
+ "taladro": "a cordless electric drill with a drill bit attached",
+ "tarugo": "several grey plastic wall plugs next to matching screws",
+ "sopapa": "a rubber toilet plunger with a wooden handle",
+ "pistola": "a caulking gun loaded with a white silicone cartridge",
+ "cinta_papel": "a roll of beige masking tape",
+ "junta_bano": "close-up of the joint line between a white bathtub edge and wall tiles, sealed with white silicone",
+ "burlete": "a roll of self-adhesive rubber weather stripping, partly unrolled",
+ "grafito": "a small squeeze tube of graphite powder lubricant next to a keyhole",
+ "pestillo": "the metal latch bolt sticking out from the edge of a door next to the handle",
+ "enduido": "an open tub of white wall filler paste with a putty knife",
+ "espatula": "a metal putty knife with a wooden handle",
+ "filtro_lav": "the small round drain pump filter at the bottom front of a front-loading washing machine, its access door open",
+ "aireador": "a small chrome tap aerator unscrewed, showing its metal mesh screen",
+ "enrollador": "a wall-mounted roller shutter strap winder box with its cover off, the strap coiled inside",
+ "cinta_persiana": "a beige fabric roller shutter strap coming out of a wall winder",
+ "tablillas": "close-up of horizontal plastic roller shutter slats",
+ "destornillador": "two screwdrivers side by side, one with a cross Phillips tip and one with a flat tip"
+};
+
 module.exports = async (req, res) => {
   const acct = process.env.CF_ACCOUNT_ID, token = process.env.CF_API_TOKEN;
 
@@ -195,8 +251,9 @@ module.exports = async (req, res) => {
 
   const q = req.query || {};
   let subject = '';
-  if (q.g) { const list = P[String(q.g)]; const i = parseInt(q.i, 10); subject = list && list[i]; }
-  else if (q.p) subject = String(q.p).slice(0, 400);
+  if (q.t) subject = T[String(q.t)] ? 'Identification picture of ' + T[String(q.t)] + ', shown clearly so a beginner can recognize it' : '';
+  else if (q.g) { const list = P[String(q.g)]; const i = parseInt(q.i, 10); subject = list && list[i]; }
+  else if (q.p) subject = 'Identification picture of ' + String(q.p).slice(0, 400) + ', shown clearly so a beginner can recognize it';
   if (!subject) { res.setHeader('Cache-Control', 'no-store'); return res.status(404).json({ ok: false, error: 'Paso desconocido' }); }
 
   const prompt = `${subject}. ${STYLE}`;

@@ -19,6 +19,9 @@ TU TRABAJO
        "pasos": 3 a 8 pasos concretos, en orden, uno por acción, con medidas de cuidado básicas (desenchufar, cortar el agua, guantes);
        "materiales": [["nombre","cómo pedirlo en una ferretería o comercio argentino"]] (puede ser lista vacía);
        "nivel": "Fácil" o "Media"; "minutos": número estimado; "alerta": una frase de precaución si corresponde, o "".
+       "glosario": las piezas, partes o herramientas que nombran los pasos y que alguien sin experiencia puede no conocer (2 a 6),
+         cada una {"termino":"tal cual aparece en los pasos","que_es":"1 frase simple, sin tecnicismos","donde":"dónde está o dónde se compra","imagen":"descripción en inglés del objeto para dibujarlo"}.
+     Escribí los pasos con palabras simples: si usás un término técnico, que esté en el glosario.
      Preferí SIEMPRE ayudar a resolverlo antes que derivar cuando el arreglo es simple y seguro.
    - "derivar": solo si es riesgoso, requiere herramientas o habilidades profesionales, o el usuario ya intentó y no pudo.
 3. Si te mandan una foto, describí brevemente lo que ves y usalo para acotar.
@@ -42,7 +45,7 @@ CAMBIO DE TEMA (para el sistema de consultas)
 Si el mensaje no tiene que ver con el hogar, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","riesgo":false,"tema_nuevo":false,"transcripcion":""}`;
+{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"tema_nuevo":false,"transcripcion":""}`;
 
 const ESTADOS = ['preguntar', 'guiar', 'derivar', 'fuera_de_tema'];
 const RUBROS = ['Plomería', 'Gas', 'Electricidad', 'Carpintería', 'Albañilería'];
@@ -206,8 +209,9 @@ function normalize(text, ids) {
     nivel: o.nivel === 'Media' ? 'Media' : 'Fácil',
     minutos: Math.max(5, Math.min(180, parseInt(o.minutos, 10) || 20)),
     alerta: typeof o.alerta === 'string' ? o.alerta.slice(0, 240) : '',
+    glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 200), donde: String(g.donde || '').slice(0, 200), imagen: String(g.imagen || '').slice(0, 200) })) : [],
     transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : ''
   };
-  if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; }
+  if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; out.glosario = []; }
   return out;
 }
