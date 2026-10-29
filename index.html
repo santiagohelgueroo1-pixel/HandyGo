@@ -25,7 +25,7 @@
   --pri:#26573F; --priInk:#FFFFFF; --priSoft:#E3F0E5; --mint:#B1D8B7;
   --acc:#F2B33D; --accInk:#1E2A24;
   --warnSoft:#FDF1D8; --warnInk:#7A4E00;
-  --bad:#B8381F; --badSoft:#FBEAE5; --ok:#2E7D4F; --okSoft:#E3F2E8;
+  --bad:#B8381F; --badSoft:#FBEAE5; --ok:#26573F; --okSoft:#E3F0E5;
   --desk:#DCE4DD; --frame:#1E2A24; --head:#26573F; --headInk:#FFFFFF; --dark:#1E2A24;
   --f-display:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -36,13 +36,13 @@
   --bg:#121A16; --surface:#1A2520; --sunk:#151F1A; --ink:#EEF3EE; --mut:#9DB0A4; --line:#2B3B33;
   --pri:#B1D8B7; --priInk:#1E2A24; --priSoft:#22382C; --mint:#B1D8B7;
   --warnSoft:#3A2E14; --warnInk:#F2B33D;
-  --bad:#FF8C74; --badSoft:#381A14; --ok:#7FD39E; --okSoft:#16301F;
+  --bad:#FF8C74; --badSoft:#381A14; --ok:#B1D8B7; --okSoft:#22382C;
   --desk:#0A0F0C; --frame:#000000; --head:#1C4230; --headInk:#FFFFFF; --dark:#0D1310; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121A16; --surface:#1A2520; --sunk:#151F1A; --ink:#EEF3EE; --mut:#9DB0A4; --line:#2B3B33;
   --pri:#B1D8B7; --priInk:#1E2A24; --priSoft:#22382C; --mint:#B1D8B7;
   --warnSoft:#3A2E14; --warnInk:#F2B33D;
-  --bad:#FF8C74; --badSoft:#381A14; --ok:#7FD39E; --okSoft:#16301F;
+  --bad:#FF8C74; --badSoft:#381A14; --ok:#B1D8B7; --okSoft:#22382C;
   --desk:#0A0F0C; --frame:#000000; --head:#1C4230; --headInk:#FFFFFF; --dark:#0D1310; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -88,7 +88,7 @@ nav .dot{position:absolute;top:6px;left:calc(50% + 8px);min-width:17px;height:17
 
 /* ---------- tipografía y piezas ---------- */
 h2{font:700 24px/1.15 var(--f-display);letter-spacing:-.01em;margin:4px 0 6px;text-wrap:balance}
-h3{font:700 17px/1.25 var(--f-body);margin:0}
+h3{font:600 16.5px/1.3 var(--f-display);margin:0}
 .eyebrow{font:700 11.5px/1 var(--f-body);text-transform:uppercase;letter-spacing:.09em;color:var(--mut)}
 .mut{color:var(--mut)}
 .small{font-size:14px}
@@ -122,6 +122,17 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .err{color:var(--bad);font-weight:600;font-size:14.5px;min-height:20px}
 
 /* ---------- bienvenida ---------- */
+.splash{flex:1;min-height:0;overflow-y:auto;background:var(--head);color:var(--headInk);display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0px) + 24px) max(24px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 28px) max(24px,env(safe-area-inset-left,0px))}
+.splash .brandc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;padding-block:24px}
+.splash .mark{width:116px;height:116px;border-radius:26%;box-shadow:0 0 0 3px var(--mint),0 18px 40px -16px rgba(0,0,0,.45)}
+.splash h1{margin:0;font:700 42px/1 var(--f-display);letter-spacing:-.02em;color:#FFFFFF}
+.splash .slogan{margin:0;font:500 16px/1.45 var(--f-body);color:var(--mint);max-width:26ch;text-wrap:balance}
+.splash .tape{height:9px;margin:0 calc(-1 * max(24px,env(safe-area-inset-left,0px))) 24px;background:linear-gradient(var(--acc),var(--acc)) top/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) top/100% 9px no-repeat}
+.splash .acts{display:grid;gap:12px}
+.splash .btn.o{background:transparent;border-color:#FFFFFF;color:#FFFFFF}
+@media (prefers-reduced-motion:no-preference){.splash .brandc>*{animation:rise .5s ease-out both}.splash .brandc>*:nth-child(2){animation-delay:.08s}.splash .brandc>*:nth-child(3){animation-delay:.16s}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
 .hero{background:var(--head);color:var(--headInk);margin:-18px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:calc(env(safe-area-inset-top,0px) + 28px) max(20px,env(safe-area-inset-right,0px)) 34px max(20px,env(safe-area-inset-left,0px));position:relative}
 .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;background:linear-gradient(var(--acc),var(--acc)) bottom/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) bottom/100% 9px no-repeat}
 .hero .mark{width:64px;height:64px;box-shadow:0 0 0 2px var(--mint)}
@@ -134,14 +145,14 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .pillar .ico.r{background:var(--warnSoft);color:var(--warnInk)}
 .pillar .ico.v{background:var(--okSoft);color:var(--ok)}
 .pillar svg,.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.pillar b{display:block;font-size:15.5px}
+.pillar b{display:block;font:600 15.5px/1.3 var(--f-display)}
 .pillar span{font-size:14px;color:var(--mut)}
 .role{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:16px;color:var(--ink)}
 .role:hover{border-color:var(--pri)}
 .role .ico{flex:none;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:var(--priSoft);color:var(--pri)}
 .role .ico.y{background:var(--acc);color:var(--accInk)}
 .role svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.role b{display:block;font-size:17px;margin-bottom:2px}
+.role b{display:block;font:600 17px/1.3 var(--f-display);margin-bottom:2px}
 .role span{font-size:14px;color:var(--mut)}
 
 /* ---------- chat ---------- */
@@ -199,7 +210,7 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 /* ---------- tutorial ---------- */
 .tut{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;align-self:stretch}
 .tut .hd{padding:14px 14px 10px;border-bottom:1px solid var(--line)}
-.tut .hd h4{margin:6px 0 8px;font:700 19px/1.1 var(--f-display);font-stretch:110%}
+.tut .hd h4{margin:6px 0 8px;font:700 19px/1.2 var(--f-display)}
 .prog{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
 .prog i{display:block;height:100%;width:0;background:var(--pri);transition:width .25s}
 .steps{list-style:none;margin:0;padding:6px 0}
@@ -223,7 +234,7 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .ticket::before{left:-9px}.ticket::after{right:-9px}
 .m .ticket::before,.m .ticket::after{background:var(--bg)}
 .ticket .tk{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:700 12px/1 var(--f-mono);color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
-.ticket h4{margin:8px 0 12px;font:700 17px/1.25 var(--f-body)}
+.ticket h4{margin:8px 0 12px;font:600 17px/1.3 var(--f-display)}
 .ticket dl{margin:0;padding-top:12px;border-top:2px dashed var(--line);display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
 .ticket dt{font:700 11.5px/1.5 var(--f-mono);color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
 .ticket dd{margin:0;min-width:0;overflow-wrap:anywhere}
@@ -274,6 +285,7 @@ details.offerf[open] summary{display:none}
 .pin svg{width:30px;height:38px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
 .me-dot{width:18px;height:18px;border-radius:50%;background:var(--pri);border:3px solid #fff;box-shadow:0 0 0 6px rgba(38,87,63,.25)}
 .leaflet-container{font-family:var(--f-body)}
+.leaflet-container a{color:var(--pri)}
 .leaflet-popup-content{margin:10px 12px;font-size:14px}
 .ferl{display:grid;gap:6px}
 .ferl a{color:var(--pri);font-weight:700;text-decoration:none}
@@ -660,18 +672,15 @@ const stars = s => typeof s === 'number' ? `<span class="stars" aria-label="${s}
    ============================================================ */
 function welcome() {
   $('#top').hidden = true; $('#nav').hidden = true; document.body.className = '';
-  view(`<div class="hero"><span data-a="logoTap" style="display:inline-block">${MARK}</span>
-      <h2>Primero entendelo. <em>Después decidí.</em></h2>
-      <p>Te ayudamos a resolver los problemas de tu casa y, si hace falta, te conectamos con alguien de confianza.</p></div>
-    <div class="pillars">
-      <div class="pillar"><span class="ico">${ico('chat')}</span><div><b>Diagnóstico guiado</b><span>Un chat que te hace las preguntas justas y te muestra cómo arreglarlo.</span></div></div>
-      <div class="pillar"><span class="ico r">${ico('alert')}</span><div><b>Límites de seguridad</b><span>En gas, electricidad compleja o estructura, te frenamos y te derivamos.</span></div></div>
-      <div class="pillar"><span class="ico v">${ico('shield')}</span><div><b>Prestadores verificados</b><span>Identidad, matrícula, reseñas y el caso ya explicado.</span></div></div>
-    </div>
-    <div class="stack">
+  view(`<div class="splash">
+    <div class="brandc"><span data-a="logoTap">${MARK}</span>
+      <h1>HandyGo</h1>
+      <p class="slogan">Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>
+    <div class="tape" aria-hidden="true"></div>
+    <div class="acts">
       <button class="btn p w" data-a="role">Crear cuenta</button>
-      <button class="btn w" data-a="login">Ya tengo cuenta</button>
-    </div>`);
+      <button class="btn o w" data-a="login">Ya tengo cuenta</button>
+    </div></div>`, true);
 }
 ACT.welcome = welcome;
 ACT.role = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button>
@@ -757,7 +766,7 @@ ACT.demoAs = v => {
   }
   save(); enter();
 };
-ACT.logout = () => { DB.cur = null; CH = null; chatEl = null; save(); welcome(); };
+ACT.logout = () => { $('#toast').hidden = true; clearTimeout(toast.t); DB.cur = null; CH = null; chatEl = null; save(); welcome(); };
 ACT.reset = () => sheet(`<h2>Borrar datos del dispositivo</h2><p class="mut">Se borran todas las cuentas, pedidos y conversaciones guardadas en este dispositivo.</p>
   <div class="stack" style="margin-top:14px"><button class="btn bad w" data-a="doReset">Borrar todo y empezar de cero</button><button class="btn g w" data-a="close">Cancelar</button></div>`);
 ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} DB = {users:[], provs:[], jobs:[], cur:null}; CH = null; chatEl = null; closeSheet(); welcome(); };
@@ -1170,7 +1179,7 @@ function pedir() {
   ps.forEach((p, i) => setTimeout(() => {
     const jj = DB.jobs.find(x => x.id === j.id); if (!jj || jj.estado !== 'nuevo') return;
     jj.offers.push({pid:p.id, precio:BASE[j.rubro] + (i ? 4000 : 0) + Math.round(Math.random() * 3) * 1000, msg:msgs[i % 2], when:i ? 'Jueves 14 a 18 h' : 'Mañana 9 a 12 h'}); save();
-    toast('Nuevo presupuesto de ' + p.n);
+    if (DB.cur && DB.cur.id === j.uid) toast('Nuevo presupuesto de ' + p.n);
     if (DB.cur && DB.cur.t === 'u' && ((V.tab === 'ped' && !V.job) || V.job === jj.id)) render(); else if (DB.cur) renderNav();
   }, 2500 + i * 2800));
 }
