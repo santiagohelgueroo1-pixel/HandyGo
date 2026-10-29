@@ -379,6 +379,19 @@ button.term{border:0;background:none;padding:0;font:inherit;color:var(--pri);fon
 .termimg svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.6}
 .tdef{display:grid;gap:10px}
 .tdef .card{display:grid;gap:4px}
+#offline{position:absolute;left:0;right:0;z-index:35;background:var(--acc);color:var(--accInk);font:600 13px/1.3 var(--f-body);text-align:center;padding:7px max(16px,env(safe-area-inset-right,0px)) 7px max(16px,env(safe-area-inset-left,0px))}
+.legal{font-size:14.5px;line-height:1.55}
+.legal h3{margin:18px 0 6px;font-size:16px}
+.legal p,.legal li{margin:0 0 8px;color:var(--ink)}
+.legal ul{padding-left:18px;margin:0 0 8px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4;cursor:pointer}
+.chk input{width:20px;height:20px;flex:none;margin:1px 0 0;accent-color:var(--pri)}
+.linkbtn{border:0;background:none;padding:0;color:var(--pri);font:inherit;font-weight:600;text-decoration:underline;cursor:pointer}
+.cons{display:grid;gap:8px}
+.cons button{display:grid;gap:2px;text-align:left;width:100%;color:var(--ink)}
+.tr{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.tr .m{max-width:90%}
+.tr .mk{align-self:center;font-size:12.5px;color:var(--mut);background:var(--sunk);border-radius:99px;padding:4px 10px}
 .review{border-top:1px solid var(--line);padding-top:10px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -393,6 +406,7 @@ button.term{border:0;background:none;padding:0;font:inherit;color:var(--pri);fon
   <main id="view"></main>
   <nav id="nav" hidden></nav>
   <div id="toast" hidden></div>
+  <div id="offline" role="status" hidden>Sin conexión: tus cambios se guardan cuando vuelva internet</div>
 </div>
 <script>
 "use strict";
@@ -716,7 +730,7 @@ const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0
 function slotLabel(k) { if (!k) return ''; const [d, f] = k.split('|'); const [y, m, dd] = d.split('-').map(Number); const dt = new Date(y, m - 1, dd);
   const t = new Date(); t.setHours(0, 0, 0, 0); const diff = Math.round((dt - t) / 864e5);
   return (diff === 0 ? 'Hoy' : diff === 1 ? 'Mañana' : DOW[dt.getDay()] + ' ' + dd + '/' + m) + ' · ' + FR[f]; }
-function bookedOf(pid) { return DB.jobs.filter(j => j.prov === pid && j.turno && j.estado !== 'finalizado').map(j => j.turno); }
+function bookedOf(pid) { return DB.jobs.filter(j => j.prov === pid && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).map(j => j.turno); }
 function slotsFor(pid, agenda, n = 6) {
   const out = [], booked = bookedOf(pid), d = new Date(); d.setHours(0, 0, 0, 0);
   for (let i = 1; i <= 14 && out.length < n; i++) { const x = new Date(d); x.setDate(d.getDate() + i);
@@ -729,7 +743,7 @@ const agendaOf = pid => { const s = PROVS.find(x => x.id === pid); if (s) return
 /* ---------- seguimiento por etapas ---------- */
 const STAGES = ['Presupuesto aceptado', 'En camino', 'Trabajando', 'Terminado'];
 const STAGE_SUB = ['Quedó confirmado el turno', 'El prestador salió para tu casa', 'El prestador está haciendo el trabajo', 'El trabajo quedó listo'];
-const stageName = j => j.estado === 'nuevo' ? 'Buscando presupuestos' : STAGES[j.etapa || 0];
+const stageName = j => j.estado === 'cancelado' ? 'Cancelado' : j.estado === 'nuevo' ? 'Buscando presupuestos' : STAGES[j.etapa || 0];
 const isUnseen = j => !!(j.unseenBy && DB.cur && j.unseenBy[DB.cur.id]);
 function markUnseen(j, who) { if (!who || (who === DB.cur.id && V.job === j.id)) return; j.unseenBy = {...(j.unseenBy || {}), [who]:true}; }
 function clearUnseen(j) { if (isUnseen(j)) { const u = {...j.unseenBy}; delete u[DB.cur.id]; j.unseenBy = u; return true; } return false; }
@@ -849,6 +863,7 @@ ACT.reg = t => {
      ${field('anios', 'Años de experiencia', 'number', '5')}
      <label class="f" for="bio">Contá sobre vos<textarea id="bio" rows="3" placeholder="Ej: Plomero hace 10 años, trabajo prolijo y explico qué hice"></textarea><span class="hint">Es lo primero que leen los clientes en tu perfil</span></label>
      <button class="btn w" id="dniBtn" data-a="dni">${ico('shield')} Verificar identidad con DNI</button>` : ''}
+   <label class="chk" for="terms"><input type="checkbox" id="terms"><span>Leí y acepto los <button type="button" class="linkbtn" data-a="legal">Términos y la Política de privacidad</button></span></label>
    <div class="err" id="err" role="alert"></div>
    <button class="btn p w" data-a="doReg">Crear cuenta</button></div>`);
 };
@@ -866,7 +881,9 @@ ACT.doReg = async (v, btn) => {
     if (['Gas', 'Electricidad'].includes(d.rubro) && !d.mat) e = `Para ${d.rubro} la matrícula es obligatoria.`;
     else if (!REG.dni) e = 'Verificá tu identidad con DNI para continuar.';
   }
+  if (!e && !$('#terms').checked) e = 'Para crear la cuenta tenés que aceptar los Términos y la Política de privacidad.';
   if (e) { $('#err').textContent = e; return; }
+  d.acepto = Date.now();
   if (CLOUD) return cloudRegister(d, btn);
   if (REG.t === 'u') { d.cr = 5; d.resueltos = 0; DB.users.push(d); }
   else { d.rev = []; d.on = true; d.desc = []; DB.provs.push(d); seedProvJobs(d); }
@@ -881,7 +898,39 @@ function seedProvJobs(p) {
 }
 ACT.login = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button><h2>Ingresá</h2>
   <div class="stack" style="margin-top:14px">${field('mail', 'Mail', 'email')}${field('pass', 'Contraseña', 'password')}
-  <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button></div>`);
+  <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button>
+  <button class="linkbtn" style="justify-self:center" data-a="forgot">Olvidé mi contraseña</button></div>`);
+ACT.forgot = () => view(`<button class="back" data-a="login">${ico('back')} Volver</button><h2>Recuperar contraseña</h2>
+  <p class="mut small">Te mandamos un mail con un link para crear una contraseña nueva.</p>
+  <div class="stack" style="margin-top:14px">${field('fmail', 'Mail de tu cuenta', 'email', 'vos@mail.com')}<div class="err" id="err" role="alert"></div>
+  <button class="btn p w" data-a="sendReset">Enviar el link</button></div>`);
+ACT.sendReset = async (v, btn) => {
+  const m = ($('#fmail').value || '').trim().toLowerCase();
+  if (!/^\S+@\S+\.\S+$/.test(m)) { $('#err').textContent = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.'; return; }
+  if (!CLOUD) { $('#err').textContent = 'Para recuperar la contraseña necesitás conexión a internet.'; return; }
+  const done = busy(btn, 'Enviando…');
+  const { error } = await SB.auth.resetPasswordForEmail(m, {redirectTo:location.origin + location.pathname});
+  done();
+  if (error) { $('#err').textContent = authError(error); return; }
+  view(`<div class="empty" style="padding-top:70px">${ico('chat')}<h2>Revisá tu mail</h2><p>Si <b>${esc(m)}</b> tiene una cuenta, te llega un link para crear una contraseña nueva. Fijate también en spam.</p>
+    <button class="btn w" style="margin-top:16px" data-a="login">Volver a ingresar</button></div>`);
+};
+function vNewPass() {
+  $('#top').hidden = true; $('#nav').hidden = true;
+  view(`<h2>Nueva contraseña</h2><p class="mut small">Elegí una contraseña nueva para tu cuenta.</p>
+   <div class="stack" style="margin-top:14px">${field('np1', 'Contraseña nueva', 'password', '', 'Mínimo 6 caracteres')}${field('np2', 'Repetila', 'password')}
+   <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="savePass">Guardar contraseña</button></div>`);
+}
+ACT.savePass = async (v, btn) => {
+  const a = $('#np1').value, b = $('#np2').value;
+  if (a.length < 6) { $('#err').textContent = 'La contraseña necesita al menos 6 caracteres.'; return; }
+  if (a !== b) { $('#err').textContent = 'Las dos contraseñas no coinciden.'; return; }
+  const done = busy(btn, 'Guardando…'); const { error } = await SB.auth.updateUser({password:a}); done();
+  if (error) { $('#err').textContent = authError(error); return; }
+  toast('Contraseña actualizada');
+  try { if (await cloudLoad()) return enter(); } catch (e) {}
+  welcome();
+};
 ACT.doLogin = (v, btn) => {
   const m = $('#mail').value.trim().toLowerCase(), p = $('#pass').value;
   if (CLOUD) return cloudLogin(m, p, btn);
@@ -939,7 +988,7 @@ function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
   if (c.t === 'u' && t === 'casa') return pendingTasks(me()).length;
-  if (c.t === 'p' && t === 'agenda') return DB.jobs.filter(j => j.prov === c.id && j.turno && j.estado !== 'finalizado').length;
+  if (c.t === 'p' && t === 'agenda') return DB.jobs.filter(j => j.prov === c.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).length;
   if (c.t === 'p' && t === 'ped') return provQueue().length;
   return 0;
 }
@@ -968,9 +1017,9 @@ function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML
 /* ============================================================
    ASISTENTE (chat)
    ============================================================ */
-function newCase() { CH = {h:[], started:false, caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}; }
+function newCase() { CH = {trans:[], ts:Date.now(), h:[], started:false, caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}; }
 // Las consultas se cobran por tema: hablar del mismo problema es gratis; un problema distinto usa 1 consulta.
-function resetTopic() { Object.assign(CH, {caso:null, rubro:null, hard:false, tut:null, tutObj:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}); }
+function resetTopic() { const lu = (CH.trans || []).filter(x => x.r === 'u').slice(-1); Object.assign(CH, {trans:lu, cid:null, ts:Date.now(), caso:null, rubro:null, hard:false, tut:null, tutObj:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}); }
 function useCredit(nuevo) {
   const u = me();
   if (u.cr <= 0) {
@@ -978,7 +1027,8 @@ function useCredit(nuevo) {
     chips([['Ver anuncio · +2', () => ACT.watchAd(), 'p'], ['Ver opciones', () => ACT.credits()]]);
     return false;
   }
-  u.cr--; save(); refreshHeader();
+  u.cr--; if (CLOUD) { SNAP.me = JSON.stringify(u); SB.rpc('use_credit').then(r => { if (!r.error && typeof r.data === 'number') { u.cr = r.data; SNAP.me = JSON.stringify(u); refreshHeader(); } }); } else save();
+  refreshHeader();
   say(nuevo ? `Nuevo problema · se usó 1 consulta (te quedan ${u.cr})` : `Consulta iniciada · te quedan ${u.cr}`, 'sys', false);
   return true;
 }
@@ -988,7 +1038,7 @@ function vChat() {
     newCase();
     chatEl = document.createElement('div');
     chatEl.style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0';
-    chatEl.innerHTML = `<div class="chatbar"><span class="mode" id="mode"><i></i> <span>Asistente HandyGo</span></span><button class="btn sm g" data-a="newCase" style="padding:5px 10px">Nueva consulta</button></div>
+    chatEl.innerHTML = `<div class="chatbar"><span class="mode" id="mode"><i></i> <span>Asistente HandyGo</span></span><span class="row" style="gap:6px;flex-wrap:nowrap"><button class="btn sm g" data-a="history" style="padding:5px 10px;white-space:nowrap">Historial</button><button class="btn sm g" data-a="newCase" style="padding:5px 10px;white-space:nowrap">${ico('plus')} Nueva</button></span></div>
       <div id="log" aria-live="polite"></div>
       <div class="composer"><div class="attach" id="att" hidden></div>
       <div class="bar"><label class="iconbtn" title="Adjuntar foto" for="pic" style="cursor:pointer">${ico('cam')}<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adjuntar foto</span></label>
@@ -1008,14 +1058,37 @@ function vChat() {
   } else { view('', true); $('#view').appendChild(chatEl); }
   setMode(); scrollLog();
 }
-function setMode() { const m = chatEl && chatEl.querySelector('#mode'); if (!m) return; m.className = 'mode' + (AI_OK === false ? ' off' : ''); m.querySelector('span').textContent = AI_OK === false ? 'Asistente · modo sin conexión' : 'Asistente HandyGo · IA'; }
+function setMode() { const m = chatEl && chatEl.querySelector('#mode'); if (!m) return; m.className = 'mode' + (AI_OK === false ? ' off' : ''); m.querySelector('span').textContent = AI_OK === false ? 'Asistente sin conexión' : 'Asistente con IA'; }
 const LOG = () => chatEl.querySelector('#log');
 function scrollLog() { const l = chatEl && chatEl.querySelector('#log'); if (l) requestAnimationFrame(() => l.scrollTop = l.scrollHeight); }
 function say(html, cls = '', who = true) {
   const l = LOG();
   if (who && !/\bu\b/.test(cls) && !cls.includes('sys')) { const last = l.lastElementChild; if (!last || !last.classList.contains('bot')) { const w = document.createElement('div'); w.className = 'who'; w.innerHTML = MARK + 'HandyGo'; l.appendChild(w); } }
-  const d = document.createElement('div'); d.className = 'm ' + cls + (/\bu\b/.test(cls) || cls.includes('sys') ? '' : ' bot'); d.innerHTML = html; l.appendChild(d); scrollLog(); return d;
+  const d = document.createElement('div'); d.className = 'm ' + cls + (/\bu\b/.test(cls) || cls.includes('sys') ? '' : ' bot'); d.innerHTML = html; l.appendChild(d); scrollLog();
+  if (!cls.includes('sys') && !/class="typing"/.test(html)) { const t = (d.textContent || '').trim() || (d.querySelector('audio') ? '(audio)' : d.querySelector('img') ? '(foto)' : ''); if (t) logTrans(/\bu\b/.test(cls) ? 'u' : 'b', t); }
+  return d;
 }
+function logTrans(r, t) {
+  if (!CH) return; CH.trans = CH.trans || []; CH.trans.push({r, t:String(t).slice(0, 600)});
+  if (!CH.started || !DB.cur || DB.cur.t !== 'u') return;
+  const u = me(); if (!u) return;
+  const item = {id:CH.cid || (CH.cid = 'c' + uid()), ts:CH.ts || Date.now(), caso:CH.caso || (CH.trans.find(x => x.r === 'u') || {}).t || 'Consulta', msgs:CH.trans.slice(-40)};
+  u.consultas = [item, ...(u.consultas || []).filter(x => x.id !== item.id)].slice(0, 20);
+  clearTimeout(logTrans.t); logTrans.t = setTimeout(save, 800);
+}
+ACT.history = () => {
+  const u = me(), cs = u.consultas || [];
+  sheet(`<h2>Consultas anteriores</h2><p class="mut small">Tus últimas ${cs.length || ''} conversaciones con el asistente.</p>
+   ${cs.length ? `<div class="cons" style="margin-top:12px">${cs.map(c => `<button class="card" data-a="histOpen" data-v="${c.id}"><b style="font:600 15px var(--f-display)">${esc(String(c.caso).slice(0, 70))}</b><span class="small mut">${ago(c.ts)} · ${c.msgs.filter(m => m.r === 'u').length} mensajes tuyos</span></button>`).join('')}</div>`
+     : '<div class="empty">' + ico('chat') + '<p class="small">Todavía no hiciste consultas.</p></div>'}
+   <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
+};
+ACT.histOpen = id => {
+  const c = (me().consultas || []).find(x => x.id === id); if (!c) return;
+  sheet(`<button class="back" data-a="history">${ico('back')} Consultas</button><h2>${esc(String(c.caso).slice(0, 80))}</h2><span class="small mut">${new Date(c.ts).toLocaleString('es-AR', {day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'})}</span>
+   <div class="tr">${c.msgs.map(m => m.r === 'u' ? `<div class="m u">${esc(m.t)}</div>` : m.r === 'b' ? `<div class="m">${esc(m.t)}</div>` : `<div class="mk">${esc(m.t)}</div>`).join('')}</div>
+   <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
+};
 function block(html) { const l = LOG(); const d = document.createElement('div'); d.className = 'bot'; d.style.cssText = 'align-self:stretch;display:flex'; d.innerHTML = html; l.appendChild(d); scrollLog(); return d; }
 function chips(list) { const d = document.createElement('div'); d.className = 'chips bot'; list.forEach(([t, f, c]) => { const b = document.createElement('button'); b.textContent = t; if (c) b.className = c; b.onclick = () => { d.remove(); f(); }; d.appendChild(b); }); LOG().appendChild(d); scrollLog(); }
 function greet() {
@@ -1040,10 +1113,18 @@ ACT.watchAd = () => {
    <div class="big">Ferretería<br>El Tornillo</div><p style="max-width:28ch;opacity:.9;margin:0">10% de descuento en cueritos, flotantes y teflón mostrando HandyGo en el mostrador.</p>
    <p style="font:700 13px/1 var(--f-mono);opacity:.7;margin:0">Av. Medrano 845 · Almagro</p>`;
   $('#device').appendChild(a);
-  let n = 5; const t = setInterval(() => { n--; a.querySelector('#cd').textContent = 'Anuncio · ' + n; if (n <= 0) { clearInterval(t); a.remove(); addCredits(2); } }, 1000);
+  let n = 5; const t = setInterval(() => { n--; a.querySelector('#cd').textContent = 'Anuncio · ' + n; if (n <= 0) { clearInterval(t); a.remove(); addCredits(2, '', 'ad'); } }, 1000);
 };
-ACT.buy = n => { closeSheet(); addCredits(+n, 'Compra realizada'); };
-function addCredits(n, msg) { const u = me(); u.cr += n; save(); render(); toast((msg ? msg + ' · ' : '') + `sumaste ${n} consultas`); }
+ACT.buy = n => { closeSheet(); addCredits(+n, 'Compra realizada', 'buy'); };
+async function addCredits(n, msg, kind) {
+  const u = me();
+  if (CLOUD) {
+    const r = kind === 'ad' ? await SB.rpc('reward_ad') : await SB.rpc('buy_credits', {p_pack:n});
+    if (r.error) { const m = String(r.error.message || ''); toast(/limite_diario/.test(m) ? 'Ya viste el máximo de anuncios por hoy. Volvé mañana.' : /muy_seguido/.test(m) ? 'Esperá unos segundos antes de ver otro anuncio.' : 'No se pudieron sumar las consultas. Revisá tu conexión.'); return; }
+    u.cr = r.data; SNAP.me = JSON.stringify(u);
+  } else { u.cr += n; save(); }
+  render(); toast((msg ? msg + ' · ' : '') + `sumaste ${n} consultas`);
+}
 
 function onPic(e) {
   const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
@@ -1114,7 +1195,7 @@ function sendAudio(blob, audio, dur) {
   LOG().querySelectorAll('.chips').forEach(c => c.remove());
   const url = URL.createObjectURL(blob);
   const bub = say(`<audio controls src="${url}"></audio><div class="tr" hidden></div>`, 'u');
-  if (!CH.started) { if (!useCredit(false)) return; CH.started = true; }
+  if (!CH.started) { if (!useCredit(false)) return; CH.started = true; CH.trans = CH.trans.filter(x => x.r !== 'b' || x.t.indexOf('Hola, ') !== 0); }
   CH.resp.push('(audio)');
   ai('', null, '', audio, bub);
 }
@@ -1127,7 +1208,7 @@ function go(txt, isReply) {
   say((img ? `<img src="${img}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
   const t = (txt || '').toLowerCase();
   const h = HARD.find(x => x.re.test(t));
-  if (!CH.started) { if (!useCredit(false)) return; CH.started = true; }
+  if (!CH.started) { if (!useCredit(false)) return; CH.started = true; CH.trans = CH.trans.filter(x => x.r !== 'b' || x.t.indexOf('Hola, ') !== 0); }
   else if (h && !isReply && CH.topic !== 'hard:' + h.rubro) { if (!useCredit(true)) return; resetTopic(); CH.h = []; }
   if (img) CH.img = img;
   CH.resp.push(txt || '(foto)');
@@ -1226,6 +1307,7 @@ function rules(t, img) {
 
 /* ---------- freno de seguridad ---------- */
 function hardStop(h) {
+  logTrans('k', 'Freno de seguridad: ' + h.k);
   CH.topic = 'hard:' + h.rubro;
   CH.hard = true; CH.caso = CH.caso || h.k; CH.rubro = h.rubro; CH.intentos = 'Ninguno · derivado por seguridad, sin pasos';
   block(`<div class="stop" role="alert"><div class="stripe"></div><div class="in">
@@ -1254,6 +1336,7 @@ function pickIcon(t) {
   const f = m.find(([re]) => re.test(t)); return f ? f[1] : 'tool';
 }
 function showTut(tut) {
+  logTrans('k', 'Guía paso a paso: ' + tut.n);
   CH.topic = tut.gen ? 'gen:' + tut.n : tut.id;
   CH.tutObj = tut;
   CH.tut = tut.id; CH.caso = tut.n; CH.rubro = tut.rubro; CH.hard = false; CH.pend = null;
@@ -1354,7 +1437,7 @@ function pedir() {
   const u = me(), s = summary();
   const j = {id:'j' + uid(), uid:u.id, un:u.nombre, zona:u.zona, caso:s.caso, rubro:s.rubro, hard:s.hard, code:s.code, desc:s.desc, intentos:s.intentos, img:s.img, estado:'nuevo', offers:[], msgs:[], ts:Date.now()};
   if (CLOUD && j.img) { const raw = j.img; j.img = null; upPhoto(raw).then(url => { j.img = url; save(); }); }
-  DB.jobs.unshift(j); save();
+  DB.jobs.unshift(j); save(); logTrans('k', 'Pedido enviado a prestadores · ' + j.code);
   say(`Listo. Enviamos tu caso <b class="num">${esc(j.code)}</b> a prestadores verificados de ${esc(j.rubro.toLowerCase())} en tu zona. Los presupuestos van a aparecer en <b>Pedidos</b>.`);
   chips([['Ver mi pedido', () => { V.tab = 'ped'; V.job = j.id; render(); }, 'p'], ['Nueva consulta', () => ACT.newCase()]]);
   const ps = PROVS.filter(p => p.r === j.rubro);
@@ -1467,7 +1550,7 @@ function vPedU() {
   view(`<h2>Mis pedidos</h2>
    ${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
       <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small num" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
-      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${isUnseen(j) ? '<span class="tag r">Novedades</span>' : ''}
+      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : j.estado === 'cancelado' ? 'r' : ''}">${stageName(j)}</span>${isUnseen(j) ? '<span class="tag r">Novedades</span>' : ''}
       ${j.turno && j.estado === 'aceptado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}
       ${j.estado === 'nuevo' && j.offers.length ? `<span class="tag y">${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''}</span>` : ''}${j.hard ? '<span class="tag r">Matriculado</span>' : ''}</div></button>`).join('')}</div>`
    : emptyState('clip', 'Todavía no pediste nada', 'Contale tu problema al asistente. Si hace falta un profesional, el pedido aparece acá.')}`);
@@ -1480,7 +1563,8 @@ function vJob() {
   if (clearUnseen(j)) { save(); renderNav(); }
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
     <div class="row" style="margin-bottom:10px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
-    ${j.estado !== 'nuevo' ? `<div class="card" style="margin-bottom:12px"><span class="eyebrow" style="display:block;margin-bottom:10px">Seguimiento</span>${trackHTML(j)}</div>` : ''}
+    ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
+    ${!['nuevo', 'cancelado'].includes(j.estado) ? `<div class="card" style="margin-bottom:12px"><span class="eyebrow" style="display:block;margin-bottom:10px">Seguimiento</span>${trackHTML(j)}</div>` : ''}
     ${ticketHTML({...j, zona:j.zona})}`;
   if (isU && j.estado === 'nuevo') {
     const B = bestOf(j);
@@ -1494,7 +1578,9 @@ function vJob() {
        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
       : `<div class="card" style="display:flex;gap:12px;align-items:center"><span class="typing"><i></i><i></i><i></i></span><span class="mut small">Los prestadores están viendo tu caso…</span></div>`) + `</div>`;
   }
-  if (j.estado !== 'nuevo') {
+  if (isU && j.uid === DB.cur.id && (j.estado === 'nuevo' || (j.estado === 'aceptado' && !(j.etapa > 0))))
+    h += `<div class="sec"><button class="btn g w" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito · cancelar pedido' : 'Cancelar el trabajo'}</button></div>`;
+  if (!['nuevo', 'cancelado'].includes(j.estado)) {
     const p = provInfo(j.prov);
     h += `<div class="sec"><span class="eyebrow">${isU ? 'Tu prestador' : 'Tu cliente'}</span><div class="card offer"><div class="top2">
       ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
@@ -1538,6 +1624,14 @@ ACT.prof = id => {
    <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
 };
 let ACC = null;
+ACT.cancelJob = () => sheet(`<h2>¿Cancelar el pedido?</h2><p class="mut">${(() => { const j = DB.jobs.find(x => x.id === V.job); return j && j.estado === 'aceptado' ? 'Le avisamos al prestador y se libera el turno.' : 'Los prestadores dejan de verlo y no vas a recibir más presupuestos.'; })()}</p>
+  <div class="stack" style="margin-top:14px"><button class="btn bad w" data-a="doCancelJob">Sí, cancelar</button><button class="btn g w" data-a="close">No, volver</button></div>`);
+ACT.doCancelJob = () => {
+  const j = DB.jobs.find(x => x.id === V.job); closeSheet(); if (!j) return;
+  const was = j.estado; j.estado = 'cancelado'; j.canceladoPor = 'u'; j.fin = Date.now();
+  if (was === 'aceptado') { j.msgs.push({f:'s', t:'El cliente canceló el trabajo'}); markUnseen(j, j.prov); }
+  save(); toast('Pedido cancelado'); render();
+};
 ACT.cmp = v => { V.cmp = v === '1'; render(); };
 ACT.acc = i => {
   const j = DB.jobs.find(x => x.id === V.job), o = j.offers[+i], p = provInfo(o.pid);
@@ -1559,7 +1653,7 @@ ACT.confAcc = () => {
 };
 ACT.stage = k => {
   const j = DB.jobs.find(x => x.id === V.job); advance(j.id, +k);
-  if (+k === 3 && j.uid === 'demo') setTimeout(() => { const p = me(); if (p && p.rev) { p.rev.push({s:5, from:first(j.un), c:'Muy prolijo y puntual. Lo recomiendo.'}); j.review = {s:5, c:'Muy prolijo y puntual. Lo recomiendo.'}; save(); toast(first(j.un) + ' te dejó una reseña de 5 estrellas'); if (V.tab === 'per' || V.job === j.id) render(); } }, 3500);
+  if (+k === 3 && j.uid === 'demo') setTimeout(() => { const p = me(); if (p && p.rev) { const rv = {s:5, from:first(j.un), c:'Muy prolijo y puntual. Lo recomiendo.'}; p.rev.push(rv); j.review = {s:5, c:rv.c}; if (CLOUD) { SNAP.me = JSON.stringify(p); SB.rpc('add_review', {p_prov:p.id, p_rev:rv}); } save(); toast(first(j.un) + ' te dejó una reseña de 5 estrellas'); if (V.tab === 'per' || V.job === j.id) render(); } }, 3500);
 };
 function bestOf(j) {
   const o = j.offers; if (o.length < 2) return {};
@@ -1629,9 +1723,9 @@ ACT.offer = () => {
 ACT.desc = () => { const p = me(); (p.desc = p.desc || []).push(V.job); save(); V.job = null; render(); };
 function vTrab() {
   const p = me(), js = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
-  view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? stageName(j) : (j.estado === 'nuevo' ? 'Presupuesto enviado' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
+  view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? stageName(j) : (j.estado === 'nuevo' ? 'Presupuesto enviado' : j.estado === 'cancelado' ? 'El cliente canceló' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
      <div class="r1"><h3>${esc(j.caso)}</h3><span class="price" style="font-size:17px">${j.prov === p.id ? money(j.precio) : ''}</span></div>
-     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span>${j.prov === p.id && j.turno && j.estado !== 'finalizado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}${isUnseen(j) && j.prov === p.id ? '<span class="tag r">Novedades</span>' : ''}</div></button>`; }).join('')}</div>`
+     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span>${j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado) ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}${isUnseen(j) && j.prov === p.id ? '<span class="tag r">Novedades</span>' : ''}</div></button>`; }).join('')}</div>`
    : emptyState('clip', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.')}`);
 }
 ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
@@ -1672,7 +1766,7 @@ ACT.mantGo = id => { const t = SEASONS[seasonNow()].tasks.find(x => x.id === id)
    ============================================================ */
 function vAgenda() {
   const p = me(); p.agenda = p.agenda || defAgenda();
-  const js = DB.jobs.filter(j => j.prov === p.id && j.turno && j.estado !== 'finalizado').sort((a, b) => a.turno.localeCompare(b.turno));
+  const js = DB.jobs.filter(j => j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).sort((a, b) => a.turno.localeCompare(b.turno));
   view(`<h2>Agenda</h2><p class="mut small">Tus turnos confirmados y los horarios en que podés trabajar.</p>
    <div class="sec"><span class="eyebrow">Próximos turnos</span>
     ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}"><div class="r1"><h3>${esc(slotLabel(j.turno))}</h3><span class="price" style="font-size:16px">${money(j.precio)}</span></div>
@@ -1757,8 +1851,58 @@ ACT.saveEdit = async (x, btn) => {
   try { save(); } catch (e) {}
   V.edit = false; EDIT = null; toast('Perfil actualizado'); render();
 };
+const LEGAL_V = 'octubre 2026';
+ACT.legal = () => sheet(`<span class="eyebrow">Versión ${LEGAL_V}</span><h2>Términos y privacidad</h2><div class="legal">
+  <h3>Qué es HandyGo</h3>
+  <p>HandyGo te ayuda a entender problemas de tu casa con un asistente, te muestra guías para resolver los arreglos simples y, cuando hace falta, te conecta con prestadores de oficios. HandyGo no es empleador de los prestadores ni realiza los trabajos: cada trabajo es un acuerdo entre vos y el prestador que elegís.</p>
+  <h3>Guías y seguridad</h3>
+  <ul><li>Las guías y respuestas del asistente son orientativas. Seguilas con cuidado y bajo tu responsabilidad.</li>
+  <li>HandyGo no da instrucciones para instalaciones de gas, trabajos eléctricos complejos ni problemas estructurales: en esos casos te deriva a un profesional matriculado.</li>
+  <li>Ante olor a gas, chispas o riesgo inmediato, alejate de la zona y llamá a emergencias.</li></ul>
+  <h3>Prestadores</h3>
+  <p>Los prestadores declaran su identidad, su experiencia y, cuando corresponde, su matrícula (obligatoria para gas y electricidad). Las reseñas las dejan los clientes que contrataron el trabajo.</p>
+  <h3>Consultas al asistente</h3>
+  <p>Cada problema distinto usa una consulta. Las consultas no son reembolsables ni se pueden transferir a otra cuenta.</p>
+  <h3>Qué datos guardamos</h3>
+  <ul><li>Tu cuenta: nombre, mail, celular, barrio y, si la cargás, tu dirección y foto.</li>
+  <li>Tus pedidos, mensajes, presupuestos, turnos y reseñas.</li>
+  <li>Lo que le contás al asistente (texto, fotos y audios) para responderte.</li>
+  <li>Tu ubicación, solo si la compartís, para mostrarte comercios cercanos. No la guardamos.</li></ul>
+  <h3>Para qué los usamos</h3>
+  <ul><li>Para que la app funcione: armar el resumen del caso, mostrarlo a los prestadores de tu rubro y zona, y permitir el contacto entre las partes.</li>
+  <li>Tu dirección y tu celular solo los ve el prestador que contratás.</li>
+  <li>No vendemos tus datos.</li></ul>
+  <h3>Servicios que usamos</h3>
+  <p>Para guardar los datos y responder al asistente usamos proveedores externos de nube e inteligencia artificial (Supabase, Vercel, Google Gemini, Groq y Cloudflare). Lo que escribís, fotografiás o grabás en el asistente se envía a esos servicios para procesarlo. No incluyas datos sensibles en tus consultas.</p>
+  <h3>Tus derechos (Ley 25.326)</h3>
+  <p>Podés acceder a tus datos, corregirlos desde Perfil → Editar perfil y eliminar tu cuenta con todos tus datos desde Perfil → Eliminar cuenta. La Agencia de Acceso a la Información Pública es el órgano de control de la Ley 25.326 y recibe denuncias por incumplimientos.</p>
+  <h3>Cambios</h3>
+  <p>Si cambiamos estos términos, te lo vamos a avisar en la app.</p>
+ </div><button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
+
+/* ---------- eliminar cuenta ---------- */
+ACT.delAcc = () => sheet(`<h2>Eliminar cuenta</h2><p class="mut">Se borran tu perfil, tus fotos, tus pedidos, tus mensajes y tu historial. No se puede deshacer.</p>
+  ${field('delc', 'Para confirmar, escribí ELIMINAR', 'text', 'ELIMINAR')}<div class="err" id="err2" role="alert"></div>
+  <div class="stack" style="margin-top:12px"><button class="btn bad w" data-a="doDelAcc">Eliminar mi cuenta</button><button class="btn g w" data-a="close">Cancelar</button></div>`);
+ACT.doDelAcc = async (v, btn) => {
+  if (($('#delc').value || '').trim().toUpperCase() !== 'ELIMINAR') { $('#err2').textContent = 'Escribí ELIMINAR para confirmar.'; return; }
+  if (!CLOUD) {
+    const id = DB.cur.id; DB.users = DB.users.filter(x => x.id !== id); DB.provs = DB.provs.filter(x => x.id !== id);
+    DB.jobs = DB.jobs.filter(j => j.uid !== id && !(j.uid === 'demo' && j.demo_prov === id)); DB.cur = null; save(); closeSheet(); toast('Cuenta eliminada'); return welcome();
+  }
+  const done = busy(btn, 'Eliminando…');
+  try {
+    const list = await SB.storage.from('fotos').list(DB.cur.id, {limit:1000});
+    if (list.data && list.data.length) await SB.storage.from('fotos').remove(list.data.map(f => DB.cur.id + '/' + f.name));
+  } catch (e) {}
+  const { error } = await SB.rpc('delete_my_account');
+  done();
+  if (error) { $('#err2').textContent = 'No se pudo eliminar la cuenta. Revisá tu conexión e intentá de nuevo.'; return; }
+  closeSheet(); toast('Cuenta eliminada'); cloudLogout();
+};
 function tail() {
-  return `<div class="sec stack"><button class="btn w" data-a="logout">Cerrar sesión</button><button class="btn g w" data-a="reset">Borrar datos del dispositivo</button>
+  return `<div class="sec stack"><button class="btn w" data-a="logout">Cerrar sesión</button><button class="btn g w" data-a="legal">Términos y privacidad</button>
+   <button class="btn g w" data-a="reset">Borrar datos del dispositivo</button><button class="btn bad w" data-a="delAcc">Eliminar cuenta</button>
    <p class="hint" style="text-align:center">HandyGo · Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>`;
 }
 
@@ -1766,7 +1910,7 @@ function tail() {
    NUBE · Supabase (cuentas reales, pedidos compartidos, chat en tiempo real)
    Si no está configurado, la app funciona como antes, guardando en el dispositivo.
    ============================================================ */
-let SB = null, SNAP = {jobs:{}, me:null}, SYNC_T = null, RT = null, SYNCING = null;
+let SB = null, SNAP = {jobs:{}, me:null}, SYNC_T = null, RT = null, SYNCING = null, UNDO_ME = null;
 const isUuid = x => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(x || ''));
 const snapJob = j => { SNAP.jobs[j.id] = JSON.stringify(j); };
 function loadSB() {
@@ -1856,11 +2000,12 @@ async function cloudSync() {
   if (m) { const s = JSON.stringify(m); if (s !== SNAP.me) {
     const old = SNAP.me ? JSON.parse(SNAP.me) : {}, patch = {};
     Object.keys(m).forEach(k => { if (k !== 'id' && k !== 'mail' && k !== 'pass' && JSON.stringify(m[k]) !== JSON.stringify(old[k])) patch[k] = m[k]; });
-    SNAP.me = s; if (Object.keys(patch).length) ops.push(SB.rpc('profile_patch', {p_patch:patch})); } }
+    const prevMe = SNAP.me; SNAP.me = s; if (Object.keys(patch).length) { ops.push(SB.rpc('profile_patch', {p_patch:patch})); UNDO_ME = () => { if (SNAP.me === s) SNAP.me = prevMe; }; } } }
+  const undo = [];
   for (const j of DB.jobs) {
     const s = JSON.stringify(j), prev = SNAP.jobs[j.id];
     if (prev === s) continue;
-    SNAP.jobs[j.id] = s;
+    SNAP.jobs[j.id] = s; undo.push(() => { if (SNAP.jobs[j.id] === s) { if (prev === undefined) delete SNAP.jobs[j.id]; else SNAP.jobs[j.id] = prev; } });
     if (prev === undefined) {
       ops.push(SB.from('jobs').insert({id:j.id, uid:isUuid(j.uid) ? j.uid : null, demo_prov:j.uid === 'demo' ? DB.cur.id : null, rubro:j.rubro, estado:j.estado, prov:j.prov ? String(j.prov) : null, data:j}));
       continue;
@@ -1877,7 +2022,12 @@ async function cloudSync() {
   SYNCING = Promise.all(ops.map(p => Promise.resolve(p).catch(e => ({error:e}))));
   const res = await SYNCING; SYNCING = null;
   const bad = res.filter(r => r && r.error);
-  if (bad.length) { console.warn('Sincronización:', bad.map(r => r.error)); toast('No se pudo guardar un cambio. Revisá tu conexión.'); }
+  if (bad.length) {
+    console.warn('Sincronización:', bad.map(r => r.error));
+    if (navigator.onLine === false || bad.some(r => /fetch|network|Failed/i.test(String((r.error && r.error.message) || r.error)))) { undo.forEach(f => f()); if (UNDO_ME) UNDO_ME(); netUI(); }
+    else toast('No se pudo guardar un cambio. Intentá de nuevo.');
+  }
+  UNDO_ME = null;
 }
 async function upPhoto(dataUrl) {
   if (!CLOUD || !dataUrl || !String(dataUrl).startsWith('data:')) return dataUrl;
@@ -1940,6 +2090,13 @@ async function cloudLogout() {
   DB = {users:[], provs:[], jobs:[], cur:null}; SNAP = {jobs:{}, me:null}; CH = null; chatEl = null; welcome();
 }
 
+/* ---------- sin conexión ---------- */
+function netUI() { const o = $('#offline'), top = $('#top'); o.hidden = navigator.onLine !== false;
+  o.style.top = (top && !top.hidden ? top.offsetHeight : 0) + 'px'; }
+window.addEventListener('offline', netUI);
+window.addEventListener('online', () => { netUI(); if (CLOUD) cloudSave(); toast('Conexión recuperada'); });
+setTimeout(netUI, 0);
+
 /* ---------- arranque ---------- */
 async function boot() {
   let cfg = null;
@@ -1952,7 +2109,10 @@ async function boot() {
     SB = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'handygo-auth'}});
     CLOUD = true;
     DB = {users:[], provs:[], jobs:[], cur:null};
+    const recovery = /type=recovery/.test(location.hash);
+    SB.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') vNewPass(); });
     const { data:{ session } } = await SB.auth.getSession();
+    if (recovery && session) { history.replaceState(null, '', location.pathname); return vNewPass(); }
     if (session && await cloudLoad()) return enter();
   } catch (e) { console.warn('Nube:', e); if (!CLOUD) return render(); }
   welcome();
