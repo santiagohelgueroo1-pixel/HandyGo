@@ -1209,41 +1209,36 @@ async function initMap() {
 function dist(a, b) { const R = 6371e3, t = x => x * Math.PI / 180, dLa = t(b.lat - a.lat), dLo = t(b.lon - a.lon);
   const h = Math.sin(dLa / 2) ** 2 + Math.cos(t(a.lat)) * Math.cos(t(b.lat)) * Math.sin(dLo / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
 const fmtD = m => m < 1000 ? Math.round(m / 10) * 10 + ' m' : (m / 1000).toFixed(1).replace('.', ',') + ' km';
-async function overpass(c, r) {
-  const q = `[out:json][timeout:20];nwr["shop"~"^(hardware|doityourself|paint|trade|bathroom_furnishing|houseware)$"](around:${r},${c.lat},${c.lon});out center 60;`;
-  for (const url of ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']) {
-    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 12000);
-    try { const res = await fetch(url, {method:'POST', signal:ctl.signal, body:'data=' + encodeURIComponent(q), headers:{'content-type':'application/x-www-form-urlencoded'}}); clearTimeout(to); if (res.ok) return (await res.json()).elements || []; } catch (e) { clearTimeout(to); }
-  }
-  throw new Error('overpass');
-}
-const SHOPTYPE = {hardware:'Ferretería', doityourself:'Materiales y bricolaje', paint:'Pinturería', trade:'Corralón', bathroom_furnishing:'Sanitarios', houseware:'Bazar'};
+const SHOPTYPE = {hardware:'Ferretería', doityourself:'Materiales y bricolaje', paint:'Pinturería', trade:'Corralón', bathroom_furnishing:'Sanitarios', houseware:'Bazar', building_materials:'Materiales de construcción'};
+let STORE_REQ = 0;
 async function loadStores(c) {
   const list = $('#ferList'); if (!list) return;
+  const my = ++STORE_REQ;
   list.innerHTML = '<div class="card"><span class="typing"><i></i><i></i><i></i></span> <span class="mut small">Buscando ferreterías…</span></div>';
-  let els;
-  try { els = await overpass(c, 1500); if (els.filter(e => e.tags && e.tags.name).length < 3) els = await overpass(c, 4000); }
-  catch (e) { if ($('#ferList')) $('#ferList').innerHTML = '<div class="card"><b>No pudimos cargar los comercios.</b><div class="small mut">Revisá tu conexión e intentá de nuevo.</div><button class="btn sm" style="margin-top:8px" data-a="retryStores">Reintentar</button></div>'; return; }
-  const st = els.map(e => ({n:e.tags && e.tags.name, lat:e.lat ?? (e.center && e.center.lat), lon:e.lon ?? (e.center && e.center.lon), t:e.tags || {}}))
-    .filter(x => x.n && x.lat).map(x => ({...x, d:dist(c, x)})).sort((a, b) => a.d - b.d).slice(0, 12);
-  if (!$('#ferList') || !MAP) return;
-  if (!st.length) { $('#ferList').innerHTML = '<div class="card mut small">No encontramos ferreterías registradas en esta zona.</div>'; return; }
+  let st;
+  try {
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
+    const r = await fetch(`/api/places?lat=${c.lat.toFixed(3)}&lon=${c.lon.toFixed(3)}`, {signal:ctl.signal});
+    clearTimeout(to);
+    const d = await r.json(); if (!r.ok || !d.ok) throw new Error('places');
+    st = d.items.map(x => ({...x, d:dist(c, x)})).sort((a, b) => a.d - b.d);
+  } catch (e) {
+    if (my === STORE_REQ && $('#ferList')) $('#ferList').innerHTML = '<div class="card"><b>No pudimos cargar los comercios.</b><div class="small mut">Revisá tu conexión e intentá de nuevo.</div><button class="btn sm" style="margin-top:8px" data-a="retryStores">Reintentar</button></div>';
+    return;
+  }
+  if (my !== STORE_REQ || !$('#ferList') || !MAP) return;
+  if (!st.length) { $('#ferList').innerHTML = '<div class="card mut small">No encontramos ferreterías registradas cerca. Probá moviéndote o actualizando la ubicación.</div>'; return; }
   const bounds = [[c.lat, c.lon]];
+  const goUrl = x => `https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lon}`;
   st.forEach(x => {
-    const dir = [x.t['addr:street'], x.t['addr:housenumber']].filter(Boolean).join(' ');
-    const go = `https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lon}`;
     L.marker([x.lat, x.lon], {icon:L.divIcon({className:'pin', html:PIN('#F2B33D'), iconSize:[30, 38], iconAnchor:[15, 37], popupAnchor:[0, -32]})}).addTo(MAP)
-      .bindPopup(`<div class="ferl"><b>${esc(x.n)}</b>${dir ? `<span>${esc(dir)}</span>` : ''}<span>${fmtD(x.d)}</span><a href="${go}" target="_blank" rel="noopener">Cómo llegar</a></div>`);
+      .bindPopup(`<div class="ferl"><b>${esc(x.n)}</b>${x.dir ? `<span>${esc(x.dir)}</span>` : ''}<span>${fmtD(x.d)}</span><a href="${goUrl(x)}" target="_blank" rel="noopener">Cómo llegar</a></div>`);
     if (x.d < 2500) bounds.push([x.lat, x.lon]);
   });
   if (bounds.length > 1) MAP.fitBounds(bounds, {padding:[30, 30], maxZoom:16});
-  $('#ferList').innerHTML = st.map(x => {
-    const dir = [x.t['addr:street'], x.t['addr:housenumber']].filter(Boolean).join(' ');
-    const typ = SHOPTYPE[x.t.shop] || 'Comercio';
-    return `<div class="card"><div class="jobcard"><div class="r1"><h3>${esc(x.n)}</h3><span class="num mut small">${fmtD(x.d)}</span></div>
-      <div class="small mut">${esc(typ)}${dir ? ' · ' + esc(dir) : ''}</div>
-      <div class="meta">${x.t.opening_hours ? `<span class="tag">${esc(x.t.opening_hours.slice(0, 40))}</span>` : ''}<a class="tag b" href="https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lon}" target="_blank" rel="noopener" style="text-decoration:none">${ico('pin')} Cómo llegar</a></div></div></div>`;
-  }).join('');
+  $('#ferList').innerHTML = st.map(x => `<div class="card"><div class="jobcard"><div class="r1"><h3>${esc(x.n)}</h3><span class="num mut small">${fmtD(x.d)}</span></div>
+      <div class="small mut">${esc(SHOPTYPE[x.shop] || 'Comercio')}${x.dir ? ' · ' + esc(x.dir) : ''}</div>
+      <div class="meta">${x.h ? `<span class="tag">${esc(String(x.h).slice(0, 40))}</span>` : ''}<a class="tag b" href="${goUrl(x)}" target="_blank" rel="noopener" style="text-decoration:none">${ico('pin')} Cómo llegar</a></div></div></div>`).join('');
 }
 ACT.retryStores = () => loadStores(LOC || CABA);
 ACT.locate = () => {
