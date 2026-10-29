@@ -605,6 +605,7 @@ let V = {tab:'chat', job:null};
 let CH = null;           // conversación actual
 let chatEl = null;       // nodo del chat (se conserva al cambiar de pestaña)
 let AI_OK = null;        // null = sin probar, true / false
+let AI_RETRY = null;
 let pendingImg = null;
 
 const me = () => DB.cur && (DB.cur.t === 'u' ? DB.users : DB.provs).find(x => x.id === DB.cur.id);
@@ -945,7 +946,6 @@ function sendAudio(blob, audio, dur) {
   LOG().querySelectorAll('.chips').forEach(c => c.remove());
   const url = URL.createObjectURL(blob);
   const bub = say(`<audio controls src="${url}"></audio><div class="tr" hidden></div>`, 'u');
-  if (AI_OK === false) { say('Sin conexión no puedo escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
   if (!CH.started) { if (!useCredit(false)) return; CH.started = true; }
   CH.resp.push('(audio)');
   ai('', null, '', audio, bub);
@@ -971,20 +971,28 @@ function go(txt, isReply) {
 async function ai(txt, img, t, audio, bub) {
   CH.h.push({role:'user', text:txt || (audio ? '(audio)' : 'Te mando una foto del problema.'), image:img ? {mime:'image/jpeg', data:img.split(',')[1]} : null, audio:audio || null});
   CH.bub = bub || null;
-  if (AI_OK === false) return rules(t, img);
   const th = say('<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>', '', false);
   try {
-    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 25000);
-    const res = await fetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal,
-      body:JSON.stringify({tema_actual:CH.caso || '', messages:CH.h.slice(-12).map((m, i, a) => i < a.length - 1 ? {role:m.role, text:m.text} : m), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))})});
-    clearTimeout(to);
-    const d = await res.json().catch(() => null);
-    if (!res.ok || !d || !d.ok) throw new Error((d && d.error) || 'api');
+    const body = JSON.stringify({tema_actual:CH.caso || '', messages:CH.h.slice(-12).map((m, i, a) => i < a.length - 1 ? {role:m.role, text:m.text} : m), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))});
+    let d = null, lastErr = null;
+    for (let intento = 0; intento < 2 && !d; intento++) {
+      if (intento) await new Promise(r => setTimeout(r, 1500));
+      const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 32000);
+      try {
+        const res = await fetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal, body});
+        const j = await res.json().catch(() => null);
+        if (res.ok && j && j.ok) d = j; else { lastErr = new Error((j && j.error) || 'api'); if (j && j.detail) console.warn('IA:', j.detail); }
+      } catch (err) { lastErr = err; }
+      clearTimeout(to);
+    }
+    if (!d) throw lastErr || new Error('api');
+    if (d.audioPerdido && audio) { th.remove(); CH.h.pop(); CH.resp.pop(); say('Ahora no puedo escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
     th.remove(); if (AI_OK !== true) { AI_OK = true; setMode(); }
     handleAI(d.reply, t);
   } catch (e) {
     th.remove(); console.warn('IA no disponible:', e);
     AI_OK = false; setMode(); CH.h.pop();
+    clearTimeout(AI_RETRY); AI_RETRY = setTimeout(() => { AI_OK = null; setMode(); }, 60000);
     if (audio) { say('Ahora no me puedo conectar para escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
     say('Ahora no me puedo conectar con la IA, así que te ayudo con mis guías revisadas.', 'sys', false);
     rules(t, img);
