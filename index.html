@@ -1113,31 +1113,26 @@ function showTut(tut) {
   });
   chips([['Lo resolví', () => resolved(), 'p'], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
 }
-/* ---------- imágenes de cada paso (Cloudflare Workers AI vía /api/img) ---------- */
-const IMG_CACHE = {};
+/* ---------- imágenes de cada paso (Cloudflare FLUX.2 vía /api/img, guardadas en la CDN) ---------- */
+const IMG_V = 2;
+const GEN_PROMPTS = {};
+function setStepImg(slot, src, i) {
+  const img = new Image(); img.alt = 'Ilustración del paso ' + (i + 1); img.decoding = 'async';
+  img.onload = () => { if (slot.isConnected) { slot.innerHTML = ''; slot.appendChild(img); } };
+  img.onerror = () => { if (!src.includes('&r=1')) setTimeout(() => setStepImg(slot, src + '&r=1', i), 2500); else slot.remove(); };
+  img.src = src;
+}
 async function stepImages(tut, box) {
   const slots = [...box.querySelectorAll('.stimg')];
-  const drop = () => slots.forEach(x => x.remove());
-  const key = tut.gen ? 'gen:' + tut.n + ':' + tut.steps.map(x => x[1]).join('|') : tut.id;
-  const c = IMG_CACHE[key] || (IMG_CACHE[key] = {prompts:null, img:[]});
+  if (!tut.gen) { slots.forEach((slot, i) => setTimeout(() => setStepImg(slot, `/api/img?g=${encodeURIComponent(tut.id)}&i=${i}&v=${IMG_V}`, i), i * 350)); return; }
+  const key = tut.n + '|' + tut.steps.map(x => x[1]).join('|');
   try {
-    if (!c.prompts) {
+    if (!GEN_PROMPTS[key]) {
       const r = await fetch('/api/img', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({mode:'prompts', caso:tut.n, pasos:tut.steps.map(x => x[1])})});
-      const d = await r.json(); if (!r.ok || !d.ok || !Array.isArray(d.prompts)) throw 0; c.prompts = d.prompts;
+      const d = await r.json(); if (!r.ok || !d.ok || !Array.isArray(d.prompts)) throw 0; GEN_PROMPTS[key] = d.prompts;
     }
-  } catch (e) { delete IMG_CACHE[key]; return drop(); }
-  let failed = false, next = 0;
-  const one = async i => {
-    const slot = slots[i]; if (!slot || failed) return;
-    if (c.img[i]) { slot.innerHTML = `<img src="${c.img[i]}" alt="Ilustración del paso ${i + 1}">`; return; }
-    try {
-      const r = await fetch('/api/img', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({prompt:c.prompts[i] || tut.steps[i][1]})});
-      const d = await r.json(); if (!r.ok || !d.ok) throw d;
-      c.img[i] = d.image; slot.innerHTML = `<img src="${d.image}" alt="Ilustración del paso ${i + 1}">`;
-    } catch (e) { if (e && e.error === 'sin_configurar') { failed = true; drop(); } else slot.remove(); }
-  };
-  const worker = async () => { while (next < slots.length && !failed) await one(next++); };
-  await Promise.all([worker(), worker(), worker()]);
+  } catch (e) { slots.forEach(x => x.remove()); return; }
+  slots.forEach((slot, i) => setTimeout(() => setStepImg(slot, `/api/img?p=${encodeURIComponent(GEN_PROMPTS[key][i] || tut.steps[i][1])}&v=${IMG_V}`, i), i * 350));
 }
 function resolved() {
   say('Lo resolví', 'u');
