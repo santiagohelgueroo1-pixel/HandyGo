@@ -25,10 +25,16 @@ SEGURIDAD (NO NEGOCIABLE)
 - Si la persona insiste en hacerlo sola, mantené la negativa con amabilidad.
 - Si dudás de que sea seguro, derivá.
 
+CAMBIO DE TEMA (para el sistema de consultas)
+- Te paso el TEMA ACTUAL de la conversación. Si el ÚLTIMO mensaje del usuario plantea un problema DISTINTO
+  (otro artefacto, otra parte de la casa u otra falla sin relación), poné "tema_nuevo": true y atendé ese problema nuevo desde cero.
+- Repreguntas, aclaraciones, detalles, fotos, dudas sobre los pasos, materiales o el prestador del MISMO problema NO son tema nuevo.
+- Si no hay tema actual, "tema_nuevo": false.
+
 Si el mensaje no tiene que ver con el hogar, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","riesgo":true}`;
+{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","riesgo":true,"tema_nuevo":false}`;
 
 const ESTADOS = ['preguntar', 'guiar', 'derivar', 'fuera_de_tema'];
 const RUBROS = ['Plomería', 'Gas', 'Electricidad', 'Carpintería', 'Albañilería'];
@@ -41,10 +47,12 @@ module.exports = async (req, res) => {
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
   const messages = Array.isArray(body && body.messages) ? body.messages.slice(-12) : [];
   const catalog = Array.isArray(body && body.catalog) ? body.catalog.slice(0, 40) : [];
+  const tema = typeof (body && body.tema_actual) === 'string' ? body.tema_actual.slice(0, 120) : '';
   if (!messages.length) return res.status(400).json({ ok: false, error: 'Faltan mensajes' });
 
   const system = SYSTEM + '\n\nCATÁLOGO DE GUÍAS REVISADAS (id: título · rubro · cuándo usarla):\n' +
-    catalog.map(c => `- ${String(c.id)}: ${String(c.titulo)} · ${String(c.rubro)} · ${String(c.cuando)}`).join('\n');
+    catalog.map(c => `- ${String(c.id)}: ${String(c.titulo)} · ${String(c.rubro)} · ${String(c.cuando)}`).join('\n') +
+    '\n\nTEMA ACTUAL: ' + (tema || '(ninguno, es el primer mensaje)');
   const ids = catalog.map(c => String(c.id));
 
   const errors = [];
@@ -122,6 +130,7 @@ function normalize(text, ids) {
     mensaje: typeof o.mensaje === 'string' ? o.mensaje.slice(0, 600) : '',
     opciones: Array.isArray(o.opciones) ? o.opciones.filter(x => typeof x === 'string').slice(0, 3).map(x => x.slice(0, 80)) : [],
     tutorial: ids.includes(o.tutorial) ? o.tutorial : null,
-    riesgo: o.riesgo === true
+    riesgo: o.riesgo === true,
+    tema_nuevo: o.tema_nuevo === true
   };
 }
