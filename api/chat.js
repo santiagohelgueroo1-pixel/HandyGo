@@ -49,6 +49,7 @@ const RUBROS = ['Plomería', 'Gas', 'Electricidad', 'Carpintería', 'Albañiler�
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (req.method === 'GET') return diagnose(req, res);
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Usá POST' });
 
   let body = req.body;
@@ -63,28 +64,47 @@ module.exports = async (req, res) => {
     '\n\nTEMA ACTUAL: ' + (tema || '(ninguno, es el primer mensaje)');
   const ids = catalog.map(c => String(c.id));
 
-  const errors = [];
+  const errors = [], t0 = Date.now(), left = () => 26000 - (Date.now() - t0);
+  const hasAudio = messages.some(m => m.audio && m.audio.data);
   if (process.env.GEMINI_API_KEY) {
-    const models = [process.env.GEMINI_MODEL, 'gemini-3-flash-preview', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].filter(Boolean);
-    for (const model of [...new Set(models)]) {
+    for (const model of geminiModels()) {
+      if (left() < 4000) break;
+      if (SKIP[model] && SKIP[model] > Date.now()) { errors.push(`${model}: sin cupo (salteado)`); continue; }
       try {
-        const text = await gemini(model, system, messages);
+        const text = await gemini(model, system, messages, Math.min(12000, left()));
         return res.status(200).json({ ok: true, provider: 'gemini', model, reply: normalize(text, ids) });
-      } catch (e) { errors.push(`${model}: ${e.message}`); }
+      } catch (e) {
+        errors.push(`${model}: ${e.message}`);
+        if (/^(429|404)/.test(e.message)) SKIP[model] = Date.now() + (e.message.startsWith('404') ? 864e5 : 6e4);
+      }
     }
   }
-  if (process.env.GROQ_API_KEY) {
+  // Respaldos sin audio: Groq y Cloudflare Workers AI (si están configurados)
+  const textOnly = messages.map(m => ({ ...m, audio: m.audio && m.audio.data ? null : m.audio, text: m.audio && m.audio.data ? '(audio que no se pudo escuchar)' : m.text }));
+  if (process.env.GROQ_API_KEY && left() > 3000) {
     try {
-      const text = await groq(system, messages);
-      return res.status(200).json({ ok: true, provider: 'groq', reply: normalize(text, ids) });
+      const text = await groq(system, textOnly, Math.min(12000, left()));
+      return res.status(200).json({ ok: true, provider: 'groq', reply: normalize(text, ids), audioPerdido: hasAudio });
     } catch (e) { errors.push(`groq: ${e.message}`); }
+  }
+  if (process.env.CF_ACCOUNT_ID && process.env.CF_API_TOKEN && left() > 3000) {
+    try {
+      const text = await cloudflare(system, textOnly, Math.min(15000, left()));
+      return res.status(200).json({ ok: true, provider: 'cloudflare', reply: normalize(text, ids), audioPerdido: hasAudio });
+    } catch (e) { errors.push(`cloudflare: ${e.message}`); }
   }
   if (!process.env.GEMINI_API_KEY && !process.env.GROQ_API_KEY) errors.push('No hay ninguna clave configurada (GEMINI_API_KEY)');
   console.error('HandyGo IA sin respuesta:', errors.join(' | '));
   return res.status(502).json({ ok: false, error: 'La IA no respondió', detail: errors });
 };
 
-async function gemini(model, system, messages) {
+const SKIP = {};
+function geminiModels() {
+  return [...new Set([process.env.GEMINI_MODEL, 'gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'].filter(Boolean))];
+}
+function timeout(ms) { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); return { signal: c.signal, done: () => clearTimeout(t) }; }
+function thinking(model) { return /2\.5/.test(model) ? { thinkingBudget: 0 } : { thinkingLevel: 'low' }; }
+async function gemini(model, system, messages, ms = 12000) {
   const contents = messages.map(m => {
     const parts = [];
     if (m.image && m.image.data) parts.push({ inlineData: { mimeType: m.image.mime || 'image/jpeg', data: String(m.image.data) } });
@@ -92,26 +112,33 @@ async function gemini(model, system, messages) {
     parts.push({ text: m.audio && m.audio.data ? 'El usuario mandó este audio. Escuchalo y transcribilo en "transcripcion".' : String(m.text || '(foto)').slice(0, 2000) });
     return { role: m.role === 'assistant' ? 'model' : 'user', parts };
   });
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents,
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens: 4096 }
-    })
-  });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(`${r.status} ${(d.error && d.error.message) || ''}`.trim());
-  const text = (((d.candidates || [])[0] || {}).content || {}).parts;
-  const out = (text || []).map(p => p.text || '').join('');
-  if (!out) throw new Error('respuesta vacía');
-  return out;
+  const call = async withThinking => {
+    const t = timeout(ms);
+    try {
+      const generationConfig = { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens: 4096 };
+      if (withThinking) generationConfig.thinkingConfig = thinking(model);
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+        method: 'POST', signal: t.signal,
+        headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: system }] }, contents, generationConfig })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { const err = new Error(`${r.status} ${((d.error && d.error.message) || '').slice(0, 160)}`.trim()); err.status = r.status; throw err; }
+      const cand = (d.candidates || [])[0] || {};
+      const out = ((cand.content || {}).parts || []).filter(p => !p.thought).map(p => p.text || '').join('');
+      if (!out) throw new Error('respuesta vacía' + (cand.finishReason ? ' (' + cand.finishReason + ')' : ''));
+      return out;
+    } catch (e) { if (e.name === 'AbortError') throw new Error('tardó demasiado'); throw e; }
+    finally { t.done(); }
+  };
+  try { return await call(true); }
+  catch (e) { if (e.status === 400 && /thinking/i.test(e.message)) return call(false); throw e; }
 }
 
-async function groq(system, messages) {
+async function groq(system, messages, ms = 12000) {
+  const t = timeout(ms);
   const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
+    method: 'POST', signal: t.signal,
     headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.GROQ_API_KEY}` },
     body: JSON.stringify({
       model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
@@ -121,11 +148,43 @@ async function groq(system, messages) {
         ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: (m.audio ? '(el usuario mandó un audio que no se puede escuchar: pedile que lo escriba)' : String(m.text || '(el usuario mandó una foto)')) + (m.image ? ' [adjuntó una foto]' : '') }))]
     })
   });
-  const d = await r.json().catch(() => ({}));
+  const d = await r.json().catch(() => ({})); t.done();
   if (!r.ok) throw new Error(`${r.status} ${(d.error && d.error.message) || ''}`.trim());
   const out = d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
   if (!out) throw new Error('respuesta vacía');
   return out;
+}
+
+async function cloudflare(system, messages, ms = 15000) {
+  const t = timeout(ms);
+  try {
+    const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CF_ACCOUNT_ID}/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast`, {
+      method: 'POST', signal: t.signal,
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.CF_API_TOKEN}` },
+      body: JSON.stringify({ max_tokens: 1500, temperature: 0.4, messages: [{ role: 'system', content: system + '\n\nIMPORTANTE: respondé únicamente el objeto JSON.' },
+        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.text || '(el usuario mandó una foto)') + (m.image ? ' [adjuntó una foto que no podés ver]' : '') }))] })
+    });
+    const d = await r.json().catch(() => ({}));
+    const out = d && d.result && (typeof d.result.response === 'string' ? d.result.response : JSON.stringify(d.result.response || ''));
+    if (!r.ok || !out) throw new Error(`${r.status} ${(d.errors && d.errors[0] && d.errors[0].message) || 'sin respuesta'}`);
+    return out;
+  } finally { t.done(); }
+}
+
+// Abrí /api/chat en el navegador para ver el estado de la IA
+async function diagnose(req, res) {
+  const out = { claves: { GEMINI_API_KEY: !!process.env.GEMINI_API_KEY, GROQ_API_KEY: !!process.env.GROQ_API_KEY, CF_ACCOUNT_ID: !!process.env.CF_ACCOUNT_ID, CF_API_TOKEN: !!process.env.CF_API_TOKEN }, modelos: {} };
+  const msg = [{ role: 'user', text: 'Respondé {"ok":true}' }];
+  if (process.env.GEMINI_API_KEY) {
+    await Promise.all(geminiModels().map(async m => {
+      try { await gemini(m, 'Respondé solo JSON.', msg, 9000); out.modelos[m] = 'funciona'; } catch (e) { out.modelos[m] = e.message; }
+    }));
+  }
+  if (process.env.GROQ_API_KEY) { try { await groq('Respondé solo JSON.', msg, 9000); out.modelos.groq = 'funciona'; } catch (e) { out.modelos.groq = e.message; } }
+  if (process.env.CF_ACCOUNT_ID && process.env.CF_API_TOKEN) { try { await cloudflare('Respondé solo JSON.', msg, 12000); out.modelos.cloudflare = 'funciona'; } catch (e) { out.modelos.cloudflare = e.message; } }
+  out.resumen = Object.values(out.modelos).includes('funciona') ? 'La IA está funcionando' : 'Ningún modelo respondió: revisá las claves o el cupo diario';
+  res.setHeader('content-type', 'application/json; charset=utf-8');
+  return res.status(200).send(JSON.stringify(out, null, 2));
 }
 
 function normalize(text, ids) {
