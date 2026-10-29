@@ -1,5 +1,5 @@
 // HandyGo · service worker: guarda la app para que abra rápido y sin señal.
-const CACHE = 'handygo-v4';
+const CACHE = 'handygo-v5';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

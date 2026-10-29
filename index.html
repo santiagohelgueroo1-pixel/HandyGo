@@ -168,6 +168,12 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .composer .bar{display:flex;gap:8px;align-items:flex-end}
 .composer textarea{flex:1;min-width:0;resize:none;border:2px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--bg);max-height:110px;line-height:1.35}
 .composer textarea:focus{outline:none;border-color:var(--pri)}
+.recbar{display:flex;align-items:center;gap:10px}
+.recbar .t{flex:1;display:flex;align-items:center;gap:10px;font-weight:600;font-variant-numeric:tabular-nums;border:2px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--bg)}
+.recdot{width:10px;height:10px;border-radius:50%;background:var(--bad)}
+@media (prefers-reduced-motion:no-preference){.recdot{animation:blink 1s infinite}}
+.m audio{display:block;width:230px;max-width:100%;height:40px}
+.m .tr{font-size:14px;opacity:.9;margin-top:6px;font-style:italic}
 .iconbtn{flex:none;width:46px;height:46px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--mut);display:grid;place-items:center}
 .iconbtn.p{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
 .iconbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -272,6 +278,20 @@ details.offerf[open] summary{display:none}
 .adfull .cd{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;font:700 13px/1 var(--f-mono);background:rgba(255,255,255,.12);padding:8px 12px;border-radius:99px}
 #toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 78px);box-shadow:0 8px 24px -8px rgba(0,0,0,.4);z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:700;font-size:14px;max-width:90%;text-align:center}
 .tag svg,.btn svg,.back svg,.hint svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+img.av{object-fit:cover;background:var(--sunk)}
+.avpick{display:flex;gap:14px;align-items:center}
+.avpick label.av{cursor:pointer;border:2px dashed var(--pri);background:var(--priSoft);overflow:hidden}
+.avpick label.av svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.avpick label.av img{width:100%;height:100%;object-fit:cover}
+.avpick b{display:block}
+.port{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.port .ph{position:relative;aspect-ratio:1;max-width:100%;border-radius:10px;overflow:hidden;background:var(--sunk)}
+.port .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.port .ph button{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center}
+.port .ph button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5}
+.port label.add{aspect-ratio:1;border:2px dashed var(--line);border-radius:10px;display:grid;place-items:center;color:var(--mut);cursor:pointer;font-size:13px;text-align:center;padding:6px}
+.port label.add svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
+.bio{font-size:15px;margin:12px 0 0}
 .review{border-top:1px solid var(--line);padding-top:10px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -340,7 +360,19 @@ const I = {
   knife:'<path d="M3 21l8-8"/><path d="M11 13l9-9 1 4-7 7z"/>',
   glove:'<path d="M7 21v-6L5 9a1.5 1.5 0 013-1l1 3V4a1.5 1.5 0 013 0v6-7a1.5 1.5 0 013 0v7-5a1.5 1.5 0 013 0v9c0 4-2 7-6 7z"/>',
   ladder:'<path d="M7 3l-3 18M17 3l3 18M6 8h12M5 13h14M4 18h16"/>',
-  probe:'<path d="M14 3l7 7-9 9-4 1 1-4z"/><path d="M3 21l4-4"/>'
+  probe:'<path d="M14 3l7 7-9 9-4 1 1-4z"/><path d="M3 21l4-4"/>',
+  wheel:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 4v5.5M12 14.5V20M4 12h5.5M14.5 12H20"/>',
+  drill:'<path d="M3 8h11v6H3z"/><path d="M14 10h6M8 14l-1 6h4l1-6"/>',
+  hammer:'<path d="M14 4l6 6-3 3-6-6z"/><path d="M11 7L3 15l3 3 8-8"/>',
+  level:'<rect x="2" y="9" width="20" height="6" rx="1"/><circle cx="12" cy="12" r="1.6"/>',
+  spray:'<rect x="7" y="9" width="8" height="12" rx="2"/><path d="M9 9V6h4v3M15 5h3M15 3l3-1M15 7l3 1"/>',
+  plunger:'<path d="M12 3v10"/><path d="M5 19a7 6 0 0114 0z"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>'
 };
 const ico = (k, cls = '') => `<svg viewBox="0 0 24 24" aria-hidden="true" class="${cls}">${I[k] || I.check}</svg>`;
 const MARK = `<img class="mark" src="data:image/jpeg;base64,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" alt="">`;
@@ -420,6 +452,100 @@ const TUT = {
     steps:[['power','Bajá la térmica o apagá la llave de luz'],['bulb','Esperá a que se enfríe y desenroscá la lámpara quemada'],['eye','Revisá que el portalámparas no esté negro ni derretido'],['bulb','Enroscá una lámpara nueva con la misma rosca y potencia'],['check','Subí la térmica y probá']],
     alert:'Si el portalámparas está quemado o la luz sigue sin prender, pedí un electricista matriculado.',
     mat:[['bulb','Lámpara LED','“Una lámpara LED rosca E27” (o E14 si es la fina)'],['ladder','Escalera firme','Que no se mueva y con traba']]},
+  silla:{n:'Rueditas de silla que no giran', rubro:'Carpintería', lvl:'Fácil', min:15,
+    re:/silla|rueditas?|ruedas? de la silla|silla de oficina|silla con ruedas/,
+    syn:'ruedas de silla de oficina trabadas, duras o con pelusa',
+    q:'¿Las ruedas están duras o trabadas, o alguna está partida?',
+    o:[['Están duras o trabadas','ok'],['Se rompió la base de la silla','pro']],
+    steps:[['eye','Dá vuelta la silla y apoyala sobre una manta para no rayar el piso'],['wheel','Sacá cada rueda tirando fuerte hacia afuera (salen a presión)'],['knife','Cortá con una tijera o trincheta los pelos y pelusas enredados en el eje'],['brush','Limpiá el eje y el agujero con un trapo seco'],['spray','Echá un poco de lubricante en aerosol en el eje y girá la rueda con la mano'],['wheel','Volvé a encastrar cada rueda con un golpe seco de la palma'],['check','Probá que todas giren; si alguna está partida, reemplazala']],
+    mat:[['spray','Lubricante en aerosol','“WD-40” o “silicona en aerosol”'],['knife','Trincheta o tijera','Para cortar pelos y pelusa'],['wheel','Ruedas de repuesto (si alguna está rota)','“Ruedas para silla de oficina con perno de 11 mm” (llevá una de muestra)']]},
+  cajon:{n:'Cajón que se traba o no corre', rubro:'Carpintería', lvl:'Fácil', min:15,
+    re:/caj[oó]n|cajones|no corre el caj|gu[ií]as? del caj/,
+    syn:'cajón de mueble que se traba, cuesta abrir o se sale',
+    q:'¿Cuesta abrirlo o se sale del riel?',
+    o:[['Cuesta abrirlo o se traba','ok'],['La madera del cajón está rota','pro']],
+    steps:[['bucket','Vaciá el cajón'],['eye','Sacalo: abrilo hasta el final y levantalo un poco de adelante'],['brush','Limpiá las guías o rieles de ambos lados'],['screw','Ajustá los tornillos de las guías que estén flojos'],['spray','Pasá silicona en aerosol por las guías (en cajones de madera sin guías, frotá una vela)'],['check','Volvé a colocarlo y abrilo y cerralo varias veces']],
+    mat:[['spray','Silicona en aerosol','“Silicona en aerosol para correderas”'],['screw','Destornillador Phillips','“Phillips número 2”']]},
+  mueble:{n:'Mueble o mesa que se mueve', rubro:'Carpintería', lvl:'Fácil', min:20,
+    re:/mueble|mesa|se tambalea|baila|tornillos flojos|placard|estanter[ií]a|biblioteca|cama que hace ruido|cama que se mueve/,
+    syn:'mueble, mesa, cama o estantería floja que se tambalea',
+    q:'¿Se mueve porque están flojas las uniones o porque una pata quedó más corta?',
+    o:[['Están flojas las uniones','ok'],['La madera está partida','pro']],
+    steps:[['eye','Mové el mueble suavemente y fijate qué unión se mueve'],['screw','Ajustá todos los tornillos o tuercas con destornillador o llave Allen'],['hinge','Si un tornillo gira en falso, poné palillos con cola en el agujero, cortalos al ras y volvé a atornillar'],['level','Si una pata quedó corta, poné un regatón o fieltro para nivelar'],['hammer','Para más firmeza, sumá una escuadra metálica en la unión floja'],['check','Probá que ya no se mueva']],
+    mat:[['screw','Destornillador y llaves Allen','“Juego de llaves Allen”'],['drop','Cola vinílica','“Cola vinílica para madera”'],['hinge','Escuadras metálicas','“Escuadras de 40 mm con tornillos”'],['level','Regatones','“Regatones de goma o fieltro autoadhesivo”']]},
+  cuadro:{n:'Colgar un cuadro o estante liviano', rubro:'Albañilería', lvl:'Fácil', min:20,
+    re:/colgar|cuadro|estante|repisa|espejo|tarugo|perforar|agujerear|barral|cortina/,
+    syn:'colgar cuadro, espejo, estante, repisa o barral de cortina en la pared',
+    q:'¿Qué vas a colgar: algo liviano (cuadro, espejo chico, repisa) o algo pesado (alacena, TV)?',
+    o:[['Algo liviano','ok'],['Algo pesado (alacena, TV)','pro']],
+    steps:[['eye','Elegí el lugar y evitá perforar en línea recta arriba o abajo de enchufes y llaves de luz'],['level','Marcá con lápiz usando un nivel para que quede derecho'],['drill','Perforá con una mecha número 6 (para pared de ladrillo, mecha de widia)'],['hammer','Metí el tarugo número 6 con un golpe suave hasta que quede al ras'],['screw','Atornillá dejando 5 mm afuera para colgar (o ajustá el soporte)'],['check','Colgá y verificá que quede firme']],
+    alert:'No perfores en línea recta arriba o abajo de enchufes y llaves de luz: por ahí suelen pasar los cables. Tampoco cerca de canillas.',
+    mat:[['drill','Taladro y mecha','“Mecha de widia número 6”'],['hinge','Tarugos y tornillos','“Tarugos del 6 con tornillos”'],['level','Nivel','Un nivel chico o la app de nivel del celular']]},
+  inodoro_tapado:{n:'Inodoro tapado', rubro:'Plomería', lvl:'Fácil', min:15,
+    re:/inodoro tapado|se tap[oó] el inodoro|no baja el agua del inodoro|desborda el inodoro|sopapa/,
+    syn:'inodoro tapado que no traga o desborda',
+    q:'¿Se tapó solo el inodoro, o también sube agua por otras rejillas de la casa?',
+    o:[['Solo el inodoro','ok'],['También sube agua por otras rejillas','pro']],
+    steps:[['valve','No vuelvas a tirar la cadena: cerrá la llave de paso de la mochila si sigue cargando'],['glove','Ponete guantes y poné trapos en el piso'],['plunger','Colocá la sopapa cubriendo bien el agujero del fondo'],['plunger','Empujá y tirá con fuerza unas 15 veces sin despegarla'],['drop','Echá un balde de agua caliente (no hirviendo) con un chorro de detergente'],['check','Abrí la llave de paso y probá tirar la cadena']],
+    mat:[['plunger','Sopapa','“Sopapa para inodoro” (la de fuelle anda mejor)'],['glove','Guantes de goma','“Guantes de látex largos”']]},
+  rejilla:{n:'Olor feo en rejilla o desagüe', rubro:'Plomería', lvl:'Fácil', min:15,
+    re:/olor a cloaca|olor feo|rejilla|desag[uü]e con olor|olor del desag|olor del baño/,
+    syn:'olor a cloaca que sale de una rejilla, ducha o desagüe',
+    q:'¿El olor sale de una rejilla que casi no se usa?',
+    o:[['Sí, casi no se usa','ok'],['Huele en toda la casa o sale agua sucia','pro']],
+    steps:[['drop','Tirá un balde de agua por la rejilla: si el sifón estaba seco, eso corta el olor'],['screw','Levantá la rejilla y sacá pelos y restos con un gancho o alambre'],['bucket','Echá media taza de bicarbonato y después una taza de vinagre'],['eye','Esperá 15 minutos con la rejilla tapada'],['drop','Enjuagá con agua caliente'],['check','Si se usa poco, echá agua una vez por semana']],
+    mat:[['bucket','Bicarbonato y vinagre','En el supermercado'],['glove','Guantes de goma','Para limpiar la rejilla']]},
+  silicona:{n:'Silicona del baño negra o despegada', rubro:'Albañilería', lvl:'Media', min:40,
+    re:/silicona|sellador|junta de la (ba[ñn]era|ducha|bacha)|borde de la ba[ñn]era|hongos en la junta/,
+    syn:'silicona de bañera, ducha o bacha negra, con hongos o despegada',
+    q:'¿La silicona está negra o despegada, o hay agua filtrándose por la pared?',
+    o:[['Está negra o despegada','ok'],['Pasa agua a la pared o al piso de abajo','pro']],
+    steps:[['knife','Cortá y sacá la silicona vieja con una trincheta'],['brush','Limpiá la junta con alcohol y dejala bien seca'],['tape','Poné cinta de papel a los dos lados de la junta'],['spray','Aplicá un cordón parejo de silicona antihongos'],['brush','Alisala con el dedo mojado en agua con detergente'],['check','Sacá la cinta enseguida y no mojes por 24 h']],
+    mat:[['spray','Silicona antihongos','“Silicona acética blanca antihongos” + pistola aplicadora'],['knife','Trincheta','Para sacar la silicona vieja'],['tape','Cinta de papel','“Cinta de enmascarar de 24 mm”']]},
+  burlete:{n:'Entra aire por la ventana o la puerta', rubro:'Carpintería', lvl:'Fácil', min:20,
+    re:/chiflete|entra aire|entra fr[ií]o|burlete|ventana que no cierra bien|corriente de aire/,
+    syn:'chiflete o aire que entra por ventana o puerta, burletes',
+    q:'¿Entra aire por los bordes, o la ventana no cierra porque está rota?',
+    o:[['Entra aire por los bordes','ok'],['La ventana está rota o descolgada','pro']],
+    steps:[['eye','Cerrá y fijate por dónde entra aire (una vela o la mano ayudan)'],['brush','Limpiá y secá bien el marco'],['level','Medí el largo y el espacio que hay que cubrir'],['tape','Pegá el burlete autoadhesivo sin estirarlo'],['check','Cerrá y verificá que no entre aire']],
+    mat:[['tape','Burlete autoadhesivo','“Burlete de goma tipo D autoadhesivo” (o “tipo P” si el espacio es mayor)'],['level','Cinta métrica','Para medir']]},
+  cerradura:{n:'Cerradura dura o llave que cuesta girar', rubro:'Carpintería', lvl:'Fácil', min:10,
+    re:/cerradura|llave cuesta|no gira la llave|cuesta abrir la puerta con la llave|traba la llave/,
+    syn:'cerradura dura donde la llave cuesta entrar o girar',
+    q:'¿La llave cuesta girar, o se rompió y quedó adentro?',
+    o:[['Cuesta girar o entrar','ok'],['Se rompió o quedé afuera','pro']],
+    steps:[['spray','Echá grafito en polvo o lubricante seco en la ranura (no uses aceite: junta tierra)'],['wrench','Meté y sacá la llave varias veces'],['wrench','Girá la llave despacio hacia los dos lados'],['check','Si sigue dura, revisá que la puerta no esté caída y roce el pestillo']],
+    mat:[['spray','Grafito en polvo','“Grafito para cerraduras” o “lubricante seco PTFE”']]},
+  agujero:{n:'Agujero chico en la pared', rubro:'Albañilería', lvl:'Fácil', min:30,
+    re:/agujero (en|de) la pared|tapar (un )?agujero|enduido|se sali[oó] el tarugo|marca en la pared|pared picada/,
+    syn:'agujero chico de tarugo o clavo en la pared para tapar',
+    q:'¿Es un agujero chico (de clavo o tarugo), o hay humedad o grietas alrededor?',
+    o:[['Es un agujero chico','ok'],['Hay humedad o grietas','pro']],
+    steps:[['brush','Sacá lo que quede del tarugo y limpiá el polvo'],['knife','Con una espátula, llená el agujero con enduido'],['eye','Dejalo secar unas 2 horas (si se hundió, poné otra capa)'],['sand','Lijá suave hasta que quede al ras'],['brush','Pintá con el mismo color de la pared'],['check','Listo']],
+    mat:[['bucket','Enduido','“Enduido plástico para interior” (el pote chico alcanza)'],['knife','Espátula','“Espátula de 5 cm”'],['sand','Lija fina','“Lija al agua grano 220”']]},
+  lavarropas:{n:'Lavarropas que no desagota', rubro:'Plomería', lvl:'Media', min:30,
+    re:/lavarropas|lavarropa|no desagota el lavarropas|lavarropas con agua|filtro del lavarropas/,
+    syn:'lavarropas que termina con agua adentro o no desagota',
+    q:'¿Termina el lavado con agua adentro, o directamente no prende?',
+    o:[['Queda agua adentro','ok'],['No prende o hace chispas','pro']],
+    steps:[['power','Desenchufá el lavarropas'],['bucket','Poné toallas y un recipiente bajo adelante, abajo'],['eye','Abrí la tapita del filtro (abajo, al frente)'],['wrench','Desenroscá el filtro despacio y dejá salir el agua'],['brush','Sacá pelusas, monedas o restos y enjuagalo'],['check','Volvé a enroscarlo bien, enchufá y probá un centrifugado']],
+    alert:'Desenchufalo siempre antes de tocarlo. Si no prende, hace chispas o huele a quemado, pedí un técnico.',
+    mat:[['bucket','Recipiente bajo y toallas','Una fuente de horno sirve'],['glove','Guantes','Para limpiar el filtro']]},
+  hongos:{n:'Manchas de hongos en la pared o el techo', rubro:'Albañilería', lvl:'Fácil', min:30,
+    re:/hongos|moho|manchas negras|manchas de humedad/,
+    syn:'manchas negras de hongos o moho por condensación en pared o techo',
+    q:'¿La mancha está seca, o la pared está mojada o se descascara?',
+    o:[['Está seca, son puntitos negros','ok'],['Está mojada o se descascara','pro']],
+    steps:[['eye','Abrí la ventana y ponete guantes y barbijo'],['bucket','Mezclá 1 parte de lavandina en 3 de agua'],['brush','Pasá la mezcla con una esponja sin frotar fuerte'],['eye','Dejala actuar 15 minutos y enjuagá con un trapo húmedo'],['check','Ventilá a diario y, si querés, pintá con pintura antihongos']],
+    alert:'Si la pared está mojada o la mancha vuelve rápido, puede ser una pérdida: pedí un profesional.',
+    mat:[['bucket','Lavandina','Común, diluida en agua'],['glove','Guantes y barbijo','Para protegerte'],['brush','Pintura antihongos (opcional)','“Pintura látex antihongos para baño”']]},
+  aireador:{n:'Canilla que salpica o sale poca agua', rubro:'Plomería', lvl:'Fácil', min:15,
+    re:/salpica|aireador|sale poca agua de la canilla|chorro (torcido|desparejo)/,
+    syn:'canilla que salpica o tira poco chorro por aireador sucio',
+    q:'¿Pasa en una sola canilla o en toda la casa?',
+    o:[['En una sola canilla','ok'],['En toda la casa','pro']],
+    steps:[['wrench','Desenroscá a mano la punta de la canilla (el aireador), envuelta en un trapo'],['eye','Sacá la mallita y fijate si tiene sarro o arenilla'],['bucket','Dejala en vinagre blanco 30 minutos'],['brush','Cepillala y enjuagala'],['check','Volvé a enroscarla y probá']],
+    mat:[['bucket','Vinagre blanco','Del supermercado'],['drop','Aireador nuevo (si está roto)','“Aireador para canilla rosca hembra”']]},
   persiana:{n:'Cinta de persiana cortada', rubro:'Carpintería', lvl:'Media', min:40,
     re:/persiana|cinta de (la )?persiana|enrollador/,
     syn:'persiana de enrollar con la cinta cortada o gastada',
@@ -429,6 +555,8 @@ const TUT = {
     mat:[['tape','Cinta para persiana','“Cinta para persiana de 22 mm” (medí la vieja)'],['screw','Destornillador','Plano y Phillips']]}
 };
 Object.entries(TUT).forEach(([id, t]) => t.id = id);
+const TUT_ORDER = ['inodoro_tapado', 'aireador', 'silicona', 'hongos', 'lavarropas', 'agujero', 'rejilla', 'cerradura', 'silla', 'cajon', 'cuadro', 'burlete', 'mueble', 'canilla', 'inodoro', 'pileta', 'ducha', 'puerta', 'enchufe', 'lampara', 'persiana'];
+const findTut = t => TUT_ORDER.map(k => TUT[k]).find(x => x && x.re.test(t));
 
 const KIT = [['screw','Destornilladores','Uno plano y uno Phillips'],['wrench','Llave francesa','“De 8 pulgadas” alcanza para casi todo'],['tape','Cinta de teflón','Para sellar roscas de agua'],['probe','Buscapolo','Para verificar que no haya corriente'],['bucket','Balde y trapos','Para cualquier arreglo con agua']];
 
@@ -462,7 +590,7 @@ const CLIENTS = ['Camila Rodríguez','Julián Pereyra','Martina López','Nicolá
 /* ---------- estado ---------- */
 let DB = {users:[], provs:[], jobs:[], cur:null};
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.users) DB = s; } catch (e) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) {} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { if (typeof toast === 'function') toast('No queda espacio en el dispositivo para guardar más fotos'); } };
 let V = {tab:'chat', job:null};
 let CH = null;           // conversación actual
 let chatEl = null;       // nodo del chat (se conserva al cambiar de pestaña)
@@ -470,7 +598,20 @@ let AI_OK = null;        // null = sin probar, true / false
 let pendingImg = null;
 
 const me = () => DB.cur && (DB.cur.t === 'u' ? DB.users : DB.provs).find(x => x.id === DB.cur.id);
-const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', rev:p.rev.map(r => [r.from, r.c || '', r.s])} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
+const SEED_BIO = {
+  p1:['Plomero hace 12 años. Trabajo prolijo y explico qué hice. Llevo los repuestos más comunes.', ['Pérdidas', 'Destapaciones', 'Griferías', 'Mochilas']],
+  p2:['Plomería general en Caballito y alrededores. Presupuesto sin cargo con el caso de HandyGo.', ['Pérdidas', 'Cambio de sifones', 'Termotanques eléctricos']],
+  p3:['Gasista matriculado ENARGAS. Habilitaciones, revisión de calefones y estufas, pruebas de hermeticidad.', ['Calefones', 'Estufas', 'Habilitaciones', 'Pérdidas de gas']],
+  p4:['Gasista matriculada. Mantenimiento preventivo antes del invierno y certificados.', ['Mantenimiento preventivo', 'Calefactores', 'Certificados']],
+  p5:['Electricista matriculada COPIME. Tableros, disyuntores y certificación de instalaciones.', ['Tableros', 'Disyuntores', 'Certificaciones', 'Iluminación']],
+  p6:['Electricista con 15 años de oficio. Urgencias y reformas eléctricas.', ['Urgencias', 'Cableado', 'Reformas']],
+  p7:['Carpintero. Arreglo muebles, puertas, placares y persianas.', ['Puertas', 'Placares', 'Persianas', 'Muebles']],
+  p8:['Carpintería a medida y reparaciones.', ['Muebles a medida', 'Reparaciones']],
+  p9:['Albañil con 21 años de experiencia. Evaluación de grietas, humedad y revoques.', ['Humedad', 'Grietas', 'Revoques', 'Revestimientos']],
+  p10:['Albañilería general y pintura.', ['Pintura', 'Revoques', 'Pisos']]
+};
+PROVS.forEach(p => { if (SEED_BIO[p.id]) { p.bio = SEED_BIO[p.id][0]; p.esp = SEED_BIO[p.id][1]; p.hor = 'Lunes a sábado, 8 a 19 h'; } });
+const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], rev:p.rev.map(r => [r.from, r.c || '', r.s])} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
 const avg = p => p.rev && p.rev.length ? +(p.rev.reduce((a, r) => a + r.s, 0) / p.rev.length).toFixed(1) : 'Nuevo';
 
 /* ---------- utilidades de interfaz ---------- */
@@ -482,6 +623,25 @@ const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="
 function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
 function closeSheet() { const s = $('#scrim'); if (s) s.remove(); }
 ACT.close = closeSheet;
+const avatar = (name, foto, cls = '', style = '') => foto ? `<img class="av ${cls}" src="${foto}" alt="" style="${style}">` : `<span class="av ${cls}" style="${style}">${ini(name)}</span>`;
+function readPhoto(file, max) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const img = new Image(); img.onerror = rej; img.onload = () => {
+    const k = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas');
+    if (max <= 300) { const side = Math.min(img.width, img.height); c.width = c.height = Math.min(max, side); c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, c.width, c.height); }
+    else { c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); }
+    res(c.toDataURL('image/jpeg', .82)); }; img.src = r.result; }; r.readAsDataURL(file); });
+}
+document.addEventListener('change', async e => {
+  const el = e.target; if (!el.dataset || !el.dataset.ph || !el.files || !el.files[0]) return;
+  const f = el.files[0]; el.value = '';
+  try {
+    if (el.dataset.ph === 'reg') { REG.foto = await readPhoto(f, 256); $('#regAv').innerHTML = `<img src="${REG.foto}" alt="Tu foto">`; }
+    if (el.dataset.ph === 'edit') { EDIT.foto = await readPhoto(f, 256); vEdit(); }
+    if (el.dataset.ph === 'port') { if ((EDIT.port || []).length >= 6) { toast('Podés subir hasta 6 fotos'); return; } EDIT.port = [...(EDIT.port || []), await readPhoto(f, 700)]; vEdit(); }
+  } catch (err) { toast('No se pudo cargar esa imagen'); }
+});
+const fotoPicker = (id, ph, foto, name) => `<div class="avpick"><label class="av lg" for="${id}" id="${ph === 'reg' ? 'regAv' : 'editAv'}" aria-label="Elegir foto">${foto ? `<img src="${foto}" alt="Tu foto">` : ico('cam')}</label>
+  <input type="file" id="${id}" accept="image/*" data-ph="${ph}" hidden><div><b>Foto de perfil</b><span class="hint">${ph === 'reg' ? 'Opcional. Ayuda a generar confianza.' : 'Tocá la imagen para cambiarla.'}</span>${foto && ph === 'edit' ? '<button class="back" style="margin:6px 0 0;color:var(--bad)" data-a="quitarFoto">Quitar foto</button>' : ''}</div></div>`;
 const stars = s => typeof s === 'number' ? `<span class="stars" aria-label="${s} de 5">★</span> <b class="num">${String(s).replace('.', ',')}</b>` : `<span class="tag b">Nuevo</span>`;
 
 /* ============================================================
@@ -511,17 +671,20 @@ ACT.role = () => view(`<button class="back" data-a="welcome">${ico('back')} Volv
   </div>`);
 let REG = {t:'u', dni:false};
 ACT.reg = t => {
-  REG = {t, dni:false};
+  REG = {t, dni:false, foto:null};
   view(`<button class="back" data-a="role">${ico('back')} Volver</button>
    <h2>${t === 'u' ? 'Creá tu cuenta' : 'Creá tu perfil de prestador'}</h2>
    <div class="stack" style="margin-top:14px">
+   ${fotoPicker('regFoto', 'reg', REG.foto)}
    ${field('nombre', 'Nombre y apellido', 'text', 'Ej: Sofía Martínez')}
    ${field('mail', 'Mail', 'email', 'vos@mail.com')}
    ${field('pass', 'Contraseña', 'password', '', 'Mínimo 6 caracteres')}
+   ${field('tel', 'Celular', 'tel', '11 2345 6789', 'Solo se comparte cuando confirmás un trabajo')}
    ${field('zona', t === 'u' ? 'Barrio' : 'Zona donde trabajás', 'text', 'Ej: Almagro, CABA', 'Por ahora HandyGo funciona solo en CABA')}
    ${t === 'p' ? `<label class="f" for="rubro">Rubro<select id="rubro">${RUBROS.map(r => `<option>${r}</option>`).join('')}</select></label>
      ${field('mat', 'Matrícula', 'text', 'N.º de matrícula', 'Obligatoria para Gas y Electricidad')}
      ${field('anios', 'Años de experiencia', 'number', '5')}
+     <label class="f" for="bio">Contá sobre vos<textarea id="bio" rows="3" placeholder="Ej: Plomero hace 10 años, trabajo prolijo y explico qué hice"></textarea><span class="hint">Es lo primero que leen los clientes en tu perfil</span></label>
      <button class="btn w" id="dniBtn" data-a="dni">${ico('shield')} Verificar identidad con DNI</button>` : ''}
    <div class="err" id="err" role="alert"></div>
    <button class="btn p w" data-a="doReg">Crear cuenta</button></div>`);
@@ -529,14 +692,14 @@ ACT.reg = t => {
 ACT.dni = (v, b) => { b.disabled = true; b.textContent = 'Validando con RENAPER…'; setTimeout(() => { REG.dni = true; b.disabled = false; b.className = 'btn w'; b.style.cssText = 'border-color:var(--ok);color:var(--ok)'; b.innerHTML = ico('check') + ' Identidad verificada'; }, 1200); };
 ACT.doReg = () => {
   const val = id => ($('#' + id)?.value || '').trim();
-  const d = {id:uid(), nombre:val('nombre'), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona')};
+  const d = {id:uid(), nombre:val('nombre'), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona'), tel:val('tel'), foto:REG.foto || null};
   let e = '';
   if (!d.nombre || !d.zona) e = 'Completá tu nombre y tu barrio.';
   else if (!/^\S+@\S+\.\S+$/.test(d.mail)) e = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
   else if (d.pass.length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
   else if ([...DB.users, ...DB.provs].some(x => x.mail === d.mail)) e = 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
   if (!e && REG.t === 'p') {
-    d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0;
+    d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0; d.bio = val('bio'); d.esp = []; d.port = []; d.hor = 'Lunes a viernes, 8 a 18 h';
     if (['Gas', 'Electricidad'].includes(d.rubro) && !d.mat) e = `Para ${d.rubro} la matrícula es obligatoria.`;
     else if (!REG.dni) e = 'Verificá tu identidad con DNI para continuar.';
   }
@@ -594,7 +757,7 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} DB = {u
 const TABS = {u:[['chat', 'Asistente', 'chat'], ['mat', 'Materiales', 'box'], ['ped', 'Pedidos', 'clip'], ['per', 'Perfil', 'user']],
               p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['per', 'Perfil', 'user']]};
 function enter() { V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null; render(); }
-ACT.tab = t => { V.tab = t; V.job = null; render(); };
+ACT.tab = t => { V.tab = t; V.job = null; V.edit = false; render(); };
 function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && j.estado === 'nuevo' && j.offers.length).length;
@@ -613,6 +776,7 @@ function render() {
   else { hp.className = 'pill' + (u.on ? '' : ' off'); hp.dataset.a = 'tog'; hp.textContent = u.on ? '● Disponible' : '○ No disponible'; }
   renderNav();
   if (V.job) return vJob();
+  if (V.edit && V.tab === 'per') return vEdit();
   ({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer})[V.tab]();
 }
 function renderNav() {
@@ -627,7 +791,7 @@ function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML
    ============================================================ */
 function newCase() { CH = {h:[], started:false, caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}; }
 // Las consultas se cobran por tema: hablar del mismo problema es gratis; un problema distinto usa 1 consulta.
-function resetTopic() { Object.assign(CH, {caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}); }
+function resetTopic() { Object.assign(CH, {caso:null, rubro:null, hard:false, tut:null, tutObj:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}); }
 function useCredit(nuevo) {
   const u = me();
   if (u.cr <= 0) {
@@ -651,11 +815,15 @@ function vChat() {
       <div class="bar"><label class="iconbtn" title="Adjuntar foto" for="pic" style="cursor:pointer">${ico('cam')}<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adjuntar foto</span></label>
       <input type="file" id="pic" accept="image/*" hidden>
       <textarea id="inp" rows="1" placeholder="Contanos qué se rompió…"></textarea>
-      <button class="iconbtn p" data-a="send" aria-label="Enviar">${ico('send')}</button></div></div>`;
+      <button class="iconbtn p" id="micBtn" data-a="mic" aria-label="Grabar audio">${ico('mic')}</button>
+      <button class="iconbtn p" id="sendBtn" data-a="send" aria-label="Enviar" hidden>${ico('send')}</button></div>
+      <div class="recbar" id="recbar" hidden><button class="iconbtn" data-a="recCancel" aria-label="Cancelar audio">${ico('trash')}</button>
+      <div class="t"><span class="recdot"></span><span id="recT">0:00</span><span class="mut small" style="font-weight:500">Grabando…</span></div>
+      <button class="iconbtn p" data-a="recStop" aria-label="Enviar audio">${ico('send')}</button></div></div>`;
     view('', true); $('#view').appendChild(chatEl);
     const inp = chatEl.querySelector('#inp');
     inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ACT.send(); } });
-    inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 110) + 'px'; });
+    inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 110) + 'px'; syncSend(); });
     chatEl.querySelector('#pic').addEventListener('change', onPic);
     greet();
   } else { view('', true); $('#view').appendChild(chatEl); }
@@ -672,7 +840,7 @@ function say(html, cls = '', who = true) {
 function block(html) { const l = LOG(); const d = document.createElement('div'); d.className = 'bot'; d.style.cssText = 'align-self:stretch;display:flex'; d.innerHTML = html; l.appendChild(d); scrollLog(); return d; }
 function chips(list) { const d = document.createElement('div'); d.className = 'chips bot'; list.forEach(([t, f, c]) => { const b = document.createElement('button'); b.textContent = t; if (c) b.className = c; b.onclick = () => { d.remove(); f(); }; d.appendChild(b); }); LOG().appendChild(d); scrollLog(); }
 function greet() {
-  say(`Hola, ${esc(first(me().nombre))}. Contame qué se rompió (si querés, mandame una foto) y te ayudo a entenderlo antes de que gastes plata. Si es peligroso, te lo digo y te conecto con un profesional.`);
+  say(`Hola, ${esc(first(me().nombre))}. Contame qué se rompió (podés escribirme, mandarme una foto o un audio) y te ayudo a entenderlo antes de que gastes plata. Si es peligroso, te lo digo y te conecto con un profesional.`);
   chips([['La canilla gotea', () => go('La canilla gotea')], ['El inodoro pierde agua', () => go('El inodoro pierde agua, se escucha correr')], ['Huelo gas en la cocina', () => go('Huelo gas en la cocina')], ['Tengo una grieta en la pared', () => go('Tengo una grieta en la pared')]]);
 }
 ACT.newCase = () => { LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
@@ -706,13 +874,74 @@ function onPic(e) {
       const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       pendingImg = c.toDataURL('image/jpeg', .8);
-      const at = chatEl.querySelector('#att'); at.hidden = false; at.innerHTML = `<img src="${pendingImg}" alt="Foto adjunta"><span>Foto lista para enviar</span><button data-a="clearPic">Quitar</button>`;
+      const at = chatEl.querySelector('#att'); at.hidden = false; at.innerHTML = `<img src="${pendingImg}" alt="Foto adjunta"><span>Foto lista para enviar</span><button data-a="clearPic">Quitar</button>`; syncSend();
     }; img.src = r.result; };
   r.readAsDataURL(f);
 }
-function clearPic() { pendingImg = null; const at = chatEl && chatEl.querySelector('#att'); if (at) { at.hidden = true; at.innerHTML = ''; } }
+function clearPic() { pendingImg = null; const at = chatEl && chatEl.querySelector('#att'); if (at) { at.hidden = true; at.innerHTML = ''; } syncSend(); }
+function syncSend() {
+  if (!chatEl) return; const has = chatEl.querySelector('#inp').value.trim() || pendingImg;
+  chatEl.querySelector('#sendBtn').hidden = !has; chatEl.querySelector('#micBtn').hidden = !!has;
+}
+
+/* ---------- audios ---------- */
+let REC = null;
+ACT.mic = async () => {
+  if (REC) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') { toast('Este navegador no permite grabar audio'); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch (e) { toast('Para mandar audios, permití el uso del micrófono'); return; }
+  let mr; try { mr = new MediaRecorder(stream); } catch (e) { stream.getTracks().forEach(t => t.stop()); toast('No se pudo empezar a grabar'); return; }
+  REC = {mr, stream, chunks:[], t0:Date.now(), cancel:false};
+  mr.ondataavailable = e => { if (e.data && e.data.size) REC && REC.chunks.push(e.data); };
+  mr.onstop = async () => {
+    const r = REC; REC = null; stream.getTracks().forEach(t => t.stop()); clearInterval(r.timer); recUI(false);
+    if (r.cancel) return;
+    const dur = (Date.now() - r.t0) / 1000;
+    if (dur < 1) { toast('El audio es muy corto'); return; }
+    const blob = new Blob(r.chunks, {type:mr.mimeType || 'audio/webm'});
+    let audio;
+    try { audio = await toWav(blob); } catch (e) { audio = {mime:(blob.type || 'audio/webm').split(';')[0], data:await b64(await blob.arrayBuffer())}; }
+    sendAudio(blob, audio, dur);
+  };
+  REC.timer = setInterval(() => {
+    const sec = Math.floor((Date.now() - REC.t0) / 1000); const el = chatEl.querySelector('#recT'); if (el) el.textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+    if (sec >= 60) ACT.recStop();
+  }, 250);
+  mr.start(); recUI(true);
+};
+ACT.recStop = () => { if (REC && REC.mr.state !== 'inactive') REC.mr.stop(); };
+ACT.recCancel = () => { if (REC) { REC.cancel = true; if (REC.mr.state !== 'inactive') REC.mr.stop(); } };
+function recUI(on) { if (!chatEl) return; chatEl.querySelector('.composer .bar').hidden = on; chatEl.querySelector('#recbar').hidden = !on; if (on) chatEl.querySelector('#recT').textContent = '0:00'; }
+async function b64(buf) { const u8 = new Uint8Array(buf); let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+async function toWav(blob) {
+  const AC = window.AudioContext || window.webkitAudioContext; const ac = new AC();
+  const ab = await blob.arrayBuffer();
+  const buf = await new Promise((res, rej) => { const p = ac.decodeAudioData(ab, res, rej); if (p && p.then) p.then(res, rej); });
+  try { ac.close(); } catch (e) {}
+  const rate = 16000, len = Math.max(1, Math.ceil(buf.duration * rate));
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; const off = new OAC(1, len, rate);
+  const src = off.createBufferSource(); src.buffer = buf; src.connect(off.destination); src.start(0);
+  const out = await off.startRendering(); const d = out.getChannelData(0);
+  const v = new DataView(new ArrayBuffer(44 + d.length * 2));
+  const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + d.length * 2, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, d.length * 2, true);
+  for (let i = 0; i < d.length; i++) { const x = Math.max(-1, Math.min(1, d[i])); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7FFF, true); }
+  return {mime:'audio/wav', data:await b64(v.buffer)};
+}
+function sendAudio(blob, audio, dur) {
+  LOG().querySelectorAll('.chips').forEach(c => c.remove());
+  const url = URL.createObjectURL(blob);
+  const bub = say(`<audio controls src="${url}"></audio><div class="tr" hidden></div>`, 'u');
+  if (AI_OK === false) { say('Sin conexión no puedo escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
+  if (!CH.started) { if (!useCredit(false)) return; CH.started = true; }
+  CH.resp.push('(audio)');
+  ai('', null, '', audio, bub);
+}
 ACT.clearPic = clearPic;
-ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImg) return; i.value = ''; i.style.height = 'auto'; go(t, false); };
+ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImg) return; i.value = ''; i.style.height = 'auto'; go(t, false); syncSend(); };
 
 function go(txt, isReply) {
   const img = isReply ? null : pendingImg; clearPic();
@@ -729,14 +958,15 @@ function go(txt, isReply) {
 }
 
 /* ---------- IA ---------- */
-async function ai(txt, img, t) {
-  CH.h.push({role:'user', text:txt || 'Te mando una foto del problema.', image:img ? {mime:'image/jpeg', data:img.split(',')[1]} : null});
+async function ai(txt, img, t, audio, bub) {
+  CH.h.push({role:'user', text:txt || (audio ? '(audio)' : 'Te mando una foto del problema.'), image:img ? {mime:'image/jpeg', data:img.split(',')[1]} : null, audio:audio || null});
+  CH.bub = bub || null;
   if (AI_OK === false) return rules(t, img);
   const th = say('<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>', '', false);
   try {
     const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 25000);
     const res = await fetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal,
-      body:JSON.stringify({tema_actual:CH.caso || '', messages:CH.h.slice(-12), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))})});
+      body:JSON.stringify({tema_actual:CH.caso || '', messages:CH.h.slice(-12).map((m, i, a) => i < a.length - 1 ? {role:m.role, text:m.text} : m), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))})});
     clearTimeout(to);
     const d = await res.json().catch(() => null);
     if (!res.ok || !d || !d.ok) throw new Error((d && d.error) || 'api');
@@ -745,15 +975,25 @@ async function ai(txt, img, t) {
   } catch (e) {
     th.remove(); console.warn('IA no disponible:', e);
     AI_OK = false; setMode(); CH.h.pop();
+    if (audio) { say('Ahora no me puedo conectar para escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
     say('Ahora no me puedo conectar con la IA, así que te ayudo con mis guías revisadas.', 'sys', false);
     rules(t, img);
   }
 }
 function handleAI(r, t) {
+  const lastU = CH.h[CH.h.length - 1];
+  if (lastU && lastU.audio) {
+    const tx = (r.transcripcion || '').trim();
+    lastU.text = tx || '(audio)'; lastU.audio = null;
+    if (CH.resp[CH.resp.length - 1] === '(audio)') CH.resp[CH.resp.length - 1] = tx || '(audio)';
+    if (tx && CH.bub) { const el = CH.bub.querySelector('.tr'); el.textContent = '“' + tx + '”'; el.hidden = false; }
+    const h = tx && HARD.find(x => x.re.test(tx.toLowerCase()));
+    if (h && !r.riesgo) { CH.h.push({role:'assistant', text:'(freno de seguridad)'}); return hardStop(h); }
+  }
   if (r.tema_nuevo && CH.caso) {
     const last = CH.h[CH.h.length - 1];
     if (!useCredit(true)) { CH.h.pop(); CH.resp.pop(); return; }
-    resetTopic(); CH.h = [last]; CH.resp = [last.text]; if (last.image) CH.img = 'data:image/jpeg;base64,' + last.image.data;
+    resetTopic(); CH.h = [last]; CH.resp = [last.text]; if (last.image && last.image.data) CH.img = 'data:image/jpeg;base64,' + last.image.data;
   }
   const msg = esc(r.mensaje || '¿Me contás un poco más?');
   CH.h.push({role:'assistant', text:r.mensaje || ''});
@@ -767,7 +1007,12 @@ function handleAI(r, t) {
   }
   if (r.estado === 'preguntar') { say(msg); if ((r.opciones || []).length) chips(r.opciones.slice(0, 3).map(o => [String(o), () => go(String(o), true)])); return; }
   if (r.estado === 'guiar' && tut) { say(msg); return showTut(tut); }
-  if (r.estado === 'guiar' && !tut) { say('Para esto todavía no tengo una guía revisada por HandyGo y no quiero improvisar. Lo mejor es que lo vea un profesional.'); return derivar(); }
+  if (r.estado === 'guiar' && !tut && (r.pasos || []).length >= 2) {
+    say(msg);
+    return showTut({id:'gen', gen:true, n:r.caso || 'Tu arreglo', rubro:CH.rubro || 'Carpintería', lvl:r.nivel || 'Fácil', min:r.minutos || 20,
+      steps:r.pasos.map(x => [pickIcon(x), x]), alert:r.alerta || '', mat:(r.materiales || []).map(([n, a]) => [pickIcon(n), n, a || ''])});
+  }
+  if (r.estado === 'guiar' && !tut) { say('Para esto no quiero improvisar pasos. Lo mejor es que lo vea un profesional.'); return derivar(); }
   if (r.estado === 'derivar') { say(msg); return derivar(); }
   say(msg);
 }
@@ -780,7 +1025,7 @@ function rules(t, img) {
     if (o && o[1] === 'ok') return showTut(tut);
     if (o && o[1] === 'pro') { say('Con eso, <b>conviene que lo vea un profesional</b>.'); return derivar(); }
   }
-  const tut = Object.values(TUT).find(x => x.re.test(t));
+  const tut = findTut(t);
   if (!tut) {
     say(img && !t ? 'Recibí la foto. Para orientarte sin conexión necesito que me cuentes con palabras qué pasa, por ejemplo “la canilla gotea” o “la puerta no cierra”.'
                  : 'No llegué a entender qué se rompió. Probá con otras palabras, por ejemplo “la canilla gotea”, “la puerta roza”, “el inodoro pierde agua” o “se quemó la lámpara”.');
@@ -812,16 +1057,26 @@ function insist(h) {
 }
 
 /* ---------- tutorial ---------- */
+function pickIcon(t) {
+  t = String(t).toLowerCase();
+  const m = [[/llave de paso|cort[aá] el agua|cerr[aá] el agua/, 'valve'], [/desenchuf|t[eé]rmica|corriente/, 'power'], [/tornillo|destornill|atornill/, 'screw'],
+    [/taladr|perfor|mecha/, 'drill'], [/martill|golpe/, 'hammer'], [/nivel|med[ií]|cinta m[eé]trica/, 'level'], [/lubric|aerosol|silicona|wd-?40|grafito/, 'spray'],
+    [/limpi|cepill|lij|pint/, 'brush'], [/cort[aá]|trincheta|tijera|cuchill/, 'knife'], [/rueda/, 'wheel'], [/balde|recipiente|trapo|toalla/, 'bucket'],
+    [/guante/, 'glove'], [/teflón|teflon|cinta/, 'tape'], [/llave|ajust|afloj|enrosc|desenrosc|tuerca/, 'wrench'], [/agua|goteo|gotea/, 'drop'],
+    [/escalera/, 'ladder'], [/lámpara|lampara|foco/, 'bulb'], [/prob|verific|comprob|listo/, 'check'], [/mir|revis|fij/, 'eye']];
+  const f = m.find(([re]) => re.test(t)); return f ? f[1] : 'tool';
+}
 function showTut(tut) {
-  CH.topic = tut.id;
+  CH.topic = tut.gen ? 'gen:' + tut.n : tut.id;
+  CH.tutObj = tut;
   CH.tut = tut.id; CH.caso = tut.n; CH.rubro = tut.rubro; CH.hard = false; CH.pend = null;
   const id = 't' + uid();
-  const b = block(`<div class="tut" id="${id}"><div class="hd"><span class="eyebrow">Guía paso a paso · revisada por HandyGo</span><h4>${esc(tut.n)}</h4>
+  const b = block(`<div class="tut" id="${id}"><div class="hd"><span class="eyebrow">${tut.gen ? 'Guía paso a paso · armada por el asistente' : 'Guía paso a paso · revisada por HandyGo'}</span><h4>${esc(tut.n)}</h4>
      <div class="row" style="margin-bottom:10px"><span class="tag v">${tut.lvl}</span><span class="tag">≈ ${tut.min} min</span><span class="tag">${tut.steps.length} pasos</span></div>
      <div class="prog"><i></i></div></div>
    <ol class="steps">${tut.steps.map(([ic, tx], i) => `<li><span class="ic">${ico(ic)}</span><label><span class="n num">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(tx)}</span><input type="checkbox" aria-label="Paso ${i + 1} hecho"></label></li>`).join('')}</ol>
    ${tut.alert ? `<div class="warn">⚠ ${esc(tut.alert)}</div>` : ''}
-   <div class="ft"><button class="btn sm" data-a="tab" data-v="mat">${ico('box')} Ver materiales y ferreterías cerca</button></div></div>`);
+   <div class="ft">${tut.mat && tut.mat.length ? '' : '<span class="hint" style="margin:0">No hace falta comprar nada especial.</span>'}<button class="btn sm" data-a="tab" data-v="mat" ${tut.mat && tut.mat.length ? '' : 'hidden'}>${ico('box')} Ver materiales y ferreterías cerca</button></div></div>`);
   const box = b.querySelector('.tut');
   box.addEventListener('change', () => {
     const all = box.querySelectorAll('input'), done = [...all].filter(x => x.checked);
@@ -879,7 +1134,7 @@ function pedir() {
    MATERIALES
    ============================================================ */
 function vMat() {
-  const tut = CH && CH.tut ? TUT[CH.tut] : null;
+  const tut = CH && CH.tutObj && CH.tutObj.mat && CH.tutObj.mat.length ? CH.tutObj : null;
   const items = tut ? tut.mat : KIT;
   view(`<span class="eyebrow">${tut ? 'Para tu arreglo' : 'Kit básico de la casa'}</span>
    <h2>${tut ? esc(tut.n) : 'Lo que conviene tener'}</h2>
@@ -927,7 +1182,7 @@ function vJob() {
     ${ticketHTML({...j, zona:j.zona})}`;
   if (isU && j.estado === 'nuevo') {
     h += `<div class="sec"><span class="eyebrow">Presupuestos recibidos</span>` + (j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
-       <div class="top2"><span class="av">${ini(p.n)}</span><div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas · ${p.y} años</span></div></div><span class="price">${money(o.precio)}</span></div>
+       <div class="top2">${avatar(p.n, p.foto)}<div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas · ${p.y} años</span></div></div><span class="price">${money(o.precio)}</span></div>
        <div class="meta"><span class="tag v">${ico('shield')} Identidad verificada</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : ''}<span class="tag">${esc(o.when)}</span></div>
        <div class="quote">“${esc(o.msg)}”</div>
        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
@@ -936,8 +1191,8 @@ function vJob() {
   if (j.estado !== 'nuevo') {
     const p = provInfo(j.prov);
     h += `<div class="sec"><span class="eyebrow">${isU ? 'Tu prestador' : 'Tu cliente'}</span><div class="card offer"><div class="top2">
-      <span class="av">${ini(isU ? p.n : j.un)}</span><div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
-      ${isU ? `<button class="btn g sm" data-a="prof" data-v="${j.prov}">Ver perfil</button>` : ''}</div>
+      ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
+      ${isU ? `<button class="btn g sm" data-a="prof" data-v="${j.prov}">Ver perfil</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div>
       <div class="thread">${j.msgs.map(m => `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
       ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
       <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2"')} Toda la comunicación queda dentro de HandyGo.</p></div>`;
@@ -963,10 +1218,13 @@ ACT.sendRev = () => {
 };
 ACT.prof = id => {
   const p = provInfo(id);
-  sheet(`<div class="top2" style="display:flex;gap:14px;align-items:center"><span class="av lg">${ini(p.n)}</span><div><h2 style="margin:0">${esc(p.n)}</h2><span class="mut">${esc(p.r)} · ${esc(p.z || 'CABA')}</span></div></div>
+  sheet(`<div class="top2" style="display:flex;gap:14px;align-items:center">${avatar(p.n, p.foto, 'lg')}<div><h2 style="margin:0">${esc(p.n)}</h2><span class="mut">${esc(p.r)} · ${esc(p.z || 'CABA')}</span></div></div>
+   ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
    <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : '<span class="tag">Oficio sin matrícula obligatoria</span>'}</div>
    <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
-   <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}</p>
+   <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}${p.hor ? ' · ' + esc(p.hor) : ''}</p>
+   ${(p.esp || []).length ? `<span class="eyebrow">Especialidades</span><div class="meta" style="margin:8px 0 14px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
+   ${(p.port || []).length ? `<span class="eyebrow">Trabajos realizados</span><div class="port" style="margin:8px 0 14px">${p.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
    <span class="eyebrow">Reseñas</span><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
    <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
 };
@@ -1032,20 +1290,68 @@ function vPer() {
   const u = me(), t = DB.cur.t;
   if (t === 'u') {
     const js = DB.jobs.filter(j => j.uid === u.id);
-    view(`<div style="display:flex;gap:14px;align-items:center"><span class="av lg">${ini(u.nombre)}</span><div style="min-width:0"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
+    view(`<div style="display:flex;gap:14px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
+     <button class="btn w sm" style="margin-top:14px" data-a="edit">${ico('edit')} Editar perfil</button>
      <div class="stat" style="margin-top:16px"><div class="card"><b>${u.resueltos || 0}</b><span>problemas resueltos por tu cuenta</span></div><div class="card"><b>${js.length}</b><span>pedidos a profesionales</span></div></div>
      <div class="card" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
      ${tail()}`);
   } else {
     const fin = DB.jobs.filter(j => j.prov === u.id && j.estado === 'finalizado');
-    view(`<div style="display:flex;gap:14px;align-items:center"><span class="av lg" style="background:var(--acc);color:var(--accInk)">${ini(u.nombre)}</span><div style="min-width:0"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
-     <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}<span class="tag">${u.anios} años de experiencia</span></div>
+    view(`<div style="display:flex;gap:14px;align-items:center">${avatar(u.nombre, u.foto, 'lg', 'background:var(--acc);color:var(--accInk)')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
+     ${u.bio ? `<p class="bio">${esc(u.bio)}</p>` : ''}
+     <button class="btn w sm" style="margin-top:14px" data-a="edit">${ico('edit')} Editar perfil</button>
+     <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}${u.anios ? `<span class="tag">${u.anios} años de experiencia</span>` : ''}</div>
      <div class="card switch"><div><b>Disponible para pedidos</b><div class="small mut">Los clientes te ven en las búsquedas</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
      <div class="stat" style="margin-top:10px"><div class="card"><b>${avg(u) === 'Nuevo' ? '—' : String(avg(u)).replace('.', ',')}</b><span>${u.rev.length} reseñas</span></div><div class="card"><b class="num" style="font-size:21px">${money(fin.reduce((a, j) => a + j.precio, 0))}</b><span>cobrado en ${fin.length} trabajo${fin.length === 1 ? '' : 's'}</span></div></div>
+     ${(u.esp || []).length ? `<div class="sec"><span class="eyebrow">Especialidades</span><div class="meta">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div></div>` : ''}
+     ${(u.port || []).length ? `<div class="sec"><span class="eyebrow">Trabajos realizados</span><div class="port">${u.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
      ${u.rev.length ? `<div class="sec"><span class="eyebrow">Tus reseñas</span><div class="card stack">${u.rev.slice().reverse().map(r => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>`).join('')}</div></div>` : ''}
      ${tail()}`);
   }
 }
+/* ---------- editar perfil ---------- */
+let EDIT = null;
+ACT.edit = () => { const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; V.edit = true; vEdit(); };
+ACT.quitarFoto = () => { EDIT.foto = null; vEdit(); };
+ACT.quitarPort = i => { EDIT.port.splice(+i, 1); vEdit(); };
+ACT.cancelEdit = () => { V.edit = false; EDIT = null; render(); };
+function vEdit() {
+  const u = me(), p = DB.cur.t === 'p';
+  const keep = id => { const el = $('#' + id); return el ? el.value : null; };
+  const cur = {nombre:keep('e_nombre') ?? u.nombre, tel:keep('e_tel') ?? (u.tel || ''), zona:keep('e_zona') ?? u.zona, dir:keep('e_dir') ?? (u.dir || ''),
+    bio:keep('e_bio') ?? (u.bio || ''), esp:keep('e_esp') ?? (u.esp || []).join(', '), hor:keep('e_hor') ?? (u.hor || ''), mat:keep('e_mat') ?? (u.mat || ''), anios:keep('e_anios') ?? (u.anios || '')};
+  const inp = (id, l, v, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
+  view(`<button class="back" data-a="cancelEdit">${ico('back')} Perfil</button><h2>Editar perfil</h2>
+   <div class="stack" style="margin-top:14px">
+    ${fotoPicker('editFoto', 'edit', EDIT.foto)}
+    ${inp('e_nombre', 'Nombre y apellido', cur.nombre)}
+    ${inp('e_tel', 'Celular', cur.tel, 'tel', '11 2345 6789', 'Solo se comparte cuando confirmás un trabajo')}
+    ${inp('e_zona', p ? 'Zona donde trabajás' : 'Barrio', cur.zona)}
+    ${p ? `
+    ${inp('e_mat', 'Matrícula', cur.mat, 'text', '', ['Gas', 'Electricidad'].includes(u.rubro) ? 'Obligatoria para ' + u.rubro : 'Opcional en ' + u.rubro)}
+    ${inp('e_anios', 'Años de experiencia', cur.anios, 'number')}
+    <label class="f" for="e_bio">Sobre vos<textarea id="e_bio" rows="3" placeholder="Contá tu experiencia y cómo trabajás">${esc(cur.bio)}</textarea></label>
+    ${inp('e_esp', 'Especialidades', cur.esp, 'text', 'Ej: pérdidas, destapaciones, griferías', 'Separalas con comas')}
+    <label class="f" for="e_hor">Horario de atención<select id="e_hor">${['Lunes a viernes, 8 a 18 h', 'Lunes a sábado, 8 a 19 h', 'Todos los días, 8 a 20 h', 'Urgencias 24 h'].map(o => `<option ${o === cur.hor ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
+    <div><span class="eyebrow" style="display:block;margin-bottom:8px">Fotos de trabajos realizados</span>
+     <div class="port">${(EDIT.port || []).map((x, i) => `<div class="ph"><img src="${x}" alt="Trabajo ${i + 1}"><button data-a="quitarPort" data-v="${i}" aria-label="Quitar foto">${ico('x')}</button></div>`).join('')}
+      ${(EDIT.port || []).length < 6 ? `<label class="add" for="e_port">${ico('plus')}<span>Agregar foto</span></label><input type="file" id="e_port" accept="image/*" data-ph="port" hidden>` : ''}</div>
+     <span class="hint">Hasta 6 fotos. Los clientes las ven en tu perfil.</span></div>`
+    : `${inp('e_dir', 'Dirección', cur.dir, 'text', 'Ej: Av. Medrano 1200, 3.º B', 'Solo la ve el prestador que contrates')}`}
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn p w" data-a="saveEdit">Guardar cambios</button>
+    <button class="btn g w" data-a="cancelEdit">Cancelar</button></div>`);
+}
+ACT.saveEdit = () => {
+  const u = me(), p = DB.cur.t === 'p', v = id => ($('#' + id)?.value || '').trim();
+  if (!v('e_nombre') || !v('e_zona')) { $('#err').textContent = 'Completá tu nombre y tu zona.'; return; }
+  if (p && ['Gas', 'Electricidad'].includes(u.rubro) && !v('e_mat')) { $('#err').textContent = `Para ${u.rubro} la matrícula es obligatoria.`; return; }
+  Object.assign(u, {nombre:v('e_nombre'), tel:v('e_tel'), zona:v('e_zona'), foto:EDIT.foto});
+  if (p) Object.assign(u, {mat:v('e_mat'), anios:+v('e_anios') || 0, bio:v('e_bio'), esp:v('e_esp').split(',').map(x => x.trim()).filter(Boolean).slice(0, 8), hor:v('e_hor'), port:EDIT.port});
+  else u.dir = v('e_dir');
+  try { save(); } catch (e) {}
+  V.edit = false; EDIT = null; toast('Perfil actualizado'); render();
+};
 function tail() {
   return `<div class="sec stack"><button class="btn w" data-a="logout">Cerrar sesión</button><button class="btn g w" data-a="reset">Borrar datos del dispositivo</button>
    <p class="hint" style="text-align:center">HandyGo · Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>`;
