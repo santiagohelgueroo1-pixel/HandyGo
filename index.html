@@ -80,7 +80,7 @@ body.prov .top{background:var(--dark)}
 #view{flex:1;min-height:0;overflow-y:auto;padding-block:18px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 #view.flush{padding:0;display:flex;flex-direction:column;overflow:hidden}
 nav{flex:none;display:flex;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav button{flex:1;border:0;background:none;padding:9px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mut);font:600 11.5px/1 var(--f-body);position:relative}
+nav button{flex:1;min-width:0;border:0;background:none;padding:9px 1px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mut);font:600 11.5px/1 var(--f-body);position:relative}
 nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--pri)}
 nav button.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--pri)}
@@ -314,6 +314,54 @@ img.av{object-fit:cover;background:var(--sunk)}
 .port label.add{aspect-ratio:1;border:2px dashed var(--line);border-radius:10px;display:grid;place-items:center;color:var(--mut);cursor:pointer;font-size:13px;text-align:center;padding:6px}
 .port label.add svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
 .bio{font-size:15px;margin:12px 0 0}
+.track{list-style:none;margin:0;padding:4px 0 0;display:grid}
+.track li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;position:relative;padding-bottom:16px}
+.track li:last-child{padding-bottom:0}
+.track li::before{content:"";position:absolute;left:12px;top:24px;bottom:0;width:2px;background:var(--line)}
+.track li:last-child::before{display:none}
+.track li.done::before{background:var(--pri)}
+.track .dt{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--priInk);z-index:1}
+.track .dt svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.track li.done .dt{background:var(--pri);border-color:var(--pri)}
+.track li.cur .dt{border-color:var(--acc);background:var(--acc);color:var(--accInk);box-shadow:0 0 0 5px var(--warnSoft)}
+.track b{display:block;font:600 15px/1.3 var(--f-display)}
+.track span{font-size:13px;color:var(--mut)}
+.track li.todo b{color:var(--mut);font-weight:500}
+.m.sysl{align-self:center;max-width:100%;background:var(--sunk);border:0;color:var(--mut);font-size:13px;border-radius:99px;padding:6px 12px;text-align:center}
+.seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:9px;font:600 14px/1 var(--f-body);color:var(--mut)}
+.seg button.on{background:var(--surface);color:var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cmpwrap{overflow-x:auto;margin-top:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table.cmp{border-collapse:collapse;width:100%;min-width:440px;font-size:14px}
+table.cmp th,table.cmp td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+table.cmp tr:last-child td{border-bottom:0}
+table.cmp th{font:600 14px/1.25 var(--f-display)}
+table.cmp td:first-child,table.cmp th:first-child{font:600 11.5px/1.3 var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--mut);width:96px;position:sticky;left:0;background:var(--surface)}
+table.cmp .best{color:var(--pri);font-weight:700}
+table.cmp .best::after{content:" ★";color:var(--acc)}
+.slots{display:grid;gap:8px}
+.slot{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--surface);cursor:pointer;font-weight:600}
+.slot input{width:20px;height:20px;accent-color:var(--pri);margin:0}
+.slot:has(input:checked){border-color:var(--pri);background:var(--priSoft)}
+.agrid{display:grid;grid-template-columns:64px 1fr 1fr;gap:8px;align-items:center}
+.agrid .h{font:600 12px/1 var(--f-body);color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+.agrid button{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 4px;font:600 13.5px/1 var(--f-body);color:var(--mut)}
+.agrid button.on{border-color:var(--pri);background:var(--pri);color:var(--priInk)}
+.season{background:var(--head);color:var(--headInk);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.season .eyebrow{color:var(--mint)}
+.season h3{color:#FFFFFF;font-size:19px;margin:4px 0 2px}
+.season p{margin:0;font-size:14px;opacity:.9}
+.task{display:grid;gap:8px}
+.task .r1{display:flex;gap:12px;align-items:flex-start}
+.task .ic{flex:none;width:42px;height:42px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center}
+.task.done{opacity:.6}
+.hist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.hist li{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:12px;align-items:center}
+.hist .ic{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:var(--sunk);color:var(--ink)}
+.hist .ic.vos{background:var(--priSoft);color:var(--pri)}
+.hist .ic.pro{background:var(--warnSoft);color:var(--warnInk)}
+.hist .when{font-size:12.5px;color:var(--mut);white-space:nowrap;text-align:right}
+.ic svg,.task .ic svg,.hist .ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .review{border-top:1px solid var(--line);padding-top:10px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -394,7 +442,14 @@ const I = {
   trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
   edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/>',
   phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/>',
-  plus:'<path d="M12 5v14M5 12h14"/>'
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',
+  leaf:'<path d="M5 19c0-9 6-14 15-14 0 9-5 15-14 15"/><path d="M5 19l7-7"/>',
+  snow:'<path d="M12 2v20M4 7l16 10M4 17L20 7"/>',
+  flower:'<circle cx="12" cy="9" r="3"/><path d="M12 12v9M9 18c-2 0-4-1-5-3 2-1 4-1 5 1M15 18c2 0 4-1 5-3-2-1-4-1-5 1"/>',
+  truck:'<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
 };
 const ico = (k, cls = '') => `<svg viewBox="0 0 24 24" aria-hidden="true" class="${cls}">${I[k] || I.check}</svg>`;
 const MARK = `<img class="mark" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMDAgQDAwMEBAQFBgoGBgUFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/2wBDAQQEBAYFBgsGBgsYEA0QGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBj/wAARCADAAMADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDweiiisT5MKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAop0ccksqxRRvJI52qiKWZiewA5JpZYpYJnhmjeKRDtZHUqyn0IPINADKKK6T4fafo2rfFDQ9M8QIz6ddXSwyorlNxIIUEjkAttBx60PQEc3RX1F4n/Zy8L6hA8vhm8udGusZWKVjPAT6EH5l+oJ+lfPXirwhr/gvXDpfiCxNvKQWikU7o5l/vI3Qj9R3AqIzUtinFowqKKKskKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiinJG80qQx/fdgi/UnA/U0AfRX7OvgSKOxk8eajAGmkZoNODD7ijh5R7k5UH0Detc/+0h4Y+weNbLxTBHiHVIvKnI/57xjGT7sm3/vk19H6JpVvoXhuw0W1QJDZW6W6gf7KgE/icn8a5j4s+F/+Es+E+p2EMe+8t1+2WuOvmR5OB/vLuX8a5lP37m7j7tj4rp8M01tcx3NuxSaJxJGw7MpyD+YFMBBAI6HmiukwPvjw/rEPiHwppuuwEGO+to7gY7FlyR+ByPwqj4y8IaT428KT6Hq0Yw3zQXAGXt5McOv9R3GRXzl4L+Ot54M+G9v4bh0JL+5t5JDFPPOUjWNjuC7QMkglu46isbXfjj8Rta3INbXSoG48vToxD+G85b9a5lSlfQ251Y4zXdE1Dw54lvdC1SLy7uzlMUg7HHRh7EYI9iKzqtXzajNc/a9TN48043+ddby0g9dzct9aq10oxCiiigAooooAKKKKACiiigAooooAKKKKACiiigAq1psqQa3ZTyfcjuInb6BwT/KqtBAIIPQ8UAfoWzBnZlOQSSDSZwc/wA6434WeKo/F3wt0zUTIGu4IxaXa55WWMAEn/eG1vxrsq4mraHUnc+L/iN4IvtD+L+p6FpOnXVzHNJ9qtIreJpCYpPmAAUHody/8BrQ0P4EfEXWdrz6XDpELf8ALTUZQjY/3Fy36CvsAcMWHBIwSOpFFae2djP2aPC9C/Zn0S32yeI/EF5ft1MNkgt4/wDvo7mP6V6ZoPw58D+Gir6R4ZsIpV/5byp50v8A32+T+WK6iioc292WopbHgf7T80X9jeGYDgzefcOM9QgRAfwyRXzjXrn7RWpXt38Wo7C4t5Ybaxs0S3LjAlD5Z3X1Gfl/4BXkddNNWijCb1CiiirJCiiigAooooAKKKKACiiigAooooAKKKKACiiigDuvhd8Rrv4e+KWndJLjSbvCXtsp5IHSRP8AbXJ+oJHpj7C0fWdL1/RYNW0a+ivLKcZSaI5HuCOoYdweRXwHW94X8ZeJfBuom88O6pLaF8ebF9+KX/fQ8H69fes50+bVFxnbRn3ZRXzro/7TlwkKp4g8KJM4HM2n3GzPvscHH/fVbE37Tnh1Yibfwrq8knZZJ4kH5jP8qw9nLsa86PcqKyfDXiPS/Fnhe017SJvMtrhc4P3o2H3kYdmB4P8Aga1qgo4b4o/Dy1+IHhI26COLVrUGSxuW4AbvGx/uNj8Dg9q+NbyzutP1CewvreS3uYJDFLDIMMjA4INfoHXzF+0aPCTeLbR9Onz4iC7NQjhAKbAPkMh7SdsdduM4wK2pS6GdSPU8SorvfBHwh8W+OrH+0bFLex03JVby9YqspHXYoBLY9envUHjn4WeKfAKR3OqxwXVhI2xb20YtGG7KwIBUntng9jW3Mr2MrPc4miiiqEFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB6J8JfiTN4B8TmK9d5NDvWC3cQ58o9BMo9R3Hce4FfYUE8N1bR3NtKk0Mqh45IzuV1IyCD3BFfDuifD/AMa+I7EXuh+GdRvLY/dnSMKjf7rMQD+Ga6xvGfxR+Hvw8l8GX+nX2kxSvi3vbmJlkgjOd0cT/dwScg5yuTjrxjOCk9NzSMmlqeofF340x+HRP4Z8JXCS6xylxeLhls/VV7NJ+i/Xgec/Cb4TXfjrUf8AhI/EfnroayFizsfM1CTPIDddufvP36DnJDfhF8I7jxrdpr2vJJD4fifgZKtfMDyqnqEz95u/Qc5I+rre3gtLSK1tYY4IIkEccUahVRQMAADoBUykoLliUk5asLe3gtbWK1tYY4IIkEccUahVRQMAADoBWX4r0i017wPq2kXyK0FxaSKd38JCkq31DAH8K2KRlVkKsoZSMEEZBHpWJofnqp3Rq2QcjOR0pa+tvif8IPD3iLwtd6hoelW2n63bRNNC9rGIluNoyY3UcHIBwcZBx2r5JByAfWuyM1JHPKPKFFFFUSFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFd58IfBkPjb4l29lfxmTTbRDd3a9nVSAqH/eYgH2zXB19Ifsx6cqaF4h1gr80txFaq3sqFz+riom7RuVBXZ7wkccUKRRxokaKFREUBVA6AAdB7Uy5tra8tHtLu3iuLeQYeGZA6MPdTwalorkOgjgggtbWO2toY4YYlCRxRqFVFHQADgD2qSiigAooooARsmNgoBODgHpXwv4w8G+IfBevHT/EFkIHkzJDLG2+KZc9UbvjuOCO4r7przT486ZY3/wAE9RurtUE1jJFcWznqrlwhA/3lYj8vStKcrOxE43R8gUUUV1GAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAV9Yfs6W/k/Bppscz6jO+fXARf6V8n96+yfgjZNZfArQg67WnWW5/B5WI/QCsq3wmlPc9BooormNgooooAKKKKACuL+K3hW58YfCzUNKspWS6j23cKA8SvHlth+ozj3xXaU15YreJp53CRRgyOzdFUckn8AaadncTVz89+ozz+NFT3ssU+p3M8AxFJM7oPRSxI/QioK7TmCiiigAooooAKKKKACiiigAooooAKKKVRucKCBk4yxwPxPYUAbHhTwzqPjDxdZ+H9MQ+dcvhpMcQxj78jeyjn64HevufTdPtdJ0a00uxTZbWkKQRL6KoAH48VxXwq+HOneA/CyyiWG81W+jV7q9jO5SvVUjP9wZzn+I8+mO/rlqT5nobwjZBRRRWZYUUUUAFFFRzTw21tJcXE0cMMal3kkYKqKOpJPAHvQBJXgnx2+KcEFhceBPD9wJLmUeXqVxGeIk7wg/3j/F6DjqTij8Tvj350c2g+Ap2VGyk2sAYJHcQDqP98/h618/klmJJJJOSSck1vTp9WZTn0QlFFFbmQUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB7H8HfjC/hWaLwz4lnZ9CdsQXDcmxJ/nEe4/h6jjIr6ljkSWJZYnV0dQyuhyGB5BBHUH1r8969l+DvxhfwvLD4Y8T3DPobnbb3LcmxJPQ+sR9P4eo4yKxqU76o0hO2jPqWimo6SRrJG6ujAMrKchgeQQR1FNuLi3tLSW6up4oIIlLySysEVFHck8AVzmxJTZJI4YXmmkSONBlndgqqPUk8CvEPGn7Rek6c8lj4Ms11WcZH264ylup9VXhn+vyj614P4m8c+K/GE5fxBrVxdR5ytsD5cKfSNfl/PJrWNJvch1Ej6X8XfHrwV4dElvpcza/fLkeXZtiFT/ALUp4/75DV88+Nvid4r8dzGPVbwQaeG3Jp1rlIV9C3dz7tn2ArjaK2jTUTJzbCiiirJCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9j+EXxmbwnGvh3xRLNNogB+zzqpd7M9duOrRn0/hJ44zXM/Ej4pa18QNTaItJZ6JG+bfT1bg46PLj7z/oO3qeCoqeRXuPmdrBRRRVCCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//9k=" alt="">`;
@@ -635,6 +690,73 @@ const SEED_BIO = {
 };
 PROVS.forEach(p => { if (SEED_BIO[p.id]) { p.bio = SEED_BIO[p.id][0]; p.esp = SEED_BIO[p.id][1]; p.hor = 'Lunes a sábado, 8 a 19 h'; } });
 const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], rev:p.rev.map(r => [r.from, r.c || '', r.s])} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
+/* ---------- agenda y turnos ---------- */
+const FR = {m:'9 a 12 h', t:'14 a 18 h'}, FRN = {m:'Mañana', t:'Tarde'};
+const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], DOWL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const defAgenda = (k = 0) => ({1:['m', 't'], 2:k % 2 ? ['t'] : ['m', 't'], 3:['m', 't'], 4:k % 3 ? ['m', 't'] : ['m'], 5:['m', 't'], 6:k % 2 ? [] : ['m']});
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function slotLabel(k) { if (!k) return ''; const [d, f] = k.split('|'); const [y, m, dd] = d.split('-').map(Number); const dt = new Date(y, m - 1, dd);
+  const t = new Date(); t.setHours(0, 0, 0, 0); const diff = Math.round((dt - t) / 864e5);
+  return (diff === 0 ? 'Hoy' : diff === 1 ? 'Mañana' : DOW[dt.getDay()] + ' ' + dd + '/' + m) + ' · ' + FR[f]; }
+function bookedOf(pid) { return DB.jobs.filter(j => j.prov === pid && j.turno && j.estado !== 'finalizado').map(j => j.turno); }
+function slotsFor(pid, agenda, n = 6) {
+  const out = [], booked = bookedOf(pid), d = new Date(); d.setHours(0, 0, 0, 0);
+  for (let i = 1; i <= 14 && out.length < n; i++) { const x = new Date(d); x.setDate(d.getDate() + i);
+    (agenda[x.getDay()] || []).forEach(f => { const k = ymd(x) + '|' + f; if (!booked.includes(k) && out.length < n) out.push(k); }); }
+  return out;
+}
+PROVS.forEach((p, i) => { p.agenda = defAgenda(i); });
+const agendaOf = pid => { const s = PROVS.find(x => x.id === pid); if (s) return s.agenda; const p = DB.provs.find(x => x.id === pid); return (p && p.agenda) || defAgenda(); };
+
+/* ---------- seguimiento por etapas ---------- */
+const STAGES = ['Presupuesto aceptado', 'En camino', 'Trabajando', 'Terminado'];
+const STAGE_SUB = ['Quedó confirmado el turno', 'El prestador salió para tu casa', 'El prestador está haciendo el trabajo', 'El trabajo quedó listo'];
+const stageName = j => j.estado === 'nuevo' ? 'Buscando presupuestos' : STAGES[j.etapa || 0];
+function advance(jid, k) {
+  const j = DB.jobs.find(x => x.id === jid); if (!j || j.estado === 'finalizado' || (j.etapa || 0) >= k) return;
+  j.etapa = k; j.hist = j.hist || {}; j.hist[k] = Date.now();
+  const pn = first(provInfo(j.prov).n), un = first(j.un);
+  const txt = [null, `${pn} está en camino`, `${pn} empezó el trabajo`, `Trabajo terminado`][k];
+  j.msgs.push({f:'s', t:txt});
+  if (k === 3) { j.estado = 'finalizado'; j.fin = Date.now(); }
+  const viewing = V.job === j.id;
+  if (!viewing) j.unseen = true;
+  save();
+  if (DB.cur && DB.cur.t === 'u' && DB.cur.id === j.uid) toast(k === 3 ? 'Trabajo terminado: contanos cómo te fue' : txt);
+  if (DB.cur && DB.cur.t === 'p' && DB.cur.id === j.prov && k === 3 && j.uid === 'demo') toast(`${un} confirmó que el trabajo terminó`);
+  if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
+}
+function demoProgress(jid) { setTimeout(() => advance(jid, 1), 7000); setTimeout(() => advance(jid, 2), 16000); }
+function trackHTML(j) {
+  const e = j.estado === 'finalizado' ? 3 : (j.etapa || 0), h = j.hist || {};
+  const tm = ts => ts ? new Date(ts).toLocaleString('es-AR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
+  return `<ol class="track">${STAGES.map((n, i) => { const st = i < e || (i === e && i === 3) ? 'done' : i === e ? 'cur' : 'todo';
+    return `<li class="${st}"><span class="dt">${st === 'done' ? ico('check').replace(/<circle[^>]*\/>/, '') : ''}</span><div><b>${n}</b><span>${h[i] ? tm(h[i]) : i === 0 && j.turno ? 'Turno: ' + slotLabel(j.turno) : STAGE_SUB[i]}</span></div></li>`; }).join('')}</ol>`;
+}
+
+/* ---------- mantenimiento por temporada (hemisferio sur) ---------- */
+const SEASONS = {
+  primavera:{n:'Primavera', ico:'flower', meses:'septiembre a noviembre', tasks:[
+    {id:'aa', n:'Limpiar los filtros del aire acondicionado', why:'Antes de usarlo en el calor: enfría mejor y gasta menos luz.', quien:'vos', chat:'Quiero limpiar los filtros del aire acondicionado split'},
+    {id:'sil', n:'Revisar la silicona del baño', why:'Con la humedad de la primavera aparecen hongos en las juntas.', quien:'vos', chat:'La silicona de la bañera está negra'},
+    {id:'desag', n:'Destapar desagües del balcón y canaletas', why:'Las lluvias de primavera los tapan con hojas y tierra.', quien:'vos', chat:'Quiero limpiar el desagüe del balcón que se llena de hojas'}]},
+  verano:{n:'Verano', ico:'sun', meses:'diciembre a febrero', tasks:[
+    {id:'rej', n:'Cuidar rejillas y desagües', why:'Con el calor, los sifones que se usan poco se secan y larga olor.', quien:'vos', chat:'Hay olor feo en la rejilla del baño'},
+    {id:'mosq', n:'Revisar mosquiteros', why:'Un agujero chico alcanza para que entren mosquitos.', quien:'vos', chat:'Se rompió la tela del mosquitero de la ventana'},
+    {id:'tanque', n:'Limpiar el tanque de agua', why:'Se recomienda cada 6 meses; mejor con un profesional.', quien:'pro', rubro:'Plomería', chat:'Quiero hacer la limpieza del tanque de agua de la casa'}]},
+  otono:{n:'Otoño', ico:'leaf', meses:'marzo a mayo', tasks:[
+    {id:'gas', n:'Revisar el calefón y las estufas', why:'Antes del frío, un gasista matriculado controla que no haya pérdidas ni monóxido.', quien:'pro', rubro:'Gas', chat:'Quiero una revisión preventiva del calefón y las estufas antes del invierno'},
+    {id:'burl', n:'Poner burletes en ventanas', why:'Por los chifletes se va hasta un 20 % de la calefacción.', quien:'vos', chat:'Entra aire frío por la ventana'},
+    {id:'hojas', n:'Limpiar canaletas de hojas', why:'Las hojas de otoño tapan los desagües del techo.', quien:'vos', chat:'Quiero limpiar las canaletas del techo llenas de hojas'}]},
+  invierno:{n:'Invierno', ico:'snow', meses:'junio a agosto', tasks:[
+    {id:'vent', n:'Ventilar donde hay estufas', why:'Dejá una ventana apenas abierta: previene intoxicaciones con monóxido.', quien:'pro', rubro:'Gas', chat:'La llama de la estufa a gas está amarilla'},
+    {id:'hong', n:'Controlar hongos por condensación', why:'En invierno aparecen manchas negras en techos y esquinas.', quien:'vos', chat:'Tengo manchas de hongos en el techo del baño'},
+    {id:'term', n:'Probar el disyuntor', why:'Apretá el botón de prueba una vez por mes: si no corta, llamá a un electricista.', quien:'pro', rubro:'Electricidad', chat:'Quiero revisar si el disyuntor del tablero funciona bien'}]}
+};
+const SORDER = ['verano', 'otono', 'invierno', 'primavera'];
+function seasonNow(d = new Date()) { const m = d.getMonth(); return m === 11 || m < 2 ? 'verano' : m < 5 ? 'otono' : m < 8 ? 'invierno' : 'primavera'; }
+function seasonKey() { const d = new Date(); const y = d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear(); return seasonNow() + '-' + y; }
+function pendingTasks(u) { const k = seasonKey(); return SEASONS[seasonNow()].tasks.filter(t => !(u.mant || {})[k + '-' + t.id]); }
 const avg = p => p.rev && p.rev.length ? +(p.rev.reduce((a, r) => a + r.s, 0) / p.rev.length).toFixed(1) : 'Nuevo';
 
 /* ---------- utilidades de interfaz ---------- */
@@ -719,7 +841,7 @@ ACT.doReg = () => {
   else if (d.pass.length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
   else if ([...DB.users, ...DB.provs].some(x => x.mail === d.mail)) e = 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
   if (!e && REG.t === 'p') {
-    d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0; d.bio = val('bio'); d.esp = []; d.port = []; d.hor = 'Lunes a viernes, 8 a 18 h';
+    d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0; d.bio = val('bio'); d.esp = []; d.port = []; d.hor = 'Lunes a viernes, 8 a 18 h'; d.agenda = defAgenda();
     if (['Gas', 'Electricidad'].includes(d.rubro) && !d.mat) e = `Para ${d.rubro} la matrícula es obligatoria.`;
     else if (!REG.dni) e = 'Verificá tu identidad con DNI para continuar.';
   }
@@ -752,16 +874,27 @@ ACT.demo = () => sheet(`<h2>Ingreso rápido</h2><p class="mut small">Elegí una 
    <button class="role" data-a="demoAs" data-v="Plomería"><span class="ico y">${ico('tool')}</span><div><b>Daniel Ortiz</b><span>Prestador · Plomería</span></div></button>
    <button class="role" data-a="demoAs" data-v="Gas"><span class="ico y">${ico('tool')}</span><div><b>Graciela Paz</b><span>Prestadora · Gas · matriculada</span></div></button>
   </div>`);
+function seedSofia(u) {
+  const d = 864e5, now = Date.now();
+  u.seeded = true; u.resueltos = Math.max(2, u.resueltos || 0);
+  u.hist = [{t:'vos', caso:'Canilla que gotea', rubro:'Plomería', ts:now - 96 * d, ahorro:18000}, {t:'vos', caso:'Puerta que roza o no cierra', rubro:'Carpintería', ts:now - 38 * d, ahorro:24000}, ...(u.hist || [])];
+  const t0 = now - 182 * d;
+  DB.jobs.push({id:'j' + uid(), uid:u.id, un:u.nombre, zona:u.zona, caso:'Revisión del calefón antes del invierno', rubro:'Gas', hard:true, code:code(), desc:'Revisión preventiva del calefón y las estufas', intentos:'Ninguno · derivado por seguridad', img:null,
+    estado:'finalizado', etapa:3, hist:{0:t0, 1:t0 + 1.9 * d, 2:t0 + 1.95 * d, 3:t0 + 2 * d}, prov:'p3', precio:28000, turno:null, when:'Sábado · 9 a 12 h', offers:[], ts:t0 - d, fin:t0 + 2 * d,
+    msgs:[{f:'s', t:'Presupuesto aceptado'}, {f:'p', t:'¡Gracias por elegirme! Ya leí el resumen del caso.'}, {f:'s', t:'Hernán está en camino'}, {f:'s', t:'Hernán empezó el trabajo'}, {f:'s', t:'Trabajo terminado'}],
+    review:{s:5, c:'Revisó todo y dejó el certificado firmado.'}});
+}
 ACT.demoAs = v => {
   closeSheet();
   if (v === 'u') {
     let u = DB.users.find(x => x.mail === 'sofia@demo.com');
     if (!u) { u = {id:uid(), nombre:'Sofía Martínez', mail:'sofia@demo.com', pass:'demo123', zona:'Almagro, CABA', cr:5, resueltos:2}; DB.users.push(u); }
+    if (!u.seeded) seedSofia(u);
     DB.cur = {t:'u', id:u.id};
   } else {
     const mail = v === 'Gas' ? 'graciela@demo.com' : 'daniel@demo.com';
     let p = DB.provs.find(x => x.mail === mail);
-    if (!p) { p = {id:uid(), nombre:v === 'Gas' ? 'Graciela Paz' : 'Daniel Ortiz', mail, pass:'demo123', zona:'Almagro y alrededores', rubro:v, mat:v === 'Gas' ? 'ENARGAS 7731' : '', anios:v === 'Gas' ? 16 : 9, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[]}; DB.provs.push(p); seedProvJobs(p); }
+    if (!p) { p = {id:uid(), nombre:v === 'Gas' ? 'Graciela Paz' : 'Daniel Ortiz', mail, pass:'demo123', zona:'Almagro y alrededores', rubro:v, mat:v === 'Gas' ? 'ENARGAS 7731' : '', anios:v === 'Gas' ? 16 : 9, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[], agenda:defAgenda(1)}; DB.provs.push(p); seedProvJobs(p); }
     DB.cur = {t:'p', id:p.id};
   }
   save(); enter();
@@ -774,13 +907,15 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} DB = {u
 /* ============================================================
    ESTRUCTURA DE LA APP
    ============================================================ */
-const TABS = {u:[['chat', 'Asistente', 'chat'], ['mat', 'Materiales', 'box'], ['ped', 'Pedidos', 'clip'], ['per', 'Perfil', 'user']],
-              p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['per', 'Perfil', 'user']]};
+const TABS = {u:[['chat', 'Asistente', 'chat'], ['mat', 'Materiales', 'box'], ['ped', 'Pedidos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
+              p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['agenda', 'Agenda', 'cal'], ['per', 'Perfil', 'user']]};
 function enter() { V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null; render(); }
 ACT.tab = t => { V.tab = t; V.job = null; V.edit = false; render(); };
 function badge(t) {
   const c = DB.cur;
-  if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && j.estado === 'nuevo' && j.offers.length).length;
+  if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || j.unseen)).length;
+  if (c.t === 'u' && t === 'casa') return pendingTasks(me()).length;
+  if (c.t === 'p' && t === 'agenda') return DB.jobs.filter(j => j.prov === c.id && j.turno && j.estado !== 'finalizado').length;
   if (c.t === 'p' && t === 'ped') return provQueue().length;
   return 0;
 }
@@ -797,7 +932,7 @@ function render() {
   renderNav();
   if (V.job) return vJob();
   if (V.edit && V.tab === 'per') return vEdit();
-  ({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer})[V.tab]();
+  ({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer, casa:vCasa, agenda:vAgenda})[V.tab]();
 }
 function renderNav() {
   const c = DB.cur; if (!c) return;
@@ -1136,8 +1271,9 @@ async function stepImages(tut, box) {
 }
 function resolved() {
   say('Lo resolví', 'u');
-  const u = me(); u.resueltos = (u.resueltos || 0) + 1; save();
-  say(`¡Bien ahí! Te ahorraste una visita de ${CH.rubro ? CH.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[CH.rubro] || 18000)}). Si vuelve a pasar, acá estoy.`);
+  const u = me(); u.resueltos = (u.resueltos || 0) + 1;
+  (u.hist = u.hist || []).push({t:'vos', caso:CH.caso || 'Arreglo en casa', rubro:CH.rubro || '', ts:Date.now(), ahorro:BASE[CH.rubro] || 18000}); save();
+  say(`¡Bien ahí! Te ahorraste una visita de ${CH.rubro ? CH.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[CH.rubro] || 18000)}). Lo guardé en <b>Mi casa</b>, en tu historial.`);
   chips([['Nueva consulta', () => ACT.newCase()]]);
 }
 
@@ -1170,10 +1306,11 @@ function pedir() {
   say(`Listo. Enviamos tu caso <b class="num">${esc(j.code)}</b> a prestadores verificados de ${esc(j.rubro.toLowerCase())} en tu zona. Los presupuestos van a aparecer en <b>Pedidos</b>.`);
   chips([['Ver mi pedido', () => { V.tab = 'ped'; V.job = j.id; render(); }, 'p'], ['Nueva consulta', () => ACT.newCase()]]);
   const ps = PROVS.filter(p => p.r === j.rubro);
-  const msgs = ['Hola, vi tu caso. Con el resumen ya sé qué llevar. Puedo pasar mañana a la mañana.', 'Buenas, puedo ir esta semana. El precio incluye la visita y la mano de obra.'];
+  const msgs = ['Hola, vi tu caso. Con el resumen ya sé qué llevar. Elegí el turno que te quede mejor.', 'Buenas, puedo ir esta semana. El precio incluye la visita y la mano de obra.'];
   ps.forEach((p, i) => setTimeout(() => {
     const jj = DB.jobs.find(x => x.id === j.id); if (!jj || jj.estado !== 'nuevo') return;
-    jj.offers.push({pid:p.id, precio:BASE[j.rubro] + (i ? 4000 : 0) + Math.round(Math.random() * 3) * 1000, msg:msgs[i % 2], when:i ? 'Jueves 14 a 18 h' : 'Mañana 9 a 12 h'}); save();
+    const sl = slotsFor(p.id, p.agenda, 5);
+    jj.offers.push({pid:p.id, precio:BASE[j.rubro] + (i ? 4000 : 0) + Math.round(Math.random() * 3) * 1000, msg:msgs[i % 2], slots:sl, when:slotLabel(sl[0])}); save();
     if (DB.cur && DB.cur.id === j.uid) toast('Nuevo presupuesto de ' + p.n);
     if (DB.cur && DB.cur.t === 'u' && ((V.tab === 'ped' && !V.job) || V.job === jj.id)) render(); else if (DB.cur) renderNav();
   }, 2500 + i * 2800));
@@ -1278,7 +1415,8 @@ function vPedU() {
   view(`<h2>Mis pedidos</h2>
    ${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
       <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small num" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
-      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'b' : ''}">${EST[j.estado]}</span>
+      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${j.unseen ? '<span class="tag r">Novedades</span>' : ''}
+      ${j.turno && j.estado === 'aceptado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}
       ${j.estado === 'nuevo' && j.offers.length ? `<span class="tag y">${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''}</span>` : ''}${j.hard ? '<span class="tag r">Matriculado</span>' : ''}</div></button>`).join('')}</div>`
    : emptyState('clip', 'Todavía no pediste nada', 'Contale tu problema al asistente. Si hace falta un profesional, el pedido aparece acá.')}`);
 }
@@ -1287,13 +1425,19 @@ ACT.backJob = () => { V.job = null; render(); };
 function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
+  if (j.unseen && ((isU && j.uid === DB.cur.id) || (!isU && j.prov === DB.cur.id))) { j.unseen = false; save(); renderNav(); }
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
-    <div class="row" style="margin-bottom:10px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'b' : ''}">${EST[j.estado]}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
+    <div class="row" style="margin-bottom:10px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
+    ${j.estado !== 'nuevo' ? `<div class="card" style="margin-bottom:12px"><span class="eyebrow" style="display:block;margin-bottom:10px">Seguimiento</span>${trackHTML(j)}</div>` : ''}
     ${ticketHTML({...j, zona:j.zona})}`;
   if (isU && j.estado === 'nuevo') {
-    h += `<div class="sec"><span class="eyebrow">Presupuestos recibidos</span>` + (j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
+    const B = bestOf(j);
+    h += `<div class="sec"><div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="eyebrow">Presupuestos recibidos</span>
+      ${j.offers.length > 1 ? `<div class="seg" role="tablist"><button class="${V.cmp ? '' : 'on'}" data-a="cmp" data-v="0">Lista</button><button class="${V.cmp ? 'on' : ''}" data-a="cmp" data-v="1">Comparar</button></div>` : ''}</div>`
+      + (j.offers.length > 1 && V.cmp ? compareHTML(j, B) : j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
+       ${j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i) ? `<div class="meta">${B.precio === i ? '<span class="tag y">Mejor precio</span>' : ''}${B.cal === i ? '<span class="tag b">Mejor calificado</span>' : ''}${B.turno === i ? '<span class="tag">Puede antes</span>' : ''}</div>` : ''}
        <div class="top2">${avatar(p.n, p.foto)}<div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas · ${p.y} años</span></div></div><span class="price">${money(o.precio)}</span></div>
-       <div class="meta"><span class="tag v">${ico('shield')} Identidad verificada</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : ''}<span class="tag">${esc(o.when)}</span></div>
+       <div class="meta"><span class="tag v">${ico('shield')} Identidad verificada</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : ''}<span class="tag">${ico('cal')} ${esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when)}</span></div>
        <div class="quote">“${esc(o.msg)}”</div>
        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
       : `<div class="card" style="display:flex;gap:12px;align-items:center"><span class="typing"><i></i><i></i><i></i></span><span class="mut small">Los prestadores están viendo tu caso…</span></div>`) + `</div>`;
@@ -1303,10 +1447,12 @@ function vJob() {
     h += `<div class="sec"><span class="eyebrow">${isU ? 'Tu prestador' : 'Tu cliente'}</span><div class="card offer"><div class="top2">
       ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
       ${isU ? `<button class="btn g sm" data-a="prof" data-v="${j.prov}">Ver perfil</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div>
-      <div class="thread">${j.msgs.map(m => `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
+      <div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
       ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
       <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2"')} Toda la comunicación queda dentro de HandyGo.</p></div>`;
-    if (j.estado === 'aceptado') h += `<div class="sec">${isU ? `<button class="btn p w" data-a="fin">El trabajo está terminado</button>` : `<button class="btn p w" data-a="fin">Marcar como finalizado</button>`}</div>`;
+    if (j.estado === 'aceptado') { const e = j.etapa || 0;
+      h += `<div class="sec">${isU ? (e >= 2 ? `<button class="btn p w" data-a="fin">El trabajo está terminado</button>` : `<p class="hint" style="text-align:center">Te avisamos cuando ${esc(first(provInfo(j.prov).n))} salga para tu casa.</p>`)
+        : `<button class="btn p w" data-a="stage" data-v="${e + 1}">${['', 'Estoy en camino', 'Empecé el trabajo', 'Terminé el trabajo'][e + 1]}</button>`}</div>`; }
     if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec card"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
       <div class="ratebtns" style="margin:10px 0">${[1, 2, 3, 4, 5].map(n => `<button data-a="rate" data-v="${n}" aria-label="${n} estrellas">${n}★</button>`).join('')}</div>
       <label class="f" for="rc">Comentario (opcional)<textarea id="rc" rows="2" placeholder="Ej: llegó a horario y explicó todo"></textarea></label>
@@ -1314,7 +1460,7 @@ function vJob() {
     if (j.review) h += `<div class="sec card"><b>Calificaste ${'★'.repeat(j.review.s)}</b>${j.review.c ? `<p class="mut small" style="margin:6px 0 0">“${esc(j.review.c)}”</p>` : ''}</div>`;
   }
   if (!isU && j.estado === 'nuevo') { const mine = j.offers.find(o => o.pid === DB.cur.id);
-    h += mine ? `<div class="sec card"><h3>Presupuesto enviado · <span class="num">${money(mine.precio)}</span></h3><p class="mut small" style="margin:4px 0 0">${esc(mine.when)} · esperando la respuesta del cliente.</p></div>` : offerForm(j); }
+    h += mine ? `<div class="sec card"><h3>Presupuesto enviado · <span class="num">${money(mine.precio)}</span></h3><p class="mut small" style="margin:4px 0 0">Turnos ofrecidos: ${esc((mine.slots || []).map(slotLabel).join(' · ') || mine.when)} · esperando la respuesta del cliente.</p></div>` : offerForm(j); }
   view(h);
   const mi = $('#mi'); if (mi) mi.addEventListener('keydown', e => { if (e.key === 'Enter') ACT.msg(); });
 }
@@ -1338,19 +1484,58 @@ ACT.prof = id => {
    <span class="eyebrow">Reseñas</span><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
    <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
 };
+let ACC = null;
+ACT.cmp = v => { V.cmp = v === '1'; render(); };
 ACT.acc = i => {
-  const j = DB.jobs.find(x => x.id === V.job), o = j.offers[+i];
-  Object.assign(j, {prov:o.pid, precio:o.precio, estado:'aceptado'});
-  j.msgs.push({f:'p', t:`¡Gracias por elegirme! Quedamos ${o.when.toLowerCase()}. Ya leí el resumen del caso.`});
-  save(); toast('Presupuesto aceptado'); render();
+  const j = DB.jobs.find(x => x.id === V.job), o = j.offers[+i], p = provInfo(o.pid);
+  const booked = bookedOf(o.pid), sl = (o.slots || []).filter(k => !booked.includes(k));
+  ACC = {i:+i};
+  sheet(`<span class="eyebrow">Elegí el turno</span><h2>${esc(p.n)} · ${money(o.precio)}</h2><p class="mut small">Estos son los horarios libres en su agenda.</p>
+    <div class="slots" style="margin-top:12px">${sl.length ? sl.map((k, n) => `<label class="slot"><input type="radio" name="slot" value="${k}" ${n ? '' : 'checked'}>${ico('cal').replace('<svg', '<svg style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2"')} ${esc(slotLabel(k))}</label>`).join('')
+      : `<div class="card mut small">No tiene turnos libres cargados. Coordinen el día por mensaje.</div>`}</div>
+    <div class="stack" style="margin-top:14px"><button class="btn p w" data-a="confAcc">Confirmar turno y aceptar</button><button class="btn g w" data-a="close">Cancelar</button></div>`);
 };
+ACT.confAcc = () => {
+  const j = DB.jobs.find(x => x.id === V.job), o = j.offers[ACC.i], pick = document.querySelector('input[name="slot"]:checked');
+  const turno = pick ? pick.value : null; closeSheet();
+  Object.assign(j, {prov:o.pid, precio:o.precio, estado:'aceptado', etapa:0, hist:{0:Date.now()}, turno, when:turno ? slotLabel(turno) : o.when});
+  j.msgs.push({f:'s', t:'Presupuesto aceptado' + (turno ? ' · turno ' + slotLabel(turno) : '')});
+  j.msgs.push({f:'p', t:`¡Gracias por elegirme! ${turno ? 'Te espero el ' + slotLabel(turno).toLowerCase() + '.' : 'Coordinemos el día por acá.'} Ya leí el resumen del caso.`});
+  save(); toast('Presupuesto aceptado'); render();
+  if (PROVS.some(p => p.id === o.pid)) demoProgress(j.id);
+};
+ACT.stage = k => {
+  const j = DB.jobs.find(x => x.id === V.job); advance(j.id, +k);
+  if (+k === 3 && j.uid === 'demo') setTimeout(() => { const p = me(); if (p && p.rev) { p.rev.push({s:5, from:first(j.un), c:'Muy prolijo y puntual. Lo recomiendo.'}); j.review = {s:5, c:'Muy prolijo y puntual. Lo recomiendo.'}; save(); toast(first(j.un) + ' te dejó una reseña de 5 estrellas'); if (V.tab === 'per' || V.job === j.id) render(); } }, 3500);
+};
+function bestOf(j) {
+  const o = j.offers; if (o.length < 2) return {};
+  const by = f => o.reduce((b, x, i) => f(x, i) < f(o[b], b) ? i : b, 0);
+  const first_ = x => (x.slots && x.slots[0]) || 'z';
+  const r = {precio:by(x => x.precio), cal:by(x => { const s = provInfo(x.pid).s; return -(typeof s === 'number' ? s : 0); }), turno:by(x => first_(x))};
+  return r;
+}
+function compareHTML(j, B) {
+  const ps = j.offers.map(o => provInfo(o.pid));
+  const row = (lbl, f, key) => `<tr><td>${lbl}</td>${j.offers.map((o, i) => `<td class="${B[key] === i ? 'best' : ''}">${f(o, ps[i], i)}</td>`).join('')}</tr>`;
+  return `<div class="cmpwrap"><table class="cmp"><thead><tr><th></th>${ps.map(p => `<th>${esc(p.n)}</th>`).join('')}</tr></thead><tbody>
+    ${row('Precio', o => `<span class="num">${money(o.precio)}</span>`, 'precio')}
+    ${row('Calificación', (o, p) => typeof p.s === 'number' ? '★ ' + String(p.s).replace('.', ',') : 'Nuevo', 'cal')}
+    ${row('Reseñas', (o, p) => `<span class="num">${p.v}</span>`)}
+    ${row('Experiencia', (o, p) => `${p.y} años`)}
+    ${row('Matrícula', (o, p) => p.m ? esc(p.m) : 'No requiere')}
+    ${row('Primer turno', o => esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when), 'turno')}
+    ${row('Responde', (o, p) => esc((p.resp || '').replace('Responde en ', '')))}
+    <tr><td></td>${j.offers.map((o, i) => `<td><button class="btn p sm w" data-a="acc" data-v="${i}">Aceptar</button></td>`).join('')}</tr>
+  </tbody></table></div><p class="hint">★ marca la mejor opción en cada fila. Deslizá para ver todos.</p>`;
+}
 ACT.msg = () => {
   const j = DB.jobs.find(x => x.id === V.job), i = $('#mi'), t = i.value.trim(); if (!t) return;
   j.msgs.push({f:DB.cur.t, t}); save(); render();
   const auto = DB.cur.t === 'u' ? PROVS.some(p => p.id === j.prov) : j.uid === 'demo';
   if (auto) setTimeout(() => { j.msgs.push({f:DB.cur.t === 'u' ? 'p' : 'u', t:DB.cur.t === 'u' ? 'Perfecto, te confirmo. Cualquier cosa me escribís por acá.' : 'Dale, te espero. Gracias.'}); save(); if (V.job === j.id) render(); }, 1400);
 };
-ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); j.estado = 'finalizado'; j.fin = Date.now(); save(); toast('Trabajo finalizado'); render(); };
+ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); advance(j.id, 3); render(); };
 
 /* ============================================================
    PRESTADOR
@@ -1369,29 +1554,84 @@ function vPedP() {
 function offerForm(j) {
   return `<div class="sec card"><h3>Enviar presupuesto</h3><p class="mut small">El cliente compara precio, reseñas y disponibilidad.</p>
    <div class="stack" style="margin-top:10px">${field('pr', 'Precio (ARS)', 'number', String(BASE[j.rubro] || 20000))}
-   <label class="f" for="pw">Disponibilidad<select id="pw"><option>Mañana 9 a 12 h</option><option>Mañana 14 a 18 h</option><option>Esta semana</option><option>Urgente · hoy</option></select></label>
+   <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:6px">Turnos que le ofrecés</span>${(() => { const sl = slotsFor(DB.cur.id, me().agenda || defAgenda(), 6);
+     return sl.length ? `<div class="slots">${sl.map((k, n) => `<label class="slot"><input type="checkbox" name="oslot" value="${k}" ${n < 3 ? 'checked' : ''}> ${esc(slotLabel(k))}</label>`).join('')}</div><span class="hint">Salen de tu agenda. Podés cambiarla en la pestaña Agenda.</span>`
+       : '<div class="card small mut">No tenés turnos libres. Cargá tu disponibilidad en la pestaña <b>Agenda</b>.</div>'; })()}</div>
    ${field('pm', 'Mensaje para el cliente', 'text', 'Ej: con el resumen ya sé qué llevar')}
    <button class="btn p w" data-a="offer">Enviar presupuesto</button><button class="btn g w" data-a="desc">Descartar pedido</button></div></div>`;
 }
 ACT.offer = () => {
   const j = DB.jobs.find(x => x.id === V.job), pr = +$('#pr').value;
   if (!pr || pr < 1000) { toast('Ingresá un precio válido'); return; }
-  const o = {pid:DB.cur.id, precio:pr, when:$('#pw').value, msg:$('#pm').value.trim() || 'Hola, leí el resumen y puedo tomar el trabajo.'};
+  const sl = [...document.querySelectorAll('input[name="oslot"]:checked')].map(x => x.value);
+  if (!sl.length) { toast('Elegí al menos un turno'); return; }
+  const o = {pid:DB.cur.id, precio:pr, slots:sl, when:slotLabel(sl[0]), msg:$('#pm').value.trim() || 'Hola, leí el resumen y puedo tomar el trabajo.'};
   j.offers.push(o); save(); toast('Presupuesto enviado'); V.job = null; V.tab = 'trab'; render();
   if (j.uid === 'demo') setTimeout(() => {
-    Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. ¿Te queda bien ' + o.when.toLowerCase() + '?'}); save();
+    Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr, etapa:0, hist:{0:Date.now()}, turno:sl[0], when:slotLabel(sl[0])});
+    j.msgs.push({f:'s', t:'Presupuesto aceptado · turno ' + slotLabel(sl[0])}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. Te espero el ' + slotLabel(sl[0]).toLowerCase() + '.'}); j.unseen = true; save();
     toast(first(j.un) + ' aceptó tu presupuesto'); if (DB.cur && DB.cur.t === 'p') { if (V.job && V.job !== j.id) renderNav(); else render(); }
   }, 3000);
 };
 ACT.desc = () => { const p = me(); (p.desc = p.desc || []).push(V.job); save(); V.job = null; render(); };
 function vTrab() {
   const p = me(), js = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
-  view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? EST[j.estado] : (j.estado === 'nuevo' ? 'Presupuesto enviado' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
+  view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? stageName(j) : (j.estado === 'nuevo' ? 'Presupuesto enviado' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
      <div class="r1"><h3>${esc(j.caso)}</h3><span class="price" style="font-size:17px">${j.prov === p.id ? money(j.precio) : ''}</span></div>
-     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span></div></button>`; }).join('')}</div>`
+     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span>${j.prov === p.id && j.turno && j.estado !== 'finalizado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}${j.unseen && j.prov === p.id ? '<span class="tag r">Novedades</span>' : ''}</div></button>`; }).join('')}</div>`
    : emptyState('clip', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.')}`);
 }
 ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
+
+/* ============================================================
+   MI CASA (usuario): mantenimiento por temporada + historial
+   ============================================================ */
+const ago = ts => { const d = Math.floor((Date.now() - ts) / 864e5); return d < 1 ? 'Hoy' : d === 1 ? 'Ayer' : d < 30 ? `Hace ${d} días` : d < 365 ? `Hace ${Math.round(d / 30)} ${Math.round(d / 30) === 1 ? 'mes' : 'meses'}` : new Date(ts).toLocaleDateString('es-AR', {month:'short', year:'numeric'}); };
+function vCasa() {
+  const u = me(), sk = seasonNow(), S = SEASONS[sk], key = seasonKey(), done = u.mant || {};
+  const next = SEASONS[SORDER[(SORDER.indexOf(sk) + 1) % 4]];
+  const jobs = DB.jobs.filter(j => j.uid === u.id && j.estado === 'finalizado');
+  const items = [...(u.hist || []).map(h => ({...h})), ...jobs.map(j => ({t:'pro', caso:j.caso, rubro:j.rubro, ts:j.fin || j.ts, precio:j.precio, prov:provInfo(j.prov).n, jid:j.id, img:j.img}))].sort((a, b) => b.ts - a.ts);
+  const gastado = jobs.reduce((a, j) => a + (j.precio || 0), 0), ahorro = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0);
+  const pend = S.tasks.filter(t => !done[key + '-' + t.id]).length;
+  view(`<h2>Mi casa</h2><p class="mut small">${esc(u.zona)}</p>
+   <div class="stat" style="margin-top:12px"><div class="card"><b class="num">${items.filter(x => x.t !== 'mant').length}</b><span>arreglos registrados</span></div><div class="card"><b class="num" style="font-size:21px">${money(ahorro)}</b><span>ahorrados resolviendo por tu cuenta</span></div></div>
+   <div class="sec"><div class="season"><span class="eyebrow">Mantenimiento de ${S.n.toLowerCase()}</span><h3>${pend ? `Tenés ${pend} ${pend === 1 ? 'tarea' : 'tareas'} para esta temporada` : 'Tu casa está al día'}</h3><p>Lo que conviene revisar de ${S.meses}.</p></div>
+    <div class="list" style="margin-top:10px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<div class="card task ${ok ? 'done' : ''}">
+      <div class="r1"><span class="ic">${ico(t.quien === 'pro' ? 'tool' : S.ico)}</span><div style="min-width:0;flex:1"><h3>${esc(t.n)}</h3><div class="small mut">${esc(t.why)}</div>
+      <div class="meta" style="margin-top:6px">${t.quien === 'pro' ? `<span class="tag r">Con ${t.rubro === 'Gas' ? 'gasista matriculado' : t.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}</span>` : '<span class="tag b">Lo podés hacer vos</span>'}${ok ? `<span class="tag v">${ico('check')} Hecho · ${ago(ok)}</span>` : ''}</div></div></div>
+      ${ok ? '' : `<div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="mantDone" data-v="${t.id}">Ya lo hice</button><button class="btn p sm" style="flex:1" data-a="mantGo" data-v="${t.id}">${t.quien === 'pro' ? 'Pedir profesional' : 'Cómo se hace'}</button></div>`}</div>`; }).join('')}</div>
+    <p class="hint" style="margin-top:8px">${ico(next.ico).replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2"')} Próxima temporada (${next.n.toLowerCase()}): ${esc(next.tasks.map(t => t.n.toLowerCase()).join(', '))}.</p></div>
+   <div class="sec"><span class="eyebrow">Historial de la casa</span>
+    ${items.length ? `<div class="card"><ul class="hist">${items.map(x => `<li ${x.jid ? `data-a="job" data-v="${x.jid}" style="cursor:pointer"` : ''}>
+      <span class="ic ${x.t}">${ico(x.t === 'pro' ? 'tool' : x.t === 'mant' ? S.ico : 'check')}</span>
+      <div style="min-width:0"><h3 style="font-size:15px">${esc(x.caso)}</h3><div class="small mut">${x.t === 'pro' ? `${esc(x.prov)} · <span class="num">${money(x.precio)}</span>` : x.t === 'mant' ? 'Mantenimiento preventivo' : `Lo resolviste vos · ahorraste ≈ ${money(x.ahorro || 0)}`}</div></div>
+      <span class="when">${ago(x.ts)}</span></li>`).join('')}</ul></div>
+      <p class="hint" style="margin-top:8px">Gastado en profesionales: <b class="num">${money(gastado)}</b></p>`
+    : emptyState('home', 'Todavía no hay arreglos', 'Cada problema que resuelvas o trabajo que contrates queda guardado acá.')}</div>`);
+}
+ACT.mantDone = id => { const u = me(), S = SEASONS[seasonNow()], t = S.tasks.find(x => x.id === id);
+  (u.mant = u.mant || {})[seasonKey() + '-' + id] = Date.now(); (u.hist = u.hist || []).push({t:'mant', caso:t.n, ts:Date.now()}); save(); toast('Guardado en tu historial'); render(); };
+ACT.mantGo = id => { const t = SEASONS[seasonNow()].tasks.find(x => x.id === id); V.tab = 'chat'; V.job = null; render(); setTimeout(() => go(t.chat, false), 150); };
+
+/* ============================================================
+   AGENDA (prestador)
+   ============================================================ */
+function vAgenda() {
+  const p = me(); p.agenda = p.agenda || defAgenda();
+  const js = DB.jobs.filter(j => j.prov === p.id && j.turno && j.estado !== 'finalizado').sort((a, b) => a.turno.localeCompare(b.turno));
+  view(`<h2>Agenda</h2><p class="mut small">Tus turnos confirmados y los horarios en que podés trabajar.</p>
+   <div class="sec"><span class="eyebrow">Próximos turnos</span>
+    ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}"><div class="r1"><h3>${esc(slotLabel(j.turno))}</h3><span class="price" style="font-size:16px">${money(j.precio)}</span></div>
+      <div class="small mut">${esc(j.caso)} · ${esc(j.un)} · ${esc(j.zona.split(',')[0])}</div><div class="meta"><span class="tag y">${stageName(j)}</span></div></button>`).join('')}</div>`
+      : `<div class="card small mut">Todavía no tenés turnos. Cuando un cliente acepte tu presupuesto y elija horario, aparece acá.</div>`}</div>
+   <div class="sec"><span class="eyebrow">Tu disponibilidad semanal</span>
+    <div class="card"><div class="agrid"><span></span><span class="h">Mañana<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.m}</span></span><span class="h">Tarde<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.t}</span></span>
+     ${[1, 2, 3, 4, 5, 6, 0].map(d => `<b style="font:600 14px var(--f-display)">${DOW[d]}</b>${['m', 't'].map(f => { const on = (p.agenda[d] || []).includes(f); return `<button class="${on ? 'on' : ''}" data-a="agTog" data-v="${d}|${f}" aria-pressed="${on}" aria-label="${DOWL[d]} ${FRN[f]}">${on ? 'Disponible' : '—'}</button>`; }).join('')}`).join('')}</div></div>
+    <p class="hint">Cuando mandás un presupuesto, la app ofrece solo estos horarios y saca los que ya están reservados.</p></div>`);
+}
+ACT.agTog = v => { const p = me(), [d, f] = v.split('|'); p.agenda = p.agenda || defAgenda(); const a = p.agenda[d] = p.agenda[d] || [];
+  const i = a.indexOf(f); if (i >= 0) a.splice(i, 1); else a.push(f); save(); vAgenda(); };
 
 /* ============================================================
    PERFIL
