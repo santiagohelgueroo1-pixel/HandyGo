@@ -100,7 +100,7 @@ module.exports = async (req, res) => {
 
 const SKIP = {};
 function geminiModels() {
-  return [...new Set([process.env.GEMINI_MODEL, 'gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash-lite'].filter(Boolean))];
+  return [...new Set([process.env.GEMINI_MODEL, 'gemini-3.8-flash', 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'].filter(Boolean))];
 }
 function timeout(ms) { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); return { signal: c.signal, done: () => clearTimeout(t) }; }
 function thinking(model) { return /2\.5/.test(model) ? { thinkingBudget: 0 } : { thinkingLevel: 'low' }; }

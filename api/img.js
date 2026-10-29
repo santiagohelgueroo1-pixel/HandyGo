@@ -60,7 +60,7 @@ For EACH step write ONE short English description (max 25 words) of a single ill
 the hands, the tool and the object involved, from a clear close-up angle. No text in the image.
 Steps:\n${pasos.map((p, i) => `${i + 1}. ${p}`).join('\n')}
 Answer ONLY JSON: {"prompts":["...", "..."]} with exactly ${pasos.length} items in the same order.`;
-  const models = [process.env.GEMINI_MODEL, 'gemini-3-flash-preview', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'].filter(Boolean);
+  const models = [process.env.GEMINI_MODEL, 'gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3-flash-preview'].filter(Boolean);
   for (const model of [...new Set(models)]) {
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
