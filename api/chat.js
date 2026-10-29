@@ -12,10 +12,18 @@ Hablás en español rioplatense con voseo, cálido, breve y sin tecnicismos. Nun
 TU TRABAJO
 1. Entender el problema con preguntas cortas, de a UNA por vez, con 2 o 3 opciones de respuesta.
 2. Cuando ya tengas suficiente información (en general 1 o 2 preguntas), elegí UNA de estas salidas:
-   - "guiar": si el problema coincide con una guía del CATÁLOGO y es seguro hacerlo uno mismo. Indicá su id en "tutorial".
-   - "derivar": si hace falta un profesional (no hay guía en el catálogo, el usuario no pudo, o la falla es más grave).
-3. NO inventes pasos de reparación: los pasos los muestra la app desde guías revisadas. Solo podés guiar con un id del catálogo.
-4. Si te mandan una foto, describí brevemente lo que ves y usalo para acotar.
+   - "guiar" CON CATÁLOGO: si el problema coincide con una guía del CATÁLOGO, poné su id en "tutorial" (la app muestra los pasos revisados).
+   - "guiar" SIN CATÁLOGO: si NO hay guía en el catálogo pero es un arreglo SIMPLE y SIN RIESGO que una persona sin experiencia puede hacer
+     (muebles, sillas, ruedas, cajones, objetos, ajustes, limpieza, cambiar piezas comunes, pegar, colgar algo liviano, electrodomésticos
+     DESENCHUFADOS solo para limpieza o piezas externas, etc.), "tutorial": null y armá vos:
+       "pasos": 3 a 8 pasos concretos, en orden, uno por acción, con medidas de cuidado básicas (desenchufar, cortar el agua, guantes);
+       "materiales": [["nombre","cómo pedirlo en una ferretería o comercio argentino"]] (puede ser lista vacía);
+       "nivel": "Fácil" o "Media"; "minutos": número estimado; "alerta": una frase de precaución si corresponde, o "".
+     Preferí SIEMPRE ayudar a resolverlo antes que derivar cuando el arreglo es simple y seguro.
+   - "derivar": solo si es riesgoso, requiere herramientas o habilidades profesionales, o el usuario ya intentó y no pudo.
+3. Si te mandan una foto, describí brevemente lo que ves y usalo para acotar.
+4. Si te mandan un AUDIO, escuchalo y respondé como si te lo hubieran escrito. En "transcripcion" poné lo que dijo la persona (texto breve y fiel).
+   Si no hay audio, "transcripcion": "".
 
 SEGURIDAD (NO NEGOCIABLE)
 - Nunca des instrucciones para instalaciones o artefactos de GAS (calefón, estufa, termotanque, anafe, garrafa, olor a gas),
@@ -34,7 +42,7 @@ CAMBIO DE TEMA (para el sistema de consultas)
 Si el mensaje no tiene que ver con el hogar, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","riesgo":true,"tema_nuevo":false}`;
+{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","riesgo":false,"tema_nuevo":false,"transcripcion":""}`;
 
 const ESTADOS = ['preguntar', 'guiar', 'derivar', 'fuera_de_tema'];
 const RUBROS = ['Plomería', 'Gas', 'Electricidad', 'Carpintería', 'Albañilería'];
@@ -80,7 +88,8 @@ async function gemini(model, system, messages) {
   const contents = messages.map(m => {
     const parts = [];
     if (m.image && m.image.data) parts.push({ inlineData: { mimeType: m.image.mime || 'image/jpeg', data: String(m.image.data) } });
-    parts.push({ text: String(m.text || '(foto)').slice(0, 2000) });
+    if (m.audio && m.audio.data) parts.push({ inlineData: { mimeType: m.audio.mime || 'audio/wav', data: String(m.audio.data) } });
+    parts.push({ text: m.audio && m.audio.data ? 'El usuario mandó este audio. Escuchalo y transcribilo en "transcripcion".' : String(m.text || '(foto)').slice(0, 2000) });
     return { role: m.role === 'assistant' ? 'model' : 'user', parts };
   });
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
@@ -89,7 +98,7 @@ async function gemini(model, system, messages) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
       contents,
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens: 2048 }
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens: 4096 }
     })
   });
   const d = await r.json().catch(() => ({}));
@@ -109,7 +118,7 @@ async function groq(system, messages) {
       temperature: 0.4,
       response_format: { type: 'json_object' },
       messages: [{ role: 'system', content: system },
-        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.text || '(el usuario mandó una foto)') + (m.image ? ' [adjuntó una foto]' : '') }))]
+        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: (m.audio ? '(el usuario mandó un audio que no se puede escuchar: pedile que lo escriba)' : String(m.text || '(el usuario mandó una foto)')) + (m.image ? ' [adjuntó una foto]' : '') }))]
     })
   });
   const d = await r.json().catch(() => ({}));
@@ -120,10 +129,11 @@ async function groq(system, messages) {
 }
 
 function normalize(text, ids) {
+  // (si hay riesgo, los pasos se descartan más abajo)
   let o = {};
   try { o = JSON.parse(String(text).match(/\{[\s\S]*\}/)[0]); } catch (e) { o = { estado: 'preguntar', mensaje: '¿Me contás un poco más qué pasa?' }; }
   const estado = ESTADOS.includes(o.estado) ? o.estado : 'preguntar';
-  return {
+  const out = {
     estado,
     caso: typeof o.caso === 'string' ? o.caso.slice(0, 80) : '',
     rubro: RUBROS.includes(o.rubro) ? o.rubro : null,
@@ -131,6 +141,14 @@ function normalize(text, ids) {
     opciones: Array.isArray(o.opciones) ? o.opciones.filter(x => typeof x === 'string').slice(0, 3).map(x => x.slice(0, 80)) : [],
     tutorial: ids.includes(o.tutorial) ? o.tutorial : null,
     riesgo: o.riesgo === true,
-    tema_nuevo: o.tema_nuevo === true
+    tema_nuevo: o.tema_nuevo === true,
+    pasos: Array.isArray(o.pasos) ? o.pasos.filter(x => typeof x === 'string' && x.trim()).slice(0, 8).map(x => x.slice(0, 220)) : [],
+    materiales: Array.isArray(o.materiales) ? o.materiales.filter(x => Array.isArray(x) && typeof x[0] === 'string').slice(0, 6).map(x => [x[0].slice(0, 60), String(x[1] || '').slice(0, 120)]) : [],
+    nivel: o.nivel === 'Media' ? 'Media' : 'Fácil',
+    minutos: Math.max(5, Math.min(180, parseInt(o.minutos, 10) || 20)),
+    alerta: typeof o.alerta === 'string' ? o.alerta.slice(0, 240) : '',
+    transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : ''
   };
+  if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; }
+  return out;
 }
