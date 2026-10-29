@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HandyGo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#1E4BD2">
+<meta name="description" content="Te ayudamos a resolverlo, te conectamos si hace falta.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HandyGo">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: una sola columna tipo teléfono; en compu se muestra dentro de un marco de celular para presentar.
+   Mundo del tema: ferretería y obra — azul overol, amarillo de seguridad, cinta métrica, orden de trabajo. */
+:root{
+  --bg:#F2F4F8; --surface:#FFFFFF; --sunk:#E9EDF4; --ink:#0F1A2E; --mut:#58647D; --line:#D9DFEA;
+  --pri:#1E4BD2; --priInk:#FFFFFF; --priSoft:#E5EBFB;
+  --acc:#FFC93C; --accInk:#1C1500;
+  --bad:#C2321B; --badSoft:#FCEBE6; --ok:#1C7F4F; --okSoft:#E3F3EA;
+  --desk:#D9DEE8; --frame:#0F1A2E; --head:#1E4BD2; --headInk:#FFFFFF;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0B1120; --surface:#141C2E; --sunk:#0F1626; --ink:#E9EEF8; --mut:#97A3BC; --line:#26314A;
+  --pri:#7A97FF; --priInk:#0B1120; --priSoft:#1A2547; --accInk:#1C1500;
+  --bad:#FF8C74; --badSoft:#381A14; --ok:#5DD39A; --okSoft:#10301F;
+  --desk:#05080F; --frame:#000000; --head:#15265F; --headInk:#FFFFFF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B1120; --surface:#141C2E; --sunk:#0F1626; --ink:#E9EEF8; --mut:#97A3BC; --line:#26314A;
+  --pri:#7A97FF; --priInk:#0B1120; --priSoft:#1A2547; --accInk:#1C1500;
+  --bad:#FF8C74; --badSoft:#381A14; --ok:#5DD39A; --okSoft:#10301F;
+  --desk:#05080F; --frame:#000000; --head:#15265F; --headInk:#FFFFFF; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.r1>span{white-space:nowrap}
+html,body{height:100%}
+body{margin:0;background:var(--desk);color:var(--ink);font:400 16px/1.45 var(--f-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+
+.device{position:relative;height:100%;max-width:480px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+@media (min-width:760px){
+  body{display:grid;place-items:center;padding-block:20px}
+  .device{width:400px;height:min(860px,100%);border:10px solid var(--frame);border-radius:44px;box-shadow:0 30px 80px -30px rgba(10,20,50,.55)}
+}
+
+/* ---------- encabezado con borde de cinta métrica ---------- */
+.top{position:relative;flex:none;background:var(--head);color:var(--headInk);
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;gap:12px}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:7px;
+  background:linear-gradient(var(--acc),var(--acc)) bottom/100% 3px no-repeat,
+  repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) bottom/100% 7px no-repeat}
+.top .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.top .mark{width:34px;height:34px;flex:none}
+.top h1{margin:0;font:800 21px/1.05 var(--f-display);font-stretch:118%;letter-spacing:-.01em}
+.top small{display:block;font:500 12.5px/1.3 var(--f-body);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{flex:none;border:0;border-radius:99px;padding:7px 12px;font:700 13px/1 var(--f-body);background:var(--acc);color:var(--accInk);display:inline-flex;gap:6px;align-items:center}
+.pill.off{background:rgba(255,255,255,.16);color:var(--headInk)}
+body.prov .top{background:#0F1A2E}
+:root[data-theme="dark"] body.prov .top{background:#05080F}
+
+/* ---------- vista y navegación ---------- */
+#view{flex:1;min-height:0;overflow-y:auto;padding-block:18px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#view.flush{padding:0;display:flex;flex-direction:column;overflow:hidden}
+nav{flex:none;display:flex;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;padding:9px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--mut);font:600 11.5px/1 var(--f-body);position:relative}
+nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--pri)}
+nav button.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--pri)}
+nav .dot{position:absolute;top:6px;left:calc(50% + 8px);min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--bad);color:#fff;font:700 10.5px/17px var(--f-body)}
+
+/* ---------- tipografía y piezas ---------- */
+h2{font:800 25px/1.08 var(--f-display);font-stretch:112%;letter-spacing:-.01em;margin:4px 0 6px;text-wrap:balance}
+h3{font:700 17px/1.25 var(--f-body);margin:0}
+.eyebrow{font:700 11.5px/1 var(--f-body);text-transform:uppercase;letter-spacing:.09em;color:var(--mut)}
+.mut{color:var(--mut)}
+.small{font-size:14px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sec{margin-top:26px}
+.sec>.eyebrow{display:block;margin-bottom:10px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--pri);background:var(--surface);color:var(--pri);border-radius:12px;padding:12px 16px;font:700 15.5px/1.1 var(--f-body);text-align:center}
+.btn.p{background:var(--pri);color:var(--priInk)}
+.btn.y{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.btn.g{border-color:var(--line);color:var(--mut);background:transparent}
+.btn.bad{border-color:var(--bad);color:var(--bad);background:transparent}
+.btn.w{width:100%}
+.btn.sm{padding:8px 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.45;cursor:default}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.tag{display:inline-flex;align-items:center;gap:4px;font:600 12.5px/1 var(--f-body);padding:5px 9px;border-radius:99px;background:var(--sunk);color:var(--ink);white-space:nowrap}
+.tag.v{background:var(--okSoft);color:var(--ok)}
+.tag.r{background:var(--badSoft);color:var(--bad)}
+.tag.b{background:var(--priSoft);color:var(--pri)}
+.tag.y{background:var(--acc);color:var(--accInk)}
+.stars{color:#E8A400;letter-spacing:1px}
+.num{font-variant-numeric:tabular-nums}
+
+label.f{display:block;font:600 14px/1.3 var(--f-body)}
+label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:6px;border:2px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);font-weight:400}
+label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--pri);outline:none}
+.hint{font-size:13px;color:var(--mut);font-weight:400;margin-top:4px;display:block}
+.err{color:var(--bad);font-weight:600;font-size:14.5px;min-height:20px}
+
+/* ---------- bienvenida ---------- */
+.hero{background:var(--head);color:var(--headInk);margin:-18px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:calc(env(safe-area-inset-top,0px) + 28px) max(20px,env(safe-area-inset-right,0px)) 34px max(20px,env(safe-area-inset-left,0px));position:relative}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;background:linear-gradient(var(--acc),var(--acc)) bottom/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) bottom/100% 9px no-repeat}
+.hero .mark{width:56px;height:56px}
+.hero h2{font-size:44px;line-height:.98;font-stretch:122%;margin:22px 0 12px;font-weight:900}
+.hero h2 em{font-style:normal;color:var(--acc)}
+.hero p{margin:0;opacity:.9;max-width:32ch}
+.pillars{display:grid;gap:10px;margin:22px 0 18px}
+.pillar{display:flex;gap:12px;align-items:flex-start}
+.pillar .ico{flex:none;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--priSoft);color:var(--pri)}
+.pillar .ico.r{background:var(--badSoft);color:var(--bad)}
+.pillar .ico.v{background:var(--okSoft);color:var(--ok)}
+.pillar svg,.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pillar b{display:block;font-size:15.5px}
+.pillar span{font-size:14px;color:var(--mut)}
+.role{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:16px;color:var(--ink)}
+.role:hover{border-color:var(--pri)}
+.role .ico{flex:none;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:var(--priSoft);color:var(--pri)}
+.role .ico.y{background:var(--acc);color:var(--accInk)}
+.role svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.role b{display:block;font-size:17px;margin-bottom:2px}
+.role span{font-size:14px;color:var(--mut)}
+
+/* ---------- chat ---------- */
+#log{flex:1;min-height:0;overflow-y:auto;padding:16px max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px}
+.m{max-width:86%;padding:11px 14px;border-radius:18px 18px 18px 6px;background:var(--surface);border:1px solid var(--line);font-size:15.5px;align-self:flex-start;overflow-wrap:anywhere}
+.m.u{align-self:flex-end;background:var(--pri);border-color:var(--pri);color:var(--priInk);border-radius:18px 18px 6px 18px}
+.m.wide{max-width:100%;width:100%;padding:0;overflow:hidden}
+.m img{display:block;max-width:220px;width:100%;border-radius:12px;margin-bottom:6px}
+.m.sys{align-self:center;background:transparent;border:0;font-size:13px;color:var(--mut);padding:2px}
+.who{display:flex;align-items:center;gap:6px;font:700 12px/1 var(--f-body);color:var(--mut);margin:4px 0 -4px 2px}
+.who .mark{width:18px;height:18px}
+.typing{display:inline-flex;gap:4px;padding:4px 0}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--mut);opacity:.5}
+@media (prefers-reduced-motion:no-preference){
+  .typing i{animation:blink 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+  .m,.chips{animation:in .22s ease-out}
+}
+@keyframes blink{50%{opacity:1}}
+@keyframes in{from{opacity:0;transform:translateY(5px)}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%}
+.chips button{border:2px solid var(--pri);background:var(--surface);color:var(--pri);border-radius:99px;padding:8px 14px;font:600 14.5px/1.15 var(--f-body);text-align:left}
+.chips button.p{background:var(--pri);color:var(--priInk)}
+.composer{flex:none;background:var(--surface);border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px))}
+.composer .bar{display:flex;gap:8px;align-items:flex-end}
+.composer textarea{flex:1;min-width:0;resize:none;border:2px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--bg);max-height:110px;line-height:1.35}
+.composer textarea:focus{outline:none;border-color:var(--pri)}
+.iconbtn{flex:none;width:46px;height:46px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--mut);display:grid;place-items:center}
+.iconbtn.p{background:var(--pri);border-color:var(--pri);color:var(--priInk)}
+.iconbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.attach{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13.5px;color:var(--mut)}
+.attach img{width:46px;height:46px;object-fit:cover;border-radius:10px}
+.attach button{border:0;background:none;color:var(--bad);font-weight:700}
+.chatbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px max(14px,env(safe-area-inset-right,0px)) 8px max(14px,env(safe-area-inset-left,0px));background:var(--sunk);border-bottom:1px solid var(--line);font-size:13px;color:var(--mut)}
+.chatbar b{color:var(--ink)}
+.mode{display:inline-flex;align-items:center;gap:6px}
+.mode i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.mode.off i{background:var(--mut)}
+
+/* ---------- freno de seguridad ---------- */
+.stop{border:2px solid var(--bad);background:var(--surface);border-radius:16px;overflow:hidden;width:100%;max-width:100%;align-self:stretch}
+.stop .stripe{height:12px;background:repeating-linear-gradient(-45deg,var(--acc) 0 12px,#0F1A2E 12px 24px)}
+.stop .in{padding:14px}
+.stop h4{margin:0 0 6px;font:900 22px/1 var(--f-display);font-stretch:118%;color:var(--bad);display:flex;gap:8px;align-items:center}
+.stop h4 svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.stop p{margin:6px 0;font-size:15px}
+.stop .now{background:var(--badSoft);color:var(--bad);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600;margin:10px 0}
+.stop .rule{font-size:12.5px;color:var(--mut);margin-top:6px}
+
+/* ---------- tutorial ---------- */
+.tut{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;align-self:stretch}
+.tut .hd{padding:14px 14px 10px;border-bottom:1px solid var(--line)}
+.tut .hd h4{margin:6px 0 8px;font:800 19px/1.1 var(--f-display);font-stretch:110%}
+.prog{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+.steps{list-style:none;margin:0;padding:6px 0}
+.steps li{display:flex;gap:12px;align-items:center;padding:9px 14px}
+.steps li+li{border-top:1px dashed var(--line)}
+.steps .ic{flex:none;width:40px;height:40px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center}
+.steps label{flex:1;display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer}
+.steps .n{font:700 12px/1 var(--f-mono);color:var(--mut);margin-top:4px}
+.steps input{width:22px;height:22px;flex:none;accent-color:var(--ok);margin:0 0 0 auto}
+.steps li.done span.t{text-decoration:line-through;color:var(--mut)}
+.warn{margin:0 14px 12px;padding:10px 12px;border-radius:10px;background:var(--badSoft);color:var(--bad);font-size:14px;font-weight:600}
+.tut .ft{padding:12px 14px 14px;display:grid;gap:8px;border-top:1px solid var(--line);background:var(--sunk)}
+
+/* ---------- orden de caso ---------- */
+.ticket{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;font-size:14px}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50px;width:16px;height:16px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}
+.ticket::before{left:-9px}.ticket::after{right:-9px}
+.m .ticket::before,.m .ticket::after{background:var(--bg)}
+.ticket .tk{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:700 12px/1 var(--f-mono);color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+.ticket h4{margin:8px 0 12px;font:700 17px/1.25 var(--f-body)}
+.ticket dl{margin:0;padding-top:12px;border-top:2px dashed var(--line);display:grid;grid-template-columns:auto 1fr;gap:6px 12px}
+.ticket dt{font:700 11.5px/1.5 var(--f-mono);color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.ticket dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.ticket .photo{width:64px;height:64px;object-fit:cover;border-radius:8px}
+
+/* ---------- prestadores y pedidos ---------- */
+.offer{display:grid;gap:10px}
+.offer .top2{display:flex;gap:12px;align-items:center}
+.av{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:800 16px/1 var(--f-display);font-stretch:110%;background:var(--priSoft);color:var(--pri)}
+.av.lg{width:64px;height:64px;font-size:22px}
+.price{font:800 22px/1 var(--f-display);font-stretch:108%;font-variant-numeric:tabular-nums}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.quote{font-size:14.5px;color:var(--mut);border-left:3px solid var(--line);padding-left:10px}
+.list{display:grid;gap:10px}
+.jobcard{display:grid;gap:8px;text-align:left;width:100%;color:var(--ink)}
+.jobcard .r1{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.empty{text-align:center;padding:30px 14px;color:var(--mut)}
+.empty svg{width:56px;height:56px;fill:none;stroke:var(--line);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:8px}
+.thread{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.thread .m{font-size:15px}
+.sendrow{display:flex;gap:8px}
+.sendrow input{flex:1;min-width:0;border:2px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--surface)}
+.back{border:0;background:none;color:var(--pri);font-weight:700;padding:0;margin-bottom:8px;display:inline-flex;align-items:center;gap:4px}
+.ratebtns{display:flex;gap:6px}
+.ratebtns button{flex:1;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 0;font:800 18px/1 var(--f-display)}
+.ratebtns button.on{border-color:#E8A400;background:#FFF4CF;color:#5A4000}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat .card b{display:block;font:800 26px/1.05 var(--f-display);font-stretch:108%;font-variant-numeric:tabular-nums}
+.stat .card span{font-size:13px;color:var(--mut)}
+.switch{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.tg{width:52px;height:30px;border-radius:99px;border:0;background:var(--line);position:relative;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s}
+.tg.on{background:var(--ok)}.tg.on::after{left:25px}
+details.offerf{margin-top:4px}
+details.offerf summary{list-style:none;cursor:pointer}
+details.offerf summary::-webkit-details-marker{display:none}
+details.offerf[open] summary{display:none}
+
+/* ---------- materiales ---------- */
+.mat{display:flex;gap:12px;align-items:flex-start}
+.mat .ic{flex:none;width:44px;height:44px;border-radius:10px;background:var(--sunk);color:var(--ink);display:grid;place-items:center}
+.ask{margin-top:6px;font:500 13px/1.4 var(--f-mono);background:var(--sunk);border-radius:8px;padding:6px 8px;display:block}
+.ad{display:flex;gap:12px;align-items:center;border:1px dashed var(--mut);border-radius:var(--r);padding:12px;background:var(--surface)}
+.ad .lg{flex:none;width:44px;height:44px;border-radius:10px;background:var(--acc);color:var(--accInk);display:grid;place-items:center;font:900 18px/1 var(--f-display)}
+.map{display:block;width:100%;height:auto;border-radius:var(--r);border:1px solid var(--line);background:var(--sunk)}
+.map .st{stroke:var(--surface)}
+.map .av2{stroke:var(--line)}
+.map text{font:700 10px var(--f-body);fill:var(--ink)}
+
+/* ---------- hojas y avisos ---------- */
+.scrim{position:absolute;inset:0;background:rgba(8,14,28,.5);display:flex;align-items:flex-end;z-index:20}
+.sheet{width:100%;max-height:88%;overflow-y:auto;background:var(--bg);border-radius:22px 22px 0 0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet .grab{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+.adfull{position:absolute;inset:0;z-index:30;background:#0F1A2E;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px 24px;gap:14px}
+.adfull .big{font:900 40px/1 var(--f-display);font-stretch:120%;color:var(--acc)}
+.adfull .cd{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;font:700 13px/1 var(--f-mono);background:rgba(255,255,255,.12);padding:8px 12px;border-radius:99px}
+#toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 78px);box-shadow:0 8px 24px -8px rgba(0,0,0,.4);z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:700;font-size:14px;max-width:90%;text-align:center}
+.tag svg,.btn svg,.back svg,.hint svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.review{border-top:1px solid var(--line);padding-top:10px}
+.review:first-child{border-top:0;padding-top:0}
+</style>
+</head>
+<body>
+<div class="device" id="device">
+  <header class="top" id="top" hidden>
+    <div class="brand"><svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#FFC93C"/><path d="M14 31 32 16l18 15" fill="none" stroke="#0F1A2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 30v18M42 30v18M22 39h20" fill="none" stroke="#0F1A2E" stroke-width="6" stroke-linecap="round"/></svg>
+      <div style="min-width:0"><h1 id="ht">HandyGo</h1><small id="hs"></small></div></div>
+    <button class="pill" id="hpill" hidden></button>
+  </header>
+  <main id="view"></main>
+  <nav id="nav" hidden></nav>
+  <div id="toast" hidden></div>
+</div>
+<script>
+"use strict";
+/* ============================================================
+   HandyGo · prototipo
+   El chat usa la IA a través de /api/chat (Vercel + Gemini).
+   Si la IA no responde, la app sigue funcionando con reglas.
+   ============================================================ */
+const API_URL = '/api/chat';
+const KEY = 'handygo_proto_v3';
+const $ = s => document.querySelector(s);
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => '$' + Number(n).toLocaleString('es-AR');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+const ini = n => String(n).split(' ').map(x => x[0]).slice(0, 2).join('').toUpperCase();
+const first = n => String(n).split(' ')[0];
+
+/* ---------- íconos ---------- */
+const I = {
+  chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M9 10h6"/>',
+  box:'<path d="M3 9h18v10H3z"/><path d="M8 9V6h8v3"/><path d="M3 13h18"/>',
+  clip:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2.5h6V4"/><path d="M8.5 10h7M8.5 14h7M8.5 18h4"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6.5 8-6.5s7 2 8 6.5"/>',
+  inbox:'<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/>',
+  tool:'<path d="M15 4a5 5 0 00-5.6 6.6L3 17v4h4l6.4-6.4A5 5 0 0019.9 9l-3 3-3-1-1-3z"/>',
+  shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.1"/>',
+  home:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  hard:'<path d="M3 17h18M5 17a7 7 0 0114 0"/><path d="M10 10V6h4v4"/>',
+  cam:'<path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="4"/>',
+  send:'<path d="M4 12l16-8-6 17-3-7z"/><path d="M11 14l9-10"/>',
+  star:'<path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  pin:'<path d="M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  valve:'<circle cx="12" cy="14" r="5"/><path d="M12 9V4M8 4h8M3 14h4M17 14h4"/>',
+  drop:'<path d="M12 3C8 8.5 6 11.5 6 15a6 6 0 0012 0c0-3.5-2-6.5-6-12z"/>',
+  wrench:'<path d="M15 4a5 5 0 00-5.6 6.6L3 17v4h4l6.4-6.4A5 5 0 0019.9 9l-3 3-3-1-1-3z"/>',
+  screw:'<path d="M14 10l7-7"/><path d="M4 20l6-6 4 4-6 6z" transform="translate(0 -3)"/>',
+  tape:'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/><path d="M19 12h3"/>',
+  bucket:'<path d="M5 8h14l-2 13H7z"/><path d="M5 8c0-3 14-3 14 0"/>',
+  power:'<path d="M12 3v8"/><path d="M7 6.5a8 8 0 1010 0"/>',
+  plug:'<path d="M9 3v5M15 3v5M6 8h12v4a6 6 0 01-12 0zM12 18v3"/>',
+  hinge:'<rect x="4" y="3" width="5" height="18" rx="1"/><rect x="15" y="3" width="5" height="18" rx="1"/><path d="M9 7h6M9 17h6"/>',
+  sand:'<rect x="3" y="7" width="18" height="10" rx="1"/><path d="M7 11h.1M11 14h.1M15 11h.1M18 14h.1" stroke-width="3"/>',
+  float:'<circle cx="16" cy="15" r="5"/><path d="M3 7h10l3 3M3 7v4"/>',
+  bulb:'<path d="M9 16c-2.5-2-3.5-4-3.5-6a6.5 6.5 0 0113 0c0 2-1 4-3.5 6v2H9zM9.5 21h5"/>',
+  eye:'<path d="M2 12c3-5 6.5-7 10-7s7 2 10 7c-3 5-6.5 7-10 7s-7-2-10-7z"/><circle cx="12" cy="12" r="3"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3 6-7"/>',
+  shower:'<path d="M5 21V8a4 4 0 018 0"/><path d="M10 11h8l-1 3h-6z"/><path d="M12 17v.1M15 18v.1M18 17v.1"/>',
+  brush:'<path d="M4 20c4 0 6-2 6-5l-3-3c-3 0-3 4-3 8z"/><path d="M10 15l10-10-3-3L7 12"/>',
+  blind:'<rect x="4" y="3" width="16" height="13"/><path d="M4 7h16M4 11h16M12 16v5"/>',
+  knife:'<path d="M3 21l8-8"/><path d="M11 13l9-9 1 4-7 7z"/>',
+  glove:'<path d="M7 21v-6L5 9a1.5 1.5 0 013-1l1 3V4a1.5 1.5 0 013 0v6-7a1.5 1.5 0 013 0v7-5a1.5 1.5 0 013 0v9c0 4-2 7-6 7z"/>',
+  ladder:'<path d="M7 3l-3 18M17 3l3 18M6 8h12M5 13h14M4 18h16"/>',
+  probe:'<path d="M14 3l7 7-9 9-4 1 1-4z"/><path d="M3 21l4-4"/>'
+};
+const ico = (k, cls = '') => `<svg viewBox="0 0 24 24" aria-hidden="true" class="${cls}">${I[k] || I.check}</svg>`;
+const MARK = `<svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#FFC93C"/><path d="M14 31 32 16l18 15" fill="none" stroke="#0F1A2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 30v18M42 30v18M22 39h20" fill="none" stroke="#0F1A2E" stroke-width="6" stroke-linecap="round"/></svg>`;
+
+/* ---------- contenido curado ---------- */
+const RUBROS = ['Plomería','Gas','Electricidad','Carpintería','Albañilería'];
+const BASE = {Plomería:18000, Gas:28000, Electricidad:22000, Carpintería:24000, Albañilería:38000};
+
+// Freno de seguridad: se revisa ANTES de llamar a la IA
+const HARD = [
+  {re:/\bgas\b|garrafa|calef[oó]n|calefactor|estufa a gas|termotanque|anafe|horno a gas|olor a gas|monóxido|monoxido/,
+   k:'Instalación de gas', rubro:'Gas',
+   why:'Las instalaciones y artefactos de gas solo los puede intervenir un gasista matriculado (ENARGAS). Un error puede provocar una fuga o una intoxicación por monóxido de carbono.',
+   now:'Si hay olor a gas: no prendas luces ni fuego, abrí las ventanas, cerrá la llave de paso y salí del lugar.',
+   rule:'Norma NAG-200 · ENARGAS'},
+  {re:/tablero|t[eé]rmica salta|salta la t[eé]rmica|disyuntor|cortocircuito|cables? pelados?|cableado|instalaci[oó]n el[eé]ctrica|chispa|chispazo|olor a quemado|me dio (la )?corriente|me patea|electrocut/,
+   k:'Electricidad compleja', rubro:'Electricidad',
+   why:'Los trabajos en el tablero, el cableado o cualquier cosa que chispea o huele a quemado necesitan un electricista matriculado. El riesgo de descarga o incendio es real.',
+   now:'Si hay chispas u olor a quemado: bajá la térmica general y no toques nada.',
+   rule:'Certificación eléctrica · ENRE / COPIME'},
+  {re:/grieta|rajadura en la pared|fisura|columna|viga|losa|se hunde|se cae (el|la)|desprendimiento|estructur|cielorraso se/,
+   k:'Problema estructural', rubro:'Albañilería',
+   why:'Las grietas, columnas, vigas o losas necesitan una evaluación presencial. Un arreglo superficial puede esconder un problema más grande.',
+   now:'Si la grieta crece o se desprende material: alejate de la zona y avisá a la administración del edificio.',
+   rule:'Evaluación profesional en el lugar'}
+];
+
+const TUT = {
+  canilla:{n:'Canilla que gotea', rubro:'Plomería', lvl:'Fácil', min:20,
+    re:/canilla|grifo|gotea|goteo|cuerito/,
+    syn:'canilla o grifo que gotea con la canilla cerrada',
+    q:'¿Gotea por la boca con la canilla cerrada, o sale agua de la base o de la pared?',
+    o:[['Gotea por la boca, con la canilla cerrada','ok'],['Sale agua de la base o de la pared','pro']],
+    steps:[['valve','Cerrá la llave de paso del agua (la del baño o la general)'],['bucket','Tapá la rejilla de la bacha con un trapo para que no se pierdan piezas'],['screw','Sacá la tapita de la manija y aflojá el tornillo para desarmarla'],['wrench','Con la llave francesa aflojá la tuerca y sacá el cuerito viejo'],['drop','Poné el cuerito nuevo, volvé a armar y apretá sin pasarte'],['check','Abrí la llave de paso despacio y comprobá que no gotee']],
+    mat:[['drop','Cuerito para canilla','“Un cuerito de 1/2 pulgada” (llevá el viejo para comparar)'],['tape','Cinta de teflón','“Cinta de teflón de 1/2”'],['wrench','Llave francesa','“Una llave francesa de 8 pulgadas”']]},
+  inodoro:{n:'Inodoro que pierde agua', rubro:'Plomería', lvl:'Fácil', min:30,
+    re:/inodoro|cisterna|flotante|mochila|depósito del baño|el agua corre sola/,
+    syn:'inodoro, cisterna o mochila donde el agua corre sola',
+    q:'¿Se escucha correr el agua sola dentro de la cisterna?',
+    o:[['Sí, corre sola','ok'],['Hay agua en el piso alrededor','pro']],
+    steps:[['valve','Cerrá la llave de paso del baño'],['eye','Sacá la tapa de la cisterna y mirá el flotante: si está caído o roto, hay que cambiarlo'],['float','Desenroscá el flotante viejo y colocá el nuevo'],['tape','Poné cinta de teflón en la rosca antes de ajustar'],['wrench','Regulá el nivel del agua unos 2 cm por debajo del tubo de rebalse'],['check','Abrí el agua, dejá que llene y verificá que deje de correr']],
+    mat:[['float','Flotante para cisterna','“Un flotante universal para mochila”'],['tape','Cinta de teflón','“Cinta de teflón de 1/2”']]},
+  pileta:{n:'Pileta o bacha tapada', rubro:'Plomería', lvl:'Fácil', min:25,
+    re:/pileta|bacha|sif[oó]n|desag[uü]e|se tap[oó]|tapad[ao]|no baja el agua|no desagota/,
+    syn:'pileta de cocina o bacha tapada que no desagota',
+    q:'¿El agua baja lento o no baja nada?',
+    o:[['Baja lento o no baja','ok'],['Sube agua sucia por otra rejilla','pro']],
+    steps:[['bucket','Poné un balde debajo del sifón (el caño en forma de U)'],['wrench','Aflojá a mano las dos tuercas del sifón y sacalo'],['drop','Vaciá el sifón y limpiá los restos y la rejilla'],['tape','Volvé a armar con las juntas en su lugar, sin forzar'],['check','Abrí la canilla y comprobá que baje bien y no pierda']],
+    mat:[['bucket','Balde','Para recibir el agua del sifón'],['glove','Guantes de goma','“Guantes de látex para limpieza”'],['wrench','Sifón nuevo (si está rajado)','“Un sifón para bacha de 40 mm”']]},
+  ducha:{n:'Ducha que sale con poca presión', rubro:'Plomería', lvl:'Fácil', min:15,
+    re:/ducha|regadera|flor de la ducha|poca presi[oó]n|sarro/,
+    syn:'flor de ducha con poca presión o tapada con sarro',
+    q:'¿Pasa solo en la ducha o en todas las canillas de la casa?',
+    o:[['Solo en la ducha','ok'],['En toda la casa','pro']],
+    steps:[['valve','Cerrá la canilla de la ducha'],['wrench','Desenroscá la flor de la ducha (envolvela con un trapo para no rayarla)'],['bucket','Dejala en remojo con vinagre blanco durante una hora'],['brush','Cepillá los agujeritos con un cepillo de dientes viejo'],['tape','Poné cinta de teflón en la rosca y volvé a colocarla'],['check','Abrí el agua y probá la presión']],
+    mat:[['bucket','Vinagre blanco','En el supermercado, el común de alcohol'],['tape','Cinta de teflón','“Cinta de teflón de 1/2”']]},
+  puerta:{n:'Puerta que roza o no cierra', rubro:'Carpintería', lvl:'Fácil', min:20,
+    re:/puerta|bisagra|no cierra|roza|pestillo|picaporte/,
+    syn:'puerta que roza, está caída o no cierra',
+    q:'¿La puerta roza contra el marco o el pestillo no encaja?',
+    o:[['Roza o está caída','ok'],['La madera está hinchada o rota','pro']],
+    steps:[['eye','Marcá con lápiz en qué parte roza la puerta'],['screw','Ajustá los tornillos de las bisagras'],['hinge','Si un tornillo gira en falso, poné un palillo con cola en el agujero y volvé a atornillar'],['sand','Si sigue rozando, lijá el borde marcado y repasá con barniz'],['check','Abrí y cerrá varias veces para comprobar']],
+    mat:[['screw','Destornillador Phillips','“Un destornillador Phillips número 2”'],['hinge','Tornillos para bisagra','“Tornillos para bisagra de 1½ pulgada”'],['sand','Lija','“Lija al agua grano 80”']]},
+  enchufe:{n:'Enchufe flojo', rubro:'Electricidad', lvl:'Media', min:20,
+    re:/enchufe|tomacorriente|toma (est[aá] )?suelto|toma flojo|no hace contacto/,
+    syn:'enchufe o tomacorriente flojo, sin olor a quemado',
+    q:'¿Tiene olor a quemado, chispas, o está caliente?',
+    o:[['No, solo está flojo','ok'],['Sí, alguna de esas','pro']],
+    steps:[['power','Bajá la térmica del sector donde está el enchufe'],['probe','Comprobá con un buscapolo que no haya tensión'],['screw','Sacá el frente y apretá los tornillos de los cables'],['plug','Volvé a colocar el frente'],['check','Subí la térmica y probá con un aparato']],
+    alert:'Si ves cables quemados o el enchufe está caliente, no sigas: pedí un electricista matriculado.',
+    mat:[['probe','Buscapolo','“Un buscapolo” (destornillador probador de tensión)'],['screw','Destornillador aislado','“Destornillador plano aislado de 1000 V”']]},
+  lampara:{n:'Lámpara que no prende', rubro:'Electricidad', lvl:'Fácil', min:10,
+    re:/l[aá]mpara|foco|bombita|lamparita|no prende la luz|se quem[oó] la luz/,
+    syn:'lámpara, foco o lamparita quemada que no prende',
+    q:'¿Se quemó de golpe, o el portalámparas se ve negro o derretido?',
+    o:[['Se quemó de golpe, el portalámparas está bien','ok'],['Está negro o derretido','pro']],
+    steps:[['power','Bajá la térmica o apagá la llave de luz'],['bulb','Esperá a que se enfríe y desenroscá la lámpara quemada'],['eye','Revisá que el portalámparas no esté negro ni derretido'],['bulb','Enroscá una lámpara nueva con la misma rosca y potencia'],['check','Subí la térmica y probá']],
+    alert:'Si el portalámparas está quemado o la luz sigue sin prender, pedí un electricista matriculado.',
+    mat:[['bulb','Lámpara LED','“Una lámpara LED rosca E27” (o E14 si es la fina)'],['ladder','Escalera firme','Que no se mueva y con traba']]},
+  persiana:{n:'Cinta de persiana cortada', rubro:'Carpintería', lvl:'Media', min:40,
+    re:/persiana|cinta de (la )?persiana|enrollador/,
+    syn:'persiana de enrollar con la cinta cortada o gastada',
+    q:'¿Se cortó la cinta, o la persiana está trabada o rota?',
+    o:[['Se cortó o está deshilachada la cinta','ok'],['Está trabada o rota la persiana','pro']],
+    steps:[['blind','Bajá la persiana del todo y trabala con un destornillador entre las tablillas'],['screw','Sacá la tapa del enrollador de la pared'],['knife','Soltá la cinta vieja del enrollador y del rodillo de arriba'],['tape','Pasá la cinta nueva por los mismos lugares y fijala con su tornillo'],['check','Volvé a tapar y subí y bajá para probar']],
+    mat:[['tape','Cinta para persiana','“Cinta para persiana de 22 mm” (medí la vieja)'],['screw','Destornillador','Plano y Phillips']]}
+};
+Object.entries(TUT).forEach(([id, t]) => t.id = id);
+
+const KIT = [['screw','Destornilladores','Uno plano y uno Phillips'],['wrench','Llave francesa','“De 8 pulgadas” alcanza para casi todo'],['tape','Cinta de teflón','Para sellar roscas de agua'],['probe','Buscapolo','Para verificar que no haya corriente'],['bucket','Balde y trapos','Para cualquier arreglo con agua']];
+
+const FER = [
+  {n:'Ferretería El Tornillo', d:'350 m', x:118, y:82, aliada:true, h:'Abierto · cierra 19:30'},
+  {n:'Sanitarios Medrano', d:'700 m', x:212, y:136, aliada:false, h:'Abierto · cierra 20:00'},
+  {n:'Casa Giménez', d:'1,1 km', x:66, y:168, aliada:true, h:'Cierra en 40 min'}
+];
+
+const PROVS = [
+  {id:'p1', n:'Marcelo Ríos', r:'Plomería', m:'', s:4.8, v:127, y:12, z:'Almagro', resp:'Responde en ~1 h', rev:[['Lucía','Llegó a horario y ya sabía qué traer. Impecable.',5],['Diego','Muy prolijo, explicó todo.',5]]},
+  {id:'p2', n:'Sergio Paz', r:'Plomería', m:'', s:4.6, v:58, y:7, z:'Caballito', resp:'Responde en ~3 h', rev:[['Ana','Buen precio, tardó un poco en confirmar.',4]]},
+  {id:'p3', n:'Hernán Giordano', r:'Gas', m:'Matrícula ENARGAS 8812', s:4.9, v:203, y:18, z:'Palermo', resp:'Responde en ~2 h', rev:[['Martín','Revisó el calefón y dejó todo firmado.',5],['Sofía','Súper confiable, matriculado de verdad.',5]]},
+  {id:'p4', n:'Claudia Ferreyra', r:'Gas', m:'Matrícula ENARGAS 6140', s:4.7, v:84, y:11, z:'Villa Crespo', resp:'Responde en ~4 h', rev:[['Pablo','Muy clara con el presupuesto.',5]]},
+  {id:'p5', n:'Paula Sosa', r:'Electricidad', m:'COPIME 3307', s:4.8, v:91, y:9, z:'Almagro', resp:'Responde en ~1 h', rev:[['Javier','Cambió el tablero en una mañana.',5]]},
+  {id:'p6', n:'Gustavo Lema', r:'Electricidad', m:'COPIME 2981', s:4.5, v:47, y:15, z:'Boedo', resp:'Responde en ~5 h', rev:[['Rocío','Buen trabajo, algo caro.',4]]},
+  {id:'p7', n:'Tomás Duarte', r:'Carpintería', m:'', s:4.6, v:44, y:7, z:'Colegiales', resp:'Responde en ~2 h', rev:[['Vale','Me dejó la puerta como nueva.',5]]},
+  {id:'p8', n:'Nora Acuña', r:'Carpintería', m:'', s:4.4, v:29, y:5, z:'Flores', resp:'Responde en ~6 h', rev:[['Leo','Cumplió con lo acordado.',4]]},
+  {id:'p9', n:'Ricardo Benítez', r:'Albañilería', m:'', s:4.5, v:66, y:21, z:'Balvanera', resp:'Responde en ~3 h', rev:[['Carla','Evaluó la grieta con mucho criterio.',5]]},
+  {id:'p10', n:'Walter Ibarra', r:'Albañilería', m:'', s:4.3, v:38, y:14, z:'Parque Patricios', resp:'Responde en ~1 día', rev:[['Fer','Bien, aunque demoró en empezar.',4]]}
+];
+const DEMO_JOBS = {
+  Plomería:[['Pérdida en el sifón de la cocina','Pileta de cocina con pérdida debajo del sifón. Ya cerró la llave de paso. Siguió la guía pero la junta está rajada.','Siguió la guía de HandyGo, no pudo resolverlo'],['Ducha que gotea con la canilla cerrada','Ducha que gotea por la flor. Cambió el cuerito y sigue goteando.','Cambió el cuerito']],
+  Gas:[['Calefón que se apaga solo','Calefón que se apaga a los pocos minutos. Derivado por seguridad, sin pasos.','Ninguno · derivado por seguridad'],['Revisión de estufa antes del invierno','Pide revisión preventiva de una estufa de tiro balanceado.','Ninguno · derivado por seguridad']],
+  Electricidad:[['Salta la térmica al usar el horno eléctrico','Salta la térmica de la cocina al prender el horno. Derivado por seguridad.','Ninguno · derivado por seguridad']],
+  Carpintería:[['Placard con puertas descolgadas','Puertas corredizas de placard que se salen del riel.','Ajustó los tornillos, sigue igual']],
+  Albañilería:[['Grieta en pared del living','Grieta diagonal de unos 40 cm que creció en el último mes. Derivado por seguridad.','Ninguno · derivado por seguridad']]
+};
+const CLIENTS = ['Camila Rodríguez','Julián Pereyra','Martina López','Nicolás Ferrari'];
+
+/* ---------- estado ---------- */
+let DB = {users:[], provs:[], jobs:[], cur:null};
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.users) DB = s; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) {} };
+let V = {tab:'chat', job:null};
+let CH = null;           // conversación actual
+let chatEl = null;       // nodo del chat (se conserva al cambiar de pestaña)
+let AI_OK = null;        // null = sin probar, true / false
+let pendingImg = null;
+
+const me = () => DB.cur && (DB.cur.t === 'u' ? DB.users : DB.provs).find(x => x.id === DB.cur.id);
+const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', rev:p.rev.map(r => [r.from, r.c || '', r.s])} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
+const avg = p => p.rev && p.rev.length ? +(p.rev.reduce((a, r) => a + r.s, 0) / p.rev.length).toFixed(1) : 'Nuevo';
+
+/* ---------- utilidades de interfaz ---------- */
+const ACT = {};
+document.addEventListener('click', e => { const a = e.target.closest('[data-a]'); if (a && ACT[a.dataset.a]) { e.preventDefault(); ACT[a.dataset.a](a.dataset.v, a, e); } });
+function toast(t) { const d = $('#toast'); d.textContent = t; d.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => d.hidden = true, 2600); }
+function view(html, flush) { const v = $('#view'); v.className = flush ? 'flush' : ''; v.innerHTML = html; v.scrollTop = 0; }
+const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
+function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
+function closeSheet() { const s = $('#scrim'); if (s) s.remove(); }
+ACT.close = closeSheet;
+const stars = s => typeof s === 'number' ? `<span class="stars" aria-label="${s} de 5">★</span> <b class="num">${String(s).replace('.', ',')}</b>` : `<span class="tag b">Nuevo</span>`;
+
+/* ============================================================
+   BIENVENIDA, REGISTRO E INGRESO
+   ============================================================ */
+function welcome() {
+  $('#top').hidden = true; $('#nav').hidden = true; document.body.className = '';
+  view(`<div class="hero">${MARK}
+      <h2>Primero entendelo. <em>Después decidí.</em></h2>
+      <p>Te ayudamos a resolver los problemas de tu casa y, si hace falta, te conectamos con alguien de confianza.</p></div>
+    <div class="pillars">
+      <div class="pillar"><span class="ico">${ico('chat')}</span><div><b>Diagnóstico guiado</b><span>Un chat que te hace las preguntas justas y te muestra cómo arreglarlo.</span></div></div>
+      <div class="pillar"><span class="ico r">${ico('alert')}</span><div><b>Límites de seguridad</b><span>En gas, electricidad compleja o estructura, te frenamos y te derivamos.</span></div></div>
+      <div class="pillar"><span class="ico v">${ico('shield')}</span><div><b>Prestadores verificados</b><span>Identidad, matrícula, reseñas y el caso ya explicado.</span></div></div>
+    </div>
+    <div class="stack">
+      <button class="btn p w" data-a="role">Crear cuenta</button>
+      <button class="btn w" data-a="login">Ya tengo cuenta</button>
+      <button class="btn g w" data-a="demo">Entrar con una cuenta de prueba</button>
+    </div>`);
+}
+ACT.welcome = welcome;
+ACT.role = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button>
+  <h2>¿Cómo vas a usar HandyGo?</h2><p class="mut">La app cambia según tu perfil.</p>
+  <div class="stack" style="margin-top:16px">
+    <button class="role" data-a="reg" data-v="u"><span class="ico">${ico('home')}</span><div><b>Necesito ayuda en casa</b><span>Diagnóstico con IA, tutoriales y presupuestos de profesionales.</span></div></button>
+    <button class="role" data-a="reg" data-v="p"><span class="ico y">${ico('tool')}</span><div><b>Soy prestador de servicios</b><span>Recibí pedidos con el problema ya explicado y construí tu reputación.</span></div></button>
+  </div>`);
+let REG = {t:'u', dni:false};
+ACT.reg = t => {
+  REG = {t, dni:false};
+  view(`<button class="back" data-a="role">${ico('back')} Volver</button>
+   <h2>${t === 'u' ? 'Creá tu cuenta' : 'Creá tu perfil de prestador'}</h2>
+   <div class="stack" style="margin-top:14px">
+   ${field('nombre', 'Nombre y apellido', 'text', 'Ej: Sofía Martínez')}
+   ${field('mail', 'Mail', 'email', 'vos@mail.com')}
+   ${field('pass', 'Contraseña', 'password', '', 'Mínimo 6 caracteres')}
+   ${field('zona', t === 'u' ? 'Barrio' : 'Zona donde trabajás', 'text', 'Ej: Almagro, CABA', 'Por ahora HandyGo funciona solo en CABA')}
+   ${t === 'p' ? `<label class="f" for="rubro">Rubro<select id="rubro">${RUBROS.map(r => `<option>${r}</option>`).join('')}</select></label>
+     ${field('mat', 'Matrícula', 'text', 'N.º de matrícula', 'Obligatoria para Gas y Electricidad')}
+     ${field('anios', 'Años de experiencia', 'number', '5')}
+     <button class="btn w" id="dniBtn" data-a="dni">${ico('shield')} Verificar identidad con DNI</button>` : ''}
+   <div class="err" id="err" role="alert"></div>
+   <button class="btn p w" data-a="doReg">Crear cuenta</button></div>`);
+};
+ACT.dni = (v, b) => { b.disabled = true; b.textContent = 'Validando con RENAPER…'; setTimeout(() => { REG.dni = true; b.disabled = false; b.className = 'btn w'; b.style.cssText = 'border-color:var(--ok);color:var(--ok)'; b.innerHTML = ico('check') + ' Identidad verificada'; }, 1200); };
+ACT.doReg = () => {
+  const val = id => ($('#' + id)?.value || '').trim();
+  const d = {id:uid(), nombre:val('nombre'), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona')};
+  let e = '';
+  if (!d.nombre || !d.zona) e = 'Completá tu nombre y tu barrio.';
+  else if (!/^\S+@\S+\.\S+$/.test(d.mail)) e = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
+  else if (d.pass.length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
+  else if ([...DB.users, ...DB.provs].some(x => x.mail === d.mail)) e = 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
+  if (!e && REG.t === 'p') {
+    d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0;
+    if (['Gas', 'Electricidad'].includes(d.rubro) && !d.mat) e = `Para ${d.rubro} la matrícula es obligatoria.`;
+    else if (!REG.dni) e = 'Verificá tu identidad con DNI para continuar.';
+  }
+  if (e) { $('#err').textContent = e; return; }
+  if (REG.t === 'u') { d.cr = 5; d.resueltos = 0; DB.users.push(d); }
+  else { d.rev = []; d.on = true; d.desc = []; DB.provs.push(d); seedProvJobs(d); }
+  DB.cur = {t:REG.t, id:d.id}; save();
+  if (REG.t === 'p') { view(`<div class="empty" style="padding-top:80px">${ico('shield')}<h2>Revisando tu perfil…</h2><p>Validamos tu identidad${d.mat ? ' y tu matrícula' : ''}.</p></div>`); setTimeout(enter, 1500); }
+  else enter();
+};
+function seedProvJobs(p) {
+  (DEMO_JOBS[p.rubro] || []).forEach(([caso, desc, intentos], i) => DB.jobs.push({
+    id:'d' + uid(), uid:'demo', un:CLIENTS[i % CLIENTS.length], zona:['Almagro','Caballito','Palermo'][i % 3], caso, rubro:p.rubro,
+    hard:/seguridad/.test(intentos), code:code(), resp:[], desc, intentos, img:null, estado:'nuevo', offers:[], msgs:[], ts:Date.now() - (i + 1) * 3600e3}));
+}
+ACT.login = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button><h2>Ingresá</h2>
+  <div class="stack" style="margin-top:14px">${field('mail', 'Mail', 'email')}${field('pass', 'Contraseña', 'password')}
+  <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button></div>`);
+ACT.doLogin = () => {
+  const m = $('#mail').value.trim().toLowerCase(), p = $('#pass').value;
+  const u = DB.users.find(x => x.mail === m && x.pass === p), pr = DB.provs.find(x => x.mail === m && x.pass === p);
+  if (!u && !pr) { $('#err').textContent = 'El mail o la contraseña no coinciden. Revisalos e intentá de nuevo.'; return; }
+  DB.cur = {t:u ? 'u' : 'p', id:(u || pr).id}; save(); enter();
+};
+ACT.demo = () => sheet(`<h2>Cuentas de prueba</h2><p class="mut small">Para mostrar la app sin registrarse. Podés cambiar de cuenta desde Perfil.</p>
+  <div class="stack" style="margin-top:12px">
+   <button class="role" data-a="demoAs" data-v="u"><span class="ico">${ico('home')}</span><div><b>Sofía Martínez</b><span>Usuaria · Almagro</span></div></button>
+   <button class="role" data-a="demoAs" data-v="Plomería"><span class="ico y">${ico('tool')}</span><div><b>Daniel Ortiz</b><span>Prestador · Plomería</span></div></button>
+   <button class="role" data-a="demoAs" data-v="Gas"><span class="ico y">${ico('tool')}</span><div><b>Graciela Paz</b><span>Prestadora · Gas · matriculada</span></div></button>
+  </div>`);
+ACT.demoAs = v => {
+  closeSheet();
+  if (v === 'u') {
+    let u = DB.users.find(x => x.mail === 'sofia@demo.com');
+    if (!u) { u = {id:uid(), nombre:'Sofía Martínez', mail:'sofia@demo.com', pass:'demo123', zona:'Almagro, CABA', cr:5, resueltos:2}; DB.users.push(u); }
+    DB.cur = {t:'u', id:u.id};
+  } else {
+    const mail = v === 'Gas' ? 'graciela@demo.com' : 'daniel@demo.com';
+    let p = DB.provs.find(x => x.mail === mail);
+    if (!p) { p = {id:uid(), nombre:v === 'Gas' ? 'Graciela Paz' : 'Daniel Ortiz', mail, pass:'demo123', zona:'Almagro y alrededores', rubro:v, mat:v === 'Gas' ? 'ENARGAS 7731' : '', anios:v === 'Gas' ? 16 : 9, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[]}; DB.provs.push(p); seedProvJobs(p); }
+    DB.cur = {t:'p', id:p.id};
+  }
+  save(); enter();
+};
+ACT.logout = () => { DB.cur = null; CH = null; chatEl = null; save(); welcome(); };
+ACT.reset = () => sheet(`<h2>Reiniciar el prototipo</h2><p class="mut">Se borran todas las cuentas, pedidos y conversaciones guardadas en este dispositivo.</p>
+  <div class="stack" style="margin-top:14px"><button class="btn bad w" data-a="doReset">Borrar todo y empezar de cero</button><button class="btn g w" data-a="close">Cancelar</button></div>`);
+ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} DB = {users:[], provs:[], jobs:[], cur:null}; CH = null; chatEl = null; closeSheet(); welcome(); };
+
+/* ============================================================
+   ESTRUCTURA DE LA APP
+   ============================================================ */
+const TABS = {u:[['chat', 'Asistente', 'chat'], ['mat', 'Materiales', 'box'], ['ped', 'Pedidos', 'clip'], ['per', 'Perfil', 'user']],
+              p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['per', 'Perfil', 'user']]};
+function enter() { V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null; render(); }
+ACT.tab = t => { V.tab = t; V.job = null; render(); };
+function badge(t) {
+  const c = DB.cur;
+  if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && j.estado === 'nuevo' && j.offers.length).length;
+  if (c.t === 'p' && t === 'ped') return provQueue().length;
+  return 0;
+}
+function render() {
+  const c = DB.cur; if (!c) return welcome();
+  const u = me(); if (!u) { DB.cur = null; return welcome(); }
+  document.body.className = c.t === 'p' ? 'prov' : '';
+  $('#top').hidden = false;
+  $('#ht').textContent = 'HandyGo';
+  $('#hs').textContent = c.t === 'u' ? 'Hola, ' + first(u.nombre) : 'Prestador · ' + u.rubro;
+  const hp = $('#hpill'); hp.hidden = false;
+  if (c.t === 'u') { hp.className = 'pill'; hp.dataset.a = 'credits'; hp.innerHTML = `<span class="num">${u.cr}</span> consultas`; }
+  else { hp.className = 'pill' + (u.on ? '' : ' off'); hp.dataset.a = 'tog'; hp.textContent = u.on ? '● Disponible' : '○ No disponible'; }
+  renderNav();
+  if (V.job) return vJob();
+  ({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer})[V.tab]();
+}
+function renderNav() {
+  const c = DB.cur; if (!c) return;
+  const n = $('#nav'); n.hidden = false;
+  n.innerHTML = TABS[c.t].map(([k, l, i]) => { const b = badge(k); return `<button data-a="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}" aria-current="${V.tab === k ? 'page' : 'false'}">${ico(i)}<span>${l}</span>${b ? `<span class="dot num">${b}</span>` : ''}</button>`; }).join('');
+}
+function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML = `<span class="num">${me().cr}</span> consultas`; }
+
+/* ============================================================
+   ASISTENTE (chat)
+   ============================================================ */
+function newCase() { CH = {h:[], started:false, caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, code:code()}; }
+function code() { return 'HG-' + Math.random().toString(36).slice(2, 6).toUpperCase(); }
+function vChat() {
+  if (!chatEl) {
+    newCase();
+    chatEl = document.createElement('div');
+    chatEl.style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0';
+    chatEl.innerHTML = `<div class="chatbar"><span class="mode" id="mode"><i></i> <span>Asistente HandyGo</span></span><button class="btn sm g" data-a="newCase" style="padding:5px 10px">Nueva consulta</button></div>
+      <div id="log" aria-live="polite"></div>
+      <div class="composer"><div class="attach" id="att" hidden></div>
+      <div class="bar"><label class="iconbtn" title="Adjuntar foto" for="pic" style="cursor:pointer">${ico('cam')}<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adjuntar foto</span></label>
+      <input type="file" id="pic" accept="image/*" hidden>
+      <textarea id="inp" rows="1" placeholder="Contanos qué se rompió…"></textarea>
+      <button class="iconbtn p" data-a="send" aria-label="Enviar">${ico('send')}</button></div></div>`;
+    view('', true); $('#view').appendChild(chatEl);
+    const inp = chatEl.querySelector('#inp');
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ACT.send(); } });
+    inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 110) + 'px'; });
+    chatEl.querySelector('#pic').addEventListener('change', onPic);
+    greet();
+  } else { view('', true); $('#view').appendChild(chatEl); }
+  setMode(); scrollLog();
+}
+function setMode() { const m = chatEl && chatEl.querySelector('#mode'); if (!m) return; m.className = 'mode' + (AI_OK === false ? ' off' : ''); m.querySelector('span').textContent = AI_OK === false ? 'Asistente · modo sin conexión' : 'Asistente HandyGo · IA'; }
+const LOG = () => chatEl.querySelector('#log');
+function scrollLog() { const l = chatEl && chatEl.querySelector('#log'); if (l) requestAnimationFrame(() => l.scrollTop = l.scrollHeight); }
+function say(html, cls = '', who = true) {
+  const l = LOG();
+  if (who && !/\bu\b/.test(cls) && !cls.includes('sys')) { const last = l.lastElementChild; if (!last || !last.classList.contains('bot')) { const w = document.createElement('div'); w.className = 'who'; w.innerHTML = MARK + 'HandyGo'; l.appendChild(w); } }
+  const d = document.createElement('div'); d.className = 'm ' + cls + (/\bu\b/.test(cls) || cls.includes('sys') ? '' : ' bot'); d.innerHTML = html; l.appendChild(d); scrollLog(); return d;
+}
+function block(html) { const l = LOG(); const d = document.createElement('div'); d.className = 'bot'; d.style.cssText = 'align-self:stretch;display:flex'; d.innerHTML = html; l.appendChild(d); scrollLog(); return d; }
+function chips(list) { const d = document.createElement('div'); d.className = 'chips bot'; list.forEach(([t, f, c]) => { const b = document.createElement('button'); b.textContent = t; if (c) b.className = c; b.onclick = () => { d.remove(); f(); }; d.appendChild(b); }); LOG().appendChild(d); scrollLog(); }
+function greet() {
+  say(`Hola, ${esc(first(me().nombre))}. Contame qué se rompió (si querés, mandame una foto) y te ayudo a entenderlo antes de que gastes plata. Si es peligroso, te lo digo y te conecto con un profesional.`);
+  chips([['La canilla gotea', () => go('La canilla gotea')], ['El inodoro pierde agua', () => go('El inodoro pierde agua, se escucha correr')], ['Huelo gas en la cocina', () => go('Huelo gas en la cocina')], ['Tengo una grieta en la pared', () => go('Tengo una grieta en la pared')]]);
+}
+ACT.newCase = () => { LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
+ACT.credits = () => {
+  const u = me();
+  sheet(`<span class="eyebrow">Plan gratuito</span><h2><span class="num">${u.cr}</span> consultas disponibles</h2>
+   <p class="mut">Cada problema nuevo que le contás al asistente usa una consulta. Las respuestas dentro de la misma consulta no se cuentan.</p>
+   <div class="stack" style="margin-top:14px">
+    <button class="btn y w" data-a="watchAd">Ver un anuncio · +2 consultas</button>
+    <button class="btn w" data-a="buy" data-v="10">Comprar 10 consultas · $1.500</button>
+    <button class="btn w" data-a="buy" data-v="30">Comprar 30 consultas · $3.500</button>
+    <p class="hint">Compra simulada: en el prototipo no se cobra nada.</p></div>`);
+};
+ACT.watchAd = () => {
+  closeSheet();
+  const a = document.createElement('div'); a.className = 'adfull';
+  a.innerHTML = `<span class="cd num" id="cd">Anuncio · 5</span><span class="eyebrow" style="color:#fff;opacity:.7">Comercio aliado</span>
+   <div class="big">Ferretería<br>El Tornillo</div><p style="max-width:28ch;opacity:.9;margin:0">10% de descuento en cueritos, flotantes y teflón mostrando HandyGo en el mostrador.</p>
+   <p style="font:700 13px/1 var(--f-mono);opacity:.7;margin:0">Av. Medrano 845 · Almagro</p>`;
+  $('#device').appendChild(a);
+  let n = 5; const t = setInterval(() => { n--; a.querySelector('#cd').textContent = 'Anuncio · ' + n; if (n <= 0) { clearInterval(t); a.remove(); addCredits(2); } }, 1000);
+};
+ACT.buy = n => { closeSheet(); addCredits(+n); };
+function addCredits(n) { const u = me(); u.cr += n; save(); render(); toast(`Sumaste ${n} consultas`); }
+
+function onPic(e) {
+  const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { const img = new Image(); img.onload = () => {
+      const max = 1024, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      pendingImg = c.toDataURL('image/jpeg', .8);
+      const at = chatEl.querySelector('#att'); at.hidden = false; at.innerHTML = `<img src="${pendingImg}" alt="Foto adjunta"><span>Foto lista para enviar</span><button data-a="clearPic">Quitar</button>`;
+    }; img.src = r.result; };
+  r.readAsDataURL(f);
+}
+function clearPic() { pendingImg = null; const at = chatEl && chatEl.querySelector('#att'); if (at) { at.hidden = true; at.innerHTML = ''; } }
+ACT.clearPic = clearPic;
+ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImg) return; i.value = ''; i.style.height = 'auto'; go(t, false); };
+
+function go(txt, isReply) {
+  const img = isReply ? null : pendingImg; clearPic();
+  LOG().querySelectorAll('.chips').forEach(c => c.remove());
+  say((img ? `<img src="${img}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
+  const u = me();
+  if (!CH.started) {
+    if (u.cr <= 0) {
+      say('<b>Se terminaron tus consultas gratis.</b> Mirá un anuncio para sumar 2 o comprá un paquete.');
+      chips([['Ver anuncio · +2', () => ACT.watchAd(), 'p'], ['Ver opciones', () => ACT.credits()]]);
+      return;
+    }
+    u.cr--; CH.started = true; save(); refreshHeader();
+  }
+  if (img) CH.img = img;
+  CH.resp.push(txt || '(foto)');
+  const t = (txt || '').toLowerCase();
+  const h = HARD.find(x => x.re.test(t));
+  if (h) return hardStop(h);
+  ai(txt, img, t);
+}
+
+/* ---------- IA ---------- */
+async function ai(txt, img, t) {
+  CH.h.push({role:'user', text:txt || 'Te mando una foto del problema.', image:img ? {mime:'image/jpeg', data:img.split(',')[1]} : null});
+  if (AI_OK === false) return rules(t, img);
+  const th = say('<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>', '', false);
+  try {
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 25000);
+    const res = await fetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal,
+      body:JSON.stringify({messages:CH.h.slice(-12), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))})});
+    clearTimeout(to);
+    const d = await res.json().catch(() => null);
+    if (!res.ok || !d || !d.ok) throw new Error((d && d.error) || 'api');
+    th.remove(); if (AI_OK !== true) { AI_OK = true; setMode(); }
+    handleAI(d.reply, t);
+  } catch (e) {
+    th.remove(); console.warn('IA no disponible:', e);
+    AI_OK = false; setMode(); CH.h.pop();
+    say('Ahora no me puedo conectar con la IA, así que te ayudo con mis guías revisadas.', 'sys', false);
+    rules(t, img);
+  }
+}
+function handleAI(r, t) {
+  const msg = esc(r.mensaje || '¿Me contás un poco más?');
+  CH.h.push({role:'assistant', text:r.mensaje || ''});
+  if (r.caso) CH.caso = r.caso;
+  if (RUBROS.includes(r.rubro)) CH.rubro = r.rubro;
+  const tut = TUT[r.tutorial];
+  if (r.estado === 'derivar' && r.riesgo) {
+    const h = HARD.find(x => x.rubro === r.rubro);
+    return hardStop({k:r.caso || (h ? h.k : 'Trabajo riesgoso'), rubro:RUBROS.includes(r.rubro) ? r.rubro : 'Albañilería', why:r.mensaje || (h ? h.why : ''),
+      now:h ? h.now : 'Si hay riesgo inmediato, alejate de la zona y cortá la llave general.', rule:h ? h.rule : 'Intervención profesional'});
+  }
+  if (r.estado === 'preguntar') { say(msg); if ((r.opciones || []).length) chips(r.opciones.slice(0, 3).map(o => [String(o), () => go(String(o), true)])); return; }
+  if (r.estado === 'guiar' && tut) { say(msg); return showTut(tut); }
+  if (r.estado === 'guiar' && !tut) { say('Para esto todavía no tengo una guía revisada por HandyGo y no quiero improvisar. Lo mejor es que lo vea un profesional.'); return derivar(); }
+  if (r.estado === 'derivar') { say(msg); return derivar(); }
+  say(msg);
+}
+
+/* ---------- reglas (sin conexión) ---------- */
+function rules(t, img) {
+  if (CH.pend) { // respuesta a la pregunta de acotado
+    const tut = TUT[CH.pend]; CH.pend = null;
+    const o = tut.o.find(x => x[0].toLowerCase() === t);
+    if (o && o[1] === 'ok') return showTut(tut);
+    if (o && o[1] === 'pro') { say('Con eso, <b>conviene que lo vea un profesional</b>.'); return derivar(); }
+  }
+  const tut = Object.values(TUT).find(x => x.re.test(t));
+  if (!tut) {
+    say(img && !t ? 'Recibí la foto. Para orientarte sin conexión necesito que me cuentes con palabras qué pasa, por ejemplo “la canilla gotea” o “la puerta no cierra”.'
+                 : 'No llegué a entender qué se rompió. Probá con otras palabras, por ejemplo “la canilla gotea”, “la puerta roza”, “el inodoro pierde agua” o “se quemó la lámpara”.');
+    return;
+  }
+  CH.caso = tut.n; CH.rubro = tut.rubro; CH.pend = tut.id;
+  say(`Entendido: <b>${esc(tut.n)}</b>. Una pregunta para acotar:<br>${esc(tut.q)}`);
+  chips(tut.o.map(([lbl]) => [lbl, () => go(lbl, true)]));
+}
+
+/* ---------- freno de seguridad ---------- */
+function hardStop(h) {
+  CH.hard = true; CH.caso = CH.caso || h.k; CH.rubro = h.rubro; CH.intentos = 'Ninguno · derivado por seguridad, sin pasos';
+  block(`<div class="stop" role="alert"><div class="stripe"></div><div class="in">
+    <h4>${ico('alert')} Frená acá</h4>
+    <p><b>${esc(h.k)}.</b> No te voy a dar pasos para hacerlo por tu cuenta.</p>
+    <p>${esc(h.why)}</p>
+    <div class="now">${esc(h.now || 'Ante cualquier riesgo, alejate de la zona y cortá la llave general.')}</div>
+    <div class="rule">${esc(h.rule || '')}</div></div></div>`);
+  const lbl = `Pedir un ${h.rubro === 'Gas' ? 'gasista matriculado' : h.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}`;
+  chips([[lbl, () => { say(lbl, 'u'); derivar(); }, 'p'], ['Igual quiero hacerlo yo', () => insist(h)]]);
+}
+function insist(h) {
+  say('Igual quiero hacerlo yo', 'u');
+  say('Te entiendo, pero en este caso no te voy a dar instrucciones: el riesgo para vos y para tu casa es alto. Lo que sí puedo hacer es armarte el resumen para que el profesional llegue sabiendo qué pasa y te cobre solo lo necesario.');
+  chips([['Armar el resumen y pedir presupuesto', () => { say('Armar el resumen y pedir presupuesto', 'u'); derivar(); }, 'p']]);
+}
+
+/* ---------- tutorial ---------- */
+function showTut(tut) {
+  CH.tut = tut.id; CH.caso = tut.n; CH.rubro = tut.rubro; CH.hard = false; CH.pend = null;
+  const id = 't' + uid();
+  const b = block(`<div class="tut" id="${id}"><div class="hd"><span class="eyebrow">Guía paso a paso · revisada por HandyGo</span><h4>${esc(tut.n)}</h4>
+     <div class="row" style="margin-bottom:10px"><span class="tag v">${tut.lvl}</span><span class="tag">≈ ${tut.min} min</span><span class="tag">${tut.steps.length} pasos</span></div>
+     <div class="prog"><i></i></div></div>
+   <ol class="steps">${tut.steps.map(([ic, tx], i) => `<li><span class="ic">${ico(ic)}</span><label><span class="n num">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(tx)}</span><input type="checkbox" aria-label="Paso ${i + 1} hecho"></label></li>`).join('')}</ol>
+   ${tut.alert ? `<div class="warn">⚠ ${esc(tut.alert)}</div>` : ''}
+   <div class="ft"><button class="btn sm" data-a="tab" data-v="mat">${ico('box')} Ver materiales y ferreterías cerca</button></div></div>`);
+  const box = b.querySelector('.tut');
+  box.addEventListener('change', () => {
+    const all = box.querySelectorAll('input'), done = [...all].filter(x => x.checked);
+    box.querySelectorAll('li').forEach((li, i) => li.classList.toggle('done', all[i].checked));
+    box.querySelector('.prog i').style.width = (done.length / all.length * 100) + '%';
+  });
+  chips([['Lo resolví', () => resolved(), 'p'], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
+}
+function resolved() {
+  say('Lo resolví', 'u');
+  const u = me(); u.resueltos = (u.resueltos || 0) + 1; save();
+  say(`¡Bien ahí! Te ahorraste una visita de ${CH.rubro ? CH.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[CH.rubro] || 18000)}). Si vuelve a pasar, acá estoy.`);
+  chips([['Nueva consulta', () => ACT.newCase()]]);
+}
+
+/* ---------- derivación ---------- */
+function summary() {
+  return {caso:CH.caso || 'Problema del hogar', rubro:CH.rubro || 'Plomería', hard:CH.hard, code:CH.code,
+    desc:CH.resp.filter(x => x && x !== '(foto)').join(' · ') || 'Ver foto adjunta',
+    intentos:CH.intentos || (CH.tut ? 'Siguió la guía de HandyGo' : 'Ninguno'), img:CH.img};
+}
+function ticketHTML(s, extra = '') {
+  return `<div class="ticket"><div class="tk"><span>Orden de caso</span><span>${esc(s.code)}</span></div>
+   <h4>${esc(s.caso)}</h4>
+   <dl><dt>Rubro</dt><dd>${esc(s.rubro)}${s.hard ? ' · <span class="tag r">Requiere matriculado</span>' : ''}</dd>
+   <dt>Relato</dt><dd>${esc(s.desc)}</dd>
+   <dt>Intentos</dt><dd>${esc(s.intentos)}</dd>
+   ${s.zona ? `<dt>Zona</dt><dd>${esc(s.zona)}</dd>` : ''}
+   ${s.img ? `<dt>Foto</dt><dd><img class="photo" src="${s.img}" alt="Foto del problema"></dd>` : ''}${extra}</dl></div>`;
+}
+function derivar() {
+  if (!CH.rubro) CH.rubro = 'Plomería';
+  say('Te armé un resumen del caso. El prestador lo recibe antes de presupuestar, así no empieza de cero.');
+  const s = summary(); s.zona = me().zona;
+  block(`<div style="width:100%">${ticketHTML(s)}</div>`);
+  chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p']]);
+}
+function pedir() {
+  const u = me(), s = summary();
+  const j = {id:'j' + uid(), uid:u.id, un:u.nombre, zona:u.zona, caso:s.caso, rubro:s.rubro, hard:s.hard, code:s.code, desc:s.desc, intentos:s.intentos, img:s.img, estado:'nuevo', offers:[], msgs:[], ts:Date.now()};
+  DB.jobs.unshift(j); save();
+  say(`Listo. Enviamos tu caso <b class="num">${esc(j.code)}</b> a prestadores verificados de ${esc(j.rubro.toLowerCase())} en tu zona. Los presupuestos van a aparecer en <b>Pedidos</b>.`);
+  chips([['Ver mi pedido', () => { V.tab = 'ped'; V.job = j.id; render(); }, 'p'], ['Nueva consulta', () => ACT.newCase()]]);
+  const ps = PROVS.filter(p => p.r === j.rubro);
+  const msgs = ['Hola, vi tu caso. Con el resumen ya sé qué llevar. Puedo pasar mañana a la mañana.', 'Buenas, puedo ir esta semana. El precio incluye la visita y la mano de obra.'];
+  ps.forEach((p, i) => setTimeout(() => {
+    const jj = DB.jobs.find(x => x.id === j.id); if (!jj || jj.estado !== 'nuevo') return;
+    jj.offers.push({pid:p.id, precio:BASE[j.rubro] + (i ? 4000 : 0) + Math.round(Math.random() * 3) * 1000, msg:msgs[i % 2], when:i ? 'Jueves 14 a 18 h' : 'Mañana 9 a 12 h'}); save();
+    toast('Nuevo presupuesto de ' + p.n);
+    if (DB.cur && DB.cur.t === 'u' && ((V.tab === 'ped' && !V.job) || V.job === jj.id)) render(); else if (DB.cur) renderNav();
+  }, 2500 + i * 2800));
+}
+
+/* ============================================================
+   MATERIALES
+   ============================================================ */
+function vMat() {
+  const tut = CH && CH.tut ? TUT[CH.tut] : null;
+  const items = tut ? tut.mat : KIT;
+  view(`<span class="eyebrow">${tut ? 'Para tu arreglo' : 'Kit básico de la casa'}</span>
+   <h2>${tut ? esc(tut.n) : 'Lo que conviene tener'}</h2>
+   <p class="mut small">${tut ? 'Qué comprar y cómo pedirlo en el mostrador.' : 'Cuando el asistente te guíe en un arreglo, acá vas a ver la lista exacta.'}</p>
+   <div class="list" style="margin-top:12px">${items.map(([ic, n, a]) => `<div class="card mat"><span class="ic">${ico(ic)}</span><div style="min-width:0"><h3>${esc(n)}</h3><span class="ask">${esc(a)}</span></div></div>`).join('')}</div>
+   <div class="sec"><span class="eyebrow">Ferreterías cerca · ${esc(me().zona.split(',')[0])}</span>${mapSVG()}
+    <div class="list" style="margin-top:10px">${FER.map(f => `<div class="card"><div class="jobcard"><div class="r1"><h3>${esc(f.n)}</h3><span class="num mut small" style="white-space:nowrap">${f.d}</span></div><div class="meta">${f.aliada ? '<span class="tag y">Aliada HandyGo · 10% off</span>' : ''}<span class="tag">${esc(f.h)}</span></div></div></div>`).join('')}</div></div>
+   <div class="sec"><div class="ad"><span class="lg">T</span><div style="min-width:0"><span class="eyebrow">Publicidad</span><div><b>Tigre Sanitarios</b> · Flotantes y sifones con garantía de 2 años.</div></div></div></div>`);
+}
+function mapSVG() {
+  return `<svg class="map" viewBox="0 0 300 220" role="img" aria-label="Mapa de ejemplo con ferreterías cercanas">
+   <rect width="300" height="220" fill="var(--sunk)"/>
+   ${[0,1,2,3,4,5,6].map(i => `<path class="st" d="M${-10 + i * 50} 0V220" stroke-width="10"/>`).join('')}
+   ${[0,1,2,3,4].map(i => `<path class="st" d="M0 ${20 + i * 48}H300" stroke-width="10"/>`).join('')}
+   <path d="M-10 230L310 -10" stroke="var(--surface)" stroke-width="18"/>
+   <rect x="148" y="150" width="54" height="40" rx="4" fill="var(--okSoft)"/>
+   <text x="150" y="214" fill="var(--mut)">Av. Medrano</text>
+   <circle cx="150" cy="112" r="16" fill="var(--pri)" opacity=".18"/><circle cx="150" cy="112" r="7" fill="var(--pri)" stroke="var(--surface)" stroke-width="3"/>
+   <text x="160" y="104">Vos</text>
+   ${FER.map(f => `<g><path d="M${f.x} ${f.y + 12}c-6-7-10-11-10-16a10 10 0 0120 0c0 5-4 9-10 16z" fill="${f.aliada ? 'var(--acc)' : 'var(--ink)'}" stroke="var(--surface)" stroke-width="2"/><circle cx="${f.x}" cy="${f.y - 4}" r="3.5" fill="var(--surface)"/><text x="${f.x + 12}" y="${f.y}">${esc(f.n.split(' ').slice(-1)[0])}</text></g>`).join('')}
+  </svg>`;
+}
+
+/* ============================================================
+   PEDIDOS · USUARIO
+   ============================================================ */
+const EST = {nuevo:'Buscando presupuestos', aceptado:'En curso', finalizado:'Finalizado'};
+function emptyState(icon, t, s) { return `<div class="empty">${ico(icon)}<h3 style="color:var(--ink)">${t}</h3><p class="small">${s}</p></div>`; }
+function vPedU() {
+  const js = DB.jobs.filter(j => j.uid === DB.cur.id);
+  view(`<h2>Mis pedidos</h2>
+   ${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
+      <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small num" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
+      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'b' : ''}">${EST[j.estado]}</span>
+      ${j.estado === 'nuevo' && j.offers.length ? `<span class="tag y">${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''}</span>` : ''}${j.hard ? '<span class="tag r">Matriculado</span>' : ''}</div></button>`).join('')}</div>`
+   : emptyState('clip', 'Todavía no pediste nada', 'Contale tu problema al asistente. Si hace falta un profesional, el pedido aparece acá.')}`);
+}
+ACT.job = id => { V.job = id; render(); };
+ACT.backJob = () => { V.job = null; render(); };
+function vJob() {
+  const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
+  const isU = DB.cur.t === 'u';
+  let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
+    <div class="row" style="margin-bottom:10px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'b' : ''}">${EST[j.estado]}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
+    ${ticketHTML({...j, zona:j.zona})}`;
+  if (isU && j.estado === 'nuevo') {
+    h += `<div class="sec"><span class="eyebrow">Presupuestos recibidos</span>` + (j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
+       <div class="top2"><span class="av">${ini(p.n)}</span><div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas · ${p.y} años</span></div></div><span class="price">${money(o.precio)}</span></div>
+       <div class="meta"><span class="tag v">${ico('shield')} Identidad verificada</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : ''}<span class="tag">${esc(o.when)}</span></div>
+       <div class="quote">“${esc(o.msg)}”</div>
+       <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
+      : `<div class="card" style="display:flex;gap:12px;align-items:center"><span class="typing"><i></i><i></i><i></i></span><span class="mut small">Los prestadores están viendo tu caso…</span></div>`) + `</div>`;
+  }
+  if (j.estado !== 'nuevo') {
+    const p = provInfo(j.prov);
+    h += `<div class="sec"><span class="eyebrow">${isU ? 'Tu prestador' : 'Tu cliente'}</span><div class="card offer"><div class="top2">
+      <span class="av">${ini(isU ? p.n : j.un)}</span><div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
+      ${isU ? `<button class="btn g sm" data-a="prof" data-v="${j.prov}">Ver perfil</button>` : ''}</div>
+      <div class="thread">${j.msgs.map(m => `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
+      ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
+      <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2"')} Toda la comunicación queda dentro de HandyGo.</p></div>`;
+    if (j.estado === 'aceptado') h += `<div class="sec">${isU ? `<button class="btn p w" data-a="fin">El trabajo está terminado</button>` : `<button class="btn p w" data-a="fin">Marcar como finalizado</button>`}</div>`;
+    if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec card"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
+      <div class="ratebtns" style="margin:10px 0">${[1, 2, 3, 4, 5].map(n => `<button data-a="rate" data-v="${n}" aria-label="${n} estrellas">${n}★</button>`).join('')}</div>
+      <label class="f" for="rc">Comentario (opcional)<textarea id="rc" rows="2" placeholder="Ej: llegó a horario y explicó todo"></textarea></label>
+      <button class="btn p w" style="margin-top:10px" data-a="sendRev">Publicar reseña</button></div>`;
+    if (j.review) h += `<div class="sec card"><b>Calificaste ${'★'.repeat(j.review.s)}</b>${j.review.c ? `<p class="mut small" style="margin:6px 0 0">“${esc(j.review.c)}”</p>` : ''}</div>`;
+  }
+  if (!isU && j.estado === 'nuevo') { const mine = j.offers.find(o => o.pid === DB.cur.id);
+    h += mine ? `<div class="sec card"><h3>Presupuesto enviado · <span class="num">${money(mine.precio)}</span></h3><p class="mut small" style="margin:4px 0 0">${esc(mine.when)} · esperando la respuesta del cliente.</p></div>` : offerForm(j); }
+  view(h);
+  const mi = $('#mi'); if (mi) mi.addEventListener('keydown', e => { if (e.key === 'Enter') ACT.msg(); });
+}
+let RATE = 0;
+ACT.rate = (n, b) => { RATE = +n; b.parentNode.querySelectorAll('button').forEach((x, i) => x.classList.toggle('on', i < RATE)); };
+ACT.sendRev = () => {
+  if (!RATE) { toast('Elegí de 1 a 5 estrellas'); return; }
+  const j = DB.jobs.find(x => x.id === V.job); j.review = {s:RATE, c:($('#rc').value || '').trim()};
+  const p = DB.provs.find(x => x.id === j.prov); if (p) p.rev.push({s:RATE, from:first(me().nombre), c:j.review.c});
+  RATE = 0; save(); toast('Reseña publicada'); render();
+};
+ACT.prof = id => {
+  const p = provInfo(id);
+  sheet(`<div class="top2" style="display:flex;gap:14px;align-items:center"><span class="av lg">${ini(p.n)}</span><div><h2 style="margin:0">${esc(p.n)}</h2><span class="mut">${esc(p.r)} · ${esc(p.z || 'CABA')}</span></div></div>
+   <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : '<span class="tag">Oficio sin matrícula obligatoria</span>'}</div>
+   <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
+   <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}</p>
+   <span class="eyebrow">Reseñas</span><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
+   <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
+};
+ACT.acc = i => {
+  const j = DB.jobs.find(x => x.id === V.job), o = j.offers[+i];
+  Object.assign(j, {prov:o.pid, precio:o.precio, estado:'aceptado'});
+  j.msgs.push({f:'p', t:`¡Gracias por elegirme! Quedamos ${o.when.toLowerCase()}. Ya leí el resumen del caso.`});
+  save(); toast('Presupuesto aceptado'); render();
+};
+ACT.msg = () => {
+  const j = DB.jobs.find(x => x.id === V.job), i = $('#mi'), t = i.value.trim(); if (!t) return;
+  j.msgs.push({f:DB.cur.t, t}); save(); render();
+  const auto = DB.cur.t === 'u' ? PROVS.some(p => p.id === j.prov) : j.uid === 'demo';
+  if (auto) setTimeout(() => { j.msgs.push({f:DB.cur.t === 'u' ? 'p' : 'u', t:DB.cur.t === 'u' ? 'Perfecto, te confirmo. Cualquier cosa me escribís por acá.' : 'Dale, te espero. Gracias.'}); save(); if (V.job === j.id) render(); }, 1400);
+};
+ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); j.estado = 'finalizado'; j.fin = Date.now(); save(); toast('Trabajo finalizado'); render(); };
+
+/* ============================================================
+   PRESTADOR
+   ============================================================ */
+function provQueue() { const p = me(); if (!p || DB.cur.t !== 'p') return []; return DB.jobs.filter(j => j.estado === 'nuevo' && j.rubro === p.rubro && !j.offers.some(o => o.pid === p.id) && !(p.desc || []).includes(j.id)); }
+function vPedP() {
+  const p = me(), js = provQueue();
+  view(`<h2>Pedidos nuevos</h2><p class="mut small">Clientes de tu zona que necesitan ${esc(p.rubro.toLowerCase())}, con el problema ya explicado.</p>
+   ${!p.on ? '<div class="card" style="margin-top:10px;border-color:var(--acc)"><b>Estás como “No disponible”.</b><div class="small mut">No vas a recibir pedidos nuevos hasta que te actives.</div></div>' : ''}
+   ${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
+     <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
+     <div class="small mut">${esc(j.desc)}</div>
+     <div class="meta"><span class="tag">${ico('pin').replace('<svg', '<svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2"')} ${esc(j.zona.split(',')[0])}</span>${j.hard ? '<span class="tag r">Derivado por seguridad</span>' : ''}${j.img ? '<span class="tag b">Con foto</span>' : ''}</div></button>`).join('')}</div>`
+   : emptyState('inbox', 'No hay pedidos nuevos', 'Cuando un vecino de tu zona necesite ' + esc(p.rubro.toLowerCase()) + ', te llega acá con el resumen del caso.')}`);
+}
+function offerForm(j) {
+  return `<div class="sec card"><h3>Enviar presupuesto</h3><p class="mut small">El cliente compara precio, reseñas y disponibilidad.</p>
+   <div class="stack" style="margin-top:10px">${field('pr', 'Precio (ARS)', 'number', String(BASE[j.rubro] || 20000))}
+   <label class="f" for="pw">Disponibilidad<select id="pw"><option>Mañana 9 a 12 h</option><option>Mañana 14 a 18 h</option><option>Esta semana</option><option>Urgente · hoy</option></select></label>
+   ${field('pm', 'Mensaje para el cliente', 'text', 'Ej: con el resumen ya sé qué llevar')}
+   <button class="btn p w" data-a="offer">Enviar presupuesto</button><button class="btn g w" data-a="desc">Descartar pedido</button></div></div>`;
+}
+ACT.offer = () => {
+  const j = DB.jobs.find(x => x.id === V.job), pr = +$('#pr').value;
+  if (!pr || pr < 1000) { toast('Ingresá un precio válido'); return; }
+  const o = {pid:DB.cur.id, precio:pr, when:$('#pw').value, msg:$('#pm').value.trim() || 'Hola, leí el resumen y puedo tomar el trabajo.'};
+  j.offers.push(o); save(); toast('Presupuesto enviado'); V.job = null; V.tab = 'trab'; render();
+  if (j.uid === 'demo') setTimeout(() => {
+    Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. ¿Te queda bien ' + o.when.toLowerCase() + '?'}); save();
+    toast(first(j.un) + ' aceptó tu presupuesto'); if (DB.cur && DB.cur.t === 'p') { if (V.job && V.job !== j.id) renderNav(); else render(); }
+  }, 3000);
+};
+ACT.desc = () => { const p = me(); (p.desc = p.desc || []).push(V.job); save(); V.job = null; render(); };
+function vTrab() {
+  const p = me(), js = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
+  view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? EST[j.estado] : (j.estado === 'nuevo' ? 'Presupuesto enviado' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
+     <div class="r1"><h3>${esc(j.caso)}</h3><span class="price" style="font-size:17px">${j.prov === p.id ? money(j.precio) : ''}</span></div>
+     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span></div></button>`; }).join('')}</div>`
+   : emptyState('clip', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.')}`);
+}
+ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
+
+/* ============================================================
+   PERFIL
+   ============================================================ */
+function vPer() {
+  const u = me(), t = DB.cur.t;
+  if (t === 'u') {
+    const js = DB.jobs.filter(j => j.uid === u.id);
+    view(`<div style="display:flex;gap:14px;align-items:center"><span class="av lg">${ini(u.nombre)}</span><div style="min-width:0"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
+     <div class="stat" style="margin-top:16px"><div class="card"><b>${u.resueltos || 0}</b><span>problemas resueltos por tu cuenta</span></div><div class="card"><b>${js.length}</b><span>pedidos a profesionales</span></div></div>
+     <div class="card" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
+     ${tail()}`);
+  } else {
+    const fin = DB.jobs.filter(j => j.prov === u.id && j.estado === 'finalizado');
+    view(`<div style="display:flex;gap:14px;align-items:center"><span class="av lg" style="background:var(--acc);color:var(--accInk)">${ini(u.nombre)}</span><div style="min-width:0"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
+     <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}<span class="tag">${u.anios} años de experiencia</span></div>
+     <div class="card switch"><div><b>Disponible para pedidos</b><div class="small mut">Los clientes te ven en las búsquedas</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
+     <div class="stat" style="margin-top:10px"><div class="card"><b>${avg(u) === 'Nuevo' ? '—' : String(avg(u)).replace('.', ',')}</b><span>${u.rev.length} reseñas</span></div><div class="card"><b class="num" style="font-size:21px">${money(fin.reduce((a, j) => a + j.precio, 0))}</b><span>cobrado en ${fin.length} trabajo${fin.length === 1 ? '' : 's'}</span></div></div>
+     ${u.rev.length ? `<div class="sec"><span class="eyebrow">Tus reseñas</span><div class="card stack">${u.rev.slice().reverse().map(r => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>`).join('')}</div></div>` : ''}
+     ${tail()}`);
+  }
+}
+function tail() {
+  return `<div class="sec stack"><button class="btn w" data-a="logout">Cerrar sesión</button><button class="btn g w" data-a="reset">Reiniciar el prototipo</button>
+   <p class="hint" style="text-align:center">HandyGo · prototipo de TIF · UADE 2026</p></div>`;
+}
+
+/* ---------- arranque ---------- */
+render();
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude|claudeusercontent/.test(location.hostname)) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
