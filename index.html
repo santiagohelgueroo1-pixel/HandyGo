@@ -684,7 +684,8 @@ const CLIENTS = ['Camila Rodríguez','Julián Pereyra','Martina López','Nicolá
 /* ---------- estado ---------- */
 let DB = {users:[], provs:[], jobs:[], cur:null};
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.users) DB = s; } catch (e) {}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { if (typeof toast === 'function') toast('No queda espacio en el dispositivo para guardar más fotos'); } };
+let CLOUD = false;
+const save = () => { if (CLOUD) return cloudSave(); try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { if (typeof toast === 'function') toast('No queda espacio en el dispositivo para guardar más fotos'); } };
 let V = {tab:'chat', job:null};
 let CH = null;           // conversación actual
 let chatEl = null;       // nodo del chat (se conserva al cambiar de pestaña)
@@ -729,7 +730,10 @@ const agendaOf = pid => { const s = PROVS.find(x => x.id === pid); if (s) return
 const STAGES = ['Presupuesto aceptado', 'En camino', 'Trabajando', 'Terminado'];
 const STAGE_SUB = ['Quedó confirmado el turno', 'El prestador salió para tu casa', 'El prestador está haciendo el trabajo', 'El trabajo quedó listo'];
 const stageName = j => j.estado === 'nuevo' ? 'Buscando presupuestos' : STAGES[j.etapa || 0];
-function advance(jid, k) {
+const isUnseen = j => !!(j.unseenBy && DB.cur && j.unseenBy[DB.cur.id]);
+function markUnseen(j, who) { if (!who || (who === DB.cur.id && V.job === j.id)) return; j.unseenBy = {...(j.unseenBy || {}), [who]:true}; }
+function clearUnseen(j) { if (isUnseen(j)) { const u = {...j.unseenBy}; delete u[DB.cur.id]; j.unseenBy = u; return true; } return false; }
+function advance(jid, k, actor) {
   const j = DB.jobs.find(x => x.id === jid); if (!j || j.estado === 'finalizado' || (j.etapa || 0) >= k) return;
   j.etapa = k; j.hist = j.hist || {}; j.hist[k] = Date.now();
   const pn = first(provInfo(j.prov).n), un = first(j.un);
@@ -737,13 +741,13 @@ function advance(jid, k) {
   j.msgs.push({f:'s', t:txt});
   if (k === 3) { j.estado = 'finalizado'; j.fin = Date.now(); }
   const viewing = V.job === j.id;
-  if (!viewing) j.unseen = true;
+  const act = actor || DB.cur.id; markUnseen(j, act === j.uid ? j.prov : j.uid);
   save();
   if (DB.cur && DB.cur.t === 'u' && DB.cur.id === j.uid) toast(k === 3 ? 'Trabajo terminado: contanos cómo te fue' : txt);
   if (DB.cur && DB.cur.t === 'p' && DB.cur.id === j.prov && k === 3 && j.uid === 'demo') toast(`${un} confirmó que el trabajo terminó`);
   if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
 }
-function demoProgress(jid) { setTimeout(() => advance(jid, 1), 7000); setTimeout(() => advance(jid, 2), 16000); }
+function demoProgress(jid) { const pv = () => (DB.jobs.find(x => x.id === jid) || {}).prov; setTimeout(() => advance(jid, 1, pv()), 7000); setTimeout(() => advance(jid, 2, pv()), 16000); }
 function trackHTML(j) {
   const e = j.estado === 'finalizado' ? 3 : (j.etapa || 0), h = j.hist || {};
   const tm = ts => ts ? new Date(ts).toLocaleString('es-AR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
@@ -849,20 +853,21 @@ ACT.reg = t => {
    <button class="btn p w" data-a="doReg">Crear cuenta</button></div>`);
 };
 ACT.dni = (v, b) => { b.disabled = true; b.textContent = 'Validando con RENAPER…'; setTimeout(() => { REG.dni = true; b.disabled = false; b.className = 'btn w'; b.style.cssText = 'border-color:var(--ok);color:var(--ok)'; b.innerHTML = ico('check') + ' Identidad verificada'; }, 1200); };
-ACT.doReg = () => {
+ACT.doReg = async (v, btn) => {
   const val = id => ($('#' + id)?.value || '').trim();
   const d = {id:uid(), nombre:val('nombre'), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona'), tel:val('tel'), foto:REG.foto || null};
   let e = '';
   if (!d.nombre || !d.zona) e = 'Completá tu nombre y tu barrio.';
   else if (!/^\S+@\S+\.\S+$/.test(d.mail)) e = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
   else if (d.pass.length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
-  else if ([...DB.users, ...DB.provs].some(x => x.mail === d.mail)) e = 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
+  else if (!CLOUD && [...DB.users, ...DB.provs].some(x => x.mail === d.mail)) e = 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
   if (!e && REG.t === 'p') {
     d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0; d.bio = val('bio'); d.esp = []; d.port = []; d.hor = 'Lunes a viernes, 8 a 18 h'; d.agenda = defAgenda();
     if (['Gas', 'Electricidad'].includes(d.rubro) && !d.mat) e = `Para ${d.rubro} la matrícula es obligatoria.`;
     else if (!REG.dni) e = 'Verificá tu identidad con DNI para continuar.';
   }
   if (e) { $('#err').textContent = e; return; }
+  if (CLOUD) return cloudRegister(d, btn);
   if (REG.t === 'u') { d.cr = 5; d.resueltos = 0; DB.users.push(d); }
   else { d.rev = []; d.on = true; d.desc = []; DB.provs.push(d); seedProvJobs(d); }
   DB.cur = {t:REG.t, id:d.id}; save();
@@ -877,8 +882,9 @@ function seedProvJobs(p) {
 ACT.login = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button><h2>Ingresá</h2>
   <div class="stack" style="margin-top:14px">${field('mail', 'Mail', 'email')}${field('pass', 'Contraseña', 'password')}
   <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button></div>`);
-ACT.doLogin = () => {
+ACT.doLogin = (v, btn) => {
   const m = $('#mail').value.trim().toLowerCase(), p = $('#pass').value;
+  if (CLOUD) return cloudLogin(m, p, btn);
   const u = DB.users.find(x => x.mail === m && x.pass === p), pr = DB.provs.find(x => x.mail === m && x.pass === p);
   if (!u && !pr) { $('#err').textContent = 'El mail o la contraseña no coinciden. Revisalos e intentá de nuevo.'; return; }
   DB.cur = {t:u ? 'u' : 'p', id:(u || pr).id}; save(); enter();
@@ -903,6 +909,7 @@ function seedSofia(u) {
 }
 ACT.demoAs = v => {
   closeSheet();
+  if (CLOUD) return cloudDemo(v);
   if (v === 'u') {
     let u = DB.users.find(x => x.mail === 'sofia@demo.com');
     if (!u) { u = {id:uid(), nombre:'Sofía Martínez', mail:'sofia@demo.com', pass:'demo123', zona:'Almagro, CABA', cr:5, resueltos:2}; DB.users.push(u); }
@@ -916,10 +923,10 @@ ACT.demoAs = v => {
   }
   save(); enter();
 };
-ACT.logout = () => { $('#toast').hidden = true; clearTimeout(toast.t); DB.cur = null; CH = null; chatEl = null; save(); welcome(); };
-ACT.reset = () => sheet(`<h2>Borrar datos del dispositivo</h2><p class="mut">Se borran todas las cuentas, pedidos y conversaciones guardadas en este dispositivo.</p>
+ACT.logout = () => { $('#toast').hidden = true; clearTimeout(toast.t); if (CLOUD) return cloudLogout(); DB.cur = null; CH = null; chatEl = null; save(); welcome(); };
+ACT.reset = () => sheet(`<h2>Borrar datos del dispositivo</h2><p class="mut">${CLOUD ? 'Se cierra la sesión y se borra lo guardado en este celular. Tu cuenta, tus pedidos y tus mensajes siguen guardados en HandyGo.' : 'Se borran todas las cuentas, pedidos y conversaciones guardadas en este dispositivo.'}</p>
   <div class="stack" style="margin-top:14px"><button class="btn bad w" data-a="doReset">Borrar todo y empezar de cero</button><button class="btn g w" data-a="close">Cancelar</button></div>`);
-ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} DB = {users:[], provs:[], jobs:[], cur:null}; CH = null; chatEl = null; closeSheet(); welcome(); };
+ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLOUD) { closeSheet(); return cloudLogout(); } DB = {users:[], provs:[], jobs:[], cur:null}; CH = null; chatEl = null; closeSheet(); welcome(); };
 
 /* ============================================================
    ESTRUCTURA DE LA APP
@@ -930,7 +937,7 @@ function enter() { V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = n
 ACT.tab = t => { V.tab = t; V.job = null; V.edit = false; render(); };
 function badge(t) {
   const c = DB.cur;
-  if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || j.unseen)).length;
+  if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
   if (c.t === 'u' && t === 'casa') return pendingTasks(me()).length;
   if (c.t === 'p' && t === 'agenda') return DB.jobs.filter(j => j.prov === c.id && j.turno && j.estado !== 'finalizado').length;
   if (c.t === 'p' && t === 'ped') return provQueue().length;
@@ -1346,6 +1353,7 @@ function derivar() {
 function pedir() {
   const u = me(), s = summary();
   const j = {id:'j' + uid(), uid:u.id, un:u.nombre, zona:u.zona, caso:s.caso, rubro:s.rubro, hard:s.hard, code:s.code, desc:s.desc, intentos:s.intentos, img:s.img, estado:'nuevo', offers:[], msgs:[], ts:Date.now()};
+  if (CLOUD && j.img) { const raw = j.img; j.img = null; upPhoto(raw).then(url => { j.img = url; save(); }); }
   DB.jobs.unshift(j); save();
   say(`Listo. Enviamos tu caso <b class="num">${esc(j.code)}</b> a prestadores verificados de ${esc(j.rubro.toLowerCase())} en tu zona. Los presupuestos van a aparecer en <b>Pedidos</b>.`);
   chips([['Ver mi pedido', () => { V.tab = 'ped'; V.job = j.id; render(); }, 'p'], ['Nueva consulta', () => ACT.newCase()]]);
@@ -1459,7 +1467,7 @@ function vPedU() {
   view(`<h2>Mis pedidos</h2>
    ${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
       <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small num" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
-      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${j.unseen ? '<span class="tag r">Novedades</span>' : ''}
+      <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${isUnseen(j) ? '<span class="tag r">Novedades</span>' : ''}
       ${j.turno && j.estado === 'aceptado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}
       ${j.estado === 'nuevo' && j.offers.length ? `<span class="tag y">${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''}</span>` : ''}${j.hard ? '<span class="tag r">Matriculado</span>' : ''}</div></button>`).join('')}</div>`
    : emptyState('clip', 'Todavía no pediste nada', 'Contale tu problema al asistente. Si hace falta un profesional, el pedido aparece acá.')}`);
@@ -1469,7 +1477,7 @@ ACT.backJob = () => { V.job = null; render(); };
 function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
-  if (j.unseen && ((isU && j.uid === DB.cur.id) || (!isU && j.prov === DB.cur.id))) { j.unseen = false; save(); renderNav(); }
+  if (clearUnseen(j)) { save(); renderNav(); }
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
     <div class="row" style="margin-bottom:10px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado !== 'nuevo' ? `<div class="card" style="margin-bottom:12px"><span class="eyebrow" style="display:block;margin-bottom:10px">Seguimiento</span>${trackHTML(j)}</div>` : ''}
@@ -1513,7 +1521,8 @@ ACT.rate = (n, b) => { RATE = +n; b.parentNode.querySelectorAll('button').forEac
 ACT.sendRev = () => {
   if (!RATE) { toast('Elegí de 1 a 5 estrellas'); return; }
   const j = DB.jobs.find(x => x.id === V.job); j.review = {s:RATE, c:($('#rc').value || '').trim()};
-  const p = DB.provs.find(x => x.id === j.prov); if (p) p.rev.push({s:RATE, from:first(me().nombre), c:j.review.c});
+  const p = DB.provs.find(x => x.id === j.prov); if (p) { p.rev = p.rev || []; p.rev.push({s:RATE, from:first(me().nombre), c:j.review.c}); }
+  if (CLOUD && isUuid(j.prov)) SB.rpc('add_review', {p_prov:j.prov, p_rev:{s:RATE, from:first(me().nombre), c:j.review.c}}).then(r => { if (r.error) console.warn(r.error); });
   RATE = 0; save(); toast('Reseña publicada'); render();
 };
 ACT.prof = id => {
@@ -1575,7 +1584,7 @@ function compareHTML(j, B) {
 }
 ACT.msg = () => {
   const j = DB.jobs.find(x => x.id === V.job), i = $('#mi'), t = i.value.trim(); if (!t) return;
-  j.msgs.push({f:DB.cur.t, t}); save(); render();
+  j.msgs.push({f:DB.cur.t, t}); markUnseen(j, DB.cur.t === 'u' ? j.prov : j.uid); save(); render();
   const auto = DB.cur.t === 'u' ? PROVS.some(p => p.id === j.prov) : j.uid === 'demo';
   if (auto) setTimeout(() => { j.msgs.push({f:DB.cur.t === 'u' ? 'p' : 'u', t:DB.cur.t === 'u' ? 'Perfecto, te confirmo. Cualquier cosa me escribís por acá.' : 'Dale, te espero. Gracias.'}); save(); if (V.job === j.id) render(); }, 1400);
 };
@@ -1613,7 +1622,7 @@ ACT.offer = () => {
   j.offers.push(o); save(); toast('Presupuesto enviado'); V.job = null; V.tab = 'trab'; render();
   if (j.uid === 'demo') setTimeout(() => {
     Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr, etapa:0, hist:{0:Date.now()}, turno:sl[0], when:slotLabel(sl[0])});
-    j.msgs.push({f:'s', t:'Presupuesto aceptado · turno ' + slotLabel(sl[0])}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. Te espero el ' + slotLabel(sl[0]).toLowerCase() + '.'}); j.unseen = true; save();
+    j.msgs.push({f:'s', t:'Presupuesto aceptado · turno ' + slotLabel(sl[0])}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. Te espero el ' + slotLabel(sl[0]).toLowerCase() + '.'}); markUnseen(j, DB.cur.id); save();
     toast(first(j.un) + ' aceptó tu presupuesto'); if (DB.cur && DB.cur.t === 'p') { if (V.job && V.job !== j.id) renderNav(); else render(); }
   }, 3000);
 };
@@ -1622,7 +1631,7 @@ function vTrab() {
   const p = me(), js = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
   view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? stageName(j) : (j.estado === 'nuevo' ? 'Presupuesto enviado' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
      <div class="r1"><h3>${esc(j.caso)}</h3><span class="price" style="font-size:17px">${j.prov === p.id ? money(j.precio) : ''}</span></div>
-     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span>${j.prov === p.id && j.turno && j.estado !== 'finalizado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}${j.unseen && j.prov === p.id ? '<span class="tag r">Novedades</span>' : ''}</div></button>`; }).join('')}</div>`
+     <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span>${j.prov === p.id && j.turno && j.estado !== 'finalizado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}${isUnseen(j) && j.prov === p.id ? '<span class="tag r">Novedades</span>' : ''}</div></button>`; }).join('')}</div>`
    : emptyState('clip', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.')}`);
 }
 ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
@@ -1736,8 +1745,10 @@ function vEdit() {
     <button class="btn p w" data-a="saveEdit">Guardar cambios</button>
     <button class="btn g w" data-a="cancelEdit">Cancelar</button></div>`);
 }
-ACT.saveEdit = () => {
+ACT.saveEdit = async (x, btn) => {
   const u = me(), p = DB.cur.t === 'p', v = id => ($('#' + id)?.value || '').trim();
+  if (CLOUD && EDIT) { if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
+    EDIT.foto = await upPhoto(EDIT.foto); EDIT.port = await Promise.all((EDIT.port || []).map(upPhoto)); if (btn) { btn.disabled = false; btn.textContent = 'Guardar cambios'; } }
   if (!v('e_nombre') || !v('e_zona')) { $('#err').textContent = 'Completá tu nombre y tu zona.'; return; }
   if (p && ['Gas', 'Electricidad'].includes(u.rubro) && !v('e_mat')) { $('#err').textContent = `Para ${u.rubro} la matrícula es obligatoria.`; return; }
   Object.assign(u, {nombre:v('e_nombre'), tel:v('e_tel'), zona:v('e_zona'), foto:EDIT.foto});
@@ -1751,8 +1762,202 @@ function tail() {
    <p class="hint" style="text-align:center">HandyGo · Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>`;
 }
 
+/* ============================================================
+   NUBE · Supabase (cuentas reales, pedidos compartidos, chat en tiempo real)
+   Si no está configurado, la app funciona como antes, guardando en el dispositivo.
+   ============================================================ */
+let SB = null, SNAP = {jobs:{}, me:null}, SYNC_T = null, RT = null, SYNCING = null;
+const isUuid = x => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(x || ''));
+const snapJob = j => { SNAP.jobs[j.id] = JSON.stringify(j); };
+function loadSB() {
+  if (window.supabase && window.supabase.createClient) return Promise.resolve();
+  return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+}
+function busy(btn, txt) { if (!btn) return () => {}; const old = btn.innerHTML; btn.disabled = true; btn.textContent = txt; return () => { btn.disabled = false; btn.innerHTML = old; }; }
+function authError(e) {
+  const m = String((e && e.message) || e || '');
+  if (/already registered|already exists/i.test(m)) return 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
+  if (/invalid login/i.test(m)) return 'El mail o la contraseña no coinciden. Revisalos e intentá de nuevo.';
+  if (/not confirmed/i.test(m)) return 'Todavía no confirmaste tu mail. Buscá el mail de HandyGo (fijate en spam) y tocá el link.';
+  if (/rate limit|too many/i.test(m)) return 'Hubo demasiados intentos seguidos. Esperá unos minutos y probá de nuevo.';
+  if (/password/i.test(m)) return 'La contraseña no es válida: usá al menos 6 caracteres.';
+  return 'No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.';
+}
+async function cloudLoad() {
+  const { data:{ user } } = await SB.auth.getUser(); if (!user) return false;
+  const [pr, js] = await Promise.all([SB.from('profiles').select('id,tipo,data'), SB.from('jobs').select('id,data').order('updated_at', {ascending:false})]);
+  if (pr.error) throw pr.error; if (js.error) throw js.error;
+  const mine = pr.data.find(x => x.id === user.id); if (!mine) throw new Error('Falta el perfil');
+  DB = {users:[], provs:[], jobs:[], cur:{t:mine.tipo, id:user.id}};
+  pr.data.forEach(addProfile);
+  DB.jobs = js.data.map(r => ({...r.data, id:r.id}));
+  SNAP = {jobs:{}, me:null}; DB.jobs.forEach(snapJob); SNAP.me = JSON.stringify(me());
+  subscribe();
+  return true;
+}
+function addProfile(r) {
+  const o = {...r.data, id:r.id}; if (r.tipo === 'p') { o.rev = o.rev || []; o.agenda = o.agenda || defAgenda(); }
+  const list = r.tipo === 'p' ? DB.provs : DB.users, i = list.findIndex(x => x.id === r.id);
+  if (i >= 0) { if (r.id !== DB.cur.id) list[i] = o; } else list.push(o);
+}
+async function ensureProfiles(j) {
+  const ids = [j.prov, ...(j.offers || []).map(o => o.pid), j.uid].filter(x => isUuid(x) && x !== DB.cur.id && ![...DB.users, ...DB.provs].some(p => p.id === x));
+  if (!ids.length) return false;
+  const r = await SB.from('profiles').select('id,tipo,data').in('id', [...new Set(ids)]);
+  if (r.error || !r.data.length) return false; r.data.forEach(addProfile); return true;
+}
+function subscribe() {
+  if (RT) SB.removeChannel(RT);
+  RT = SB.channel('jobs-' + DB.cur.id).on('postgres_changes', {event:'*', schema:'public', table:'jobs'}, onJobChange).subscribe();
+}
+function onJobChange(ev) {
+  if (!DB.cur) return;
+  if (ev.eventType === 'DELETE') { const id = ev.old && ev.old.id; DB.jobs = DB.jobs.filter(j => j.id !== id); delete SNAP.jobs[id]; return softRender(); }
+  const row = ev.new; if (!row || !row.data) return;
+  const inc = {...row.data, id:row.id}, incS = JSON.stringify(inc), cur = DB.jobs.find(j => j.id === row.id);
+  if (cur) {
+    if (JSON.stringify(cur) !== SNAP.jobs[cur.id]) return;           // hay cambios propios sin guardar: los mandamos primero
+    if (SNAP.jobs[cur.id] === incS) return;
+    const old = JSON.parse(SNAP.jobs[cur.id]);
+    Object.keys(cur).forEach(k => delete cur[k]); Object.assign(cur, inc); snapJob(cur);
+    notify(old, cur);
+  } else {
+    DB.jobs.unshift(inc); snapJob(inc);
+    if (DB.cur.t === 'p' && inc.estado === 'nuevo' && inc.uid !== 'demo') toast('Nuevo pedido de ' + String(inc.rubro || '').toLowerCase() + ' en tu zona');
+  }
+  ensureProfiles(cur || inc).then(ch => { if (ch) softRender(); });
+  softRender();
+}
+function notify(old, j) {
+  const mine = DB.cur.t === 'u' ? j.uid === DB.cur.id : j.prov === DB.cur.id;
+  if ((j.offers || []).length > (old.offers || []).length && DB.cur.t === 'u' && j.uid === DB.cur.id) { const o = j.offers[j.offers.length - 1]; if (isUuid(o.pid)) toast('Nuevo presupuesto de ' + first(provInfo(o.pid).n)); }
+  if ((j.msgs || []).length > (old.msgs || []).length && mine) {
+    const m = j.msgs[j.msgs.length - 1];
+    if (m.f === 's') toast(m.t); else if (m.f !== DB.cur.t) toast('Mensaje nuevo de ' + first(DB.cur.t === 'u' ? provInfo(j.prov).n : j.un));
+  }
+  if (DB.cur.t === 'p' && old.estado === 'nuevo' && j.estado === 'aceptado' && j.prov === DB.cur.id) toast(first(j.un) + ' aceptó tu presupuesto');
+}
+function softRender() {
+  if (!DB.cur) return;
+  if ($('#scrim') || (V.tab === 'chat' && !V.job) || V.edit) return renderNav();
+  const mi = $('#mi'), val = mi ? mi.value : '', foc = document.activeElement === mi, sc = $('#view').scrollTop;
+  const active = document.activeElement && document.activeElement.id && document.activeElement.id !== 'mi' && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if (active) return renderNav();
+  render();
+  const mi2 = $('#mi'); if (mi2 && val) mi2.value = val; if (mi2 && foc) mi2.focus();
+  $('#view').scrollTop = sc;
+}
+function cloudSave() { clearTimeout(SYNC_T); SYNC_T = setTimeout(cloudSync, 250); }
+async function cloudSync() {
+  if (!CLOUD || !DB.cur) return;
+  if (SYNCING) { await SYNCING; }
+  const ops = [];
+  const m = me();
+  if (m) { const s = JSON.stringify(m); if (s !== SNAP.me) {
+    const old = SNAP.me ? JSON.parse(SNAP.me) : {}, patch = {};
+    Object.keys(m).forEach(k => { if (k !== 'id' && k !== 'mail' && k !== 'pass' && JSON.stringify(m[k]) !== JSON.stringify(old[k])) patch[k] = m[k]; });
+    SNAP.me = s; if (Object.keys(patch).length) ops.push(SB.rpc('profile_patch', {p_patch:patch})); } }
+  for (const j of DB.jobs) {
+    const s = JSON.stringify(j), prev = SNAP.jobs[j.id];
+    if (prev === s) continue;
+    SNAP.jobs[j.id] = s;
+    if (prev === undefined) {
+      ops.push(SB.from('jobs').insert({id:j.id, uid:isUuid(j.uid) ? j.uid : null, demo_prov:j.uid === 'demo' ? DB.cur.id : null, rubro:j.rubro, estado:j.estado, prov:j.prov ? String(j.prov) : null, data:j}));
+      continue;
+    }
+    const old = JSON.parse(prev), patch = {}, msgs = [], offers = [];
+    Object.keys(j).forEach(k => {
+      const a = JSON.stringify(j[k]), b = JSON.stringify(old[k]); if (a === b) return;
+      if ((k === 'msgs' || k === 'offers') && Array.isArray(j[k]) && Array.isArray(old[k]) && j[k].length > old[k].length && JSON.stringify(j[k].slice(0, old[k].length)) === b) (k === 'msgs' ? msgs : offers).push(...j[k].slice(old[k].length));
+      else patch[k] = j[k];
+    });
+    ops.push(SB.rpc('job_patch', {p_id:j.id, p_patch:patch, p_msgs:msgs, p_offers:offers}));
+  }
+  if (!ops.length) return;
+  SYNCING = Promise.all(ops.map(p => Promise.resolve(p).catch(e => ({error:e}))));
+  const res = await SYNCING; SYNCING = null;
+  const bad = res.filter(r => r && r.error);
+  if (bad.length) { console.warn('Sincronización:', bad.map(r => r.error)); toast('No se pudo guardar un cambio. Revisá tu conexión.'); }
+}
+async function upPhoto(dataUrl) {
+  if (!CLOUD || !dataUrl || !String(dataUrl).startsWith('data:')) return dataUrl;
+  try {
+    const blob = await (await fetch(dataUrl)).blob(), path = DB.cur.id + '/' + uid() + '.jpg';
+    const { error } = await SB.storage.from('fotos').upload(path, blob, {contentType:'image/jpeg', cacheControl:'31536000'});
+    if (error) throw error;
+    return SB.storage.from('fotos').getPublicUrl(path).data.publicUrl;
+  } catch (e) { console.warn('Foto:', e); return dataUrl; }
+}
+async function cloudRegister(d, btn) {
+  const done = busy(btn, 'Creando cuenta…');
+  const meta = {...d}; ['id', 'mail', 'pass', 'foto'].forEach(k => delete meta[k]); meta.t = REG.t;
+  if (REG.t === 'u') Object.assign(meta, {cr:5, resueltos:0}); else Object.assign(meta, {rev:[], on:true, desc:[]});
+  const { data, error } = await SB.auth.signUp({email:d.mail, password:d.pass, options:{data:meta, emailRedirectTo:location.origin}});
+  done();
+  if (error) { $('#err').textContent = authError(error); return; }
+  if (data.user && Array.isArray(data.user.identities) && !data.user.identities.length) { $('#err').textContent = authError('already registered'); return; }
+  if (!data.session) {
+    view(`<div class="empty" style="padding-top:70px">${ico('chat')}<h2>Revisá tu mail</h2><p>Te mandamos un link a <b>${esc(d.mail)}</b> para confirmar tu cuenta. Después volvé y tocá “Ya tengo cuenta”.</p>
+      <button class="btn p w" style="margin-top:16px" data-a="login">Ya confirmé, ingresar</button></div>`); return;
+  }
+  try { await cloudLoad(); } catch (e) { console.warn(e); $('#err') && ($('#err').textContent = authError(e)); return; }
+  if (REG.foto) { me().foto = await upPhoto(REG.foto); }
+  if (REG.t === 'p') seedProvJobs(me());
+  save();
+  if (REG.t === 'p') { view(`<div class="empty" style="padding-top:80px">${ico('shield')}<h2>Revisando tu perfil…</h2><p>Validamos tu identidad${d.mat ? ' y tu matrícula' : ''}.</p></div>`); setTimeout(enter, 1500); }
+  else enter();
+}
+async function cloudLogin(mail, pass, btn) {
+  const done = busy(btn, 'Ingresando…');
+  const { error } = await SB.auth.signInWithPassword({email:mail, password:pass});
+  if (error) { done(); $('#err').textContent = authError(error); return; }
+  try { await cloudLoad(); } catch (e) { done(); $('#err').textContent = authError(e); return; }
+  enter();
+}
+const DEMO_ACC = {
+  u:{mail:'sofia.demo@handygo.app', meta:{t:'u', nombre:'Sofía Martínez', zona:'Almagro, CABA', cr:5, resueltos:2}},
+  'Plomería':{mail:'daniel.demo@handygo.app', meta:{t:'p', nombre:'Daniel Ortiz', zona:'Almagro y alrededores', rubro:'Plomería', mat:'', anios:9, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[], hor:'Lunes a sábado, 8 a 19 h'}},
+  'Gas':{mail:'graciela.demo@handygo.app', meta:{t:'p', nombre:'Graciela Paz', zona:'Almagro y alrededores', rubro:'Gas', mat:'ENARGAS 7731', anios:16, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[], hor:'Lunes a sábado, 8 a 19 h'}}
+};
+const DEMO_PASS = 'HandyGo-demo-2026';
+async function cloudDemo(v) {
+  const a = DEMO_ACC[v]; toast('Ingresando…');
+  let r = await SB.auth.signInWithPassword({email:a.mail, password:DEMO_PASS}), nuevo = false;
+  if (r.error && /invalid login/i.test(r.error.message)) {
+    const meta = {...a.meta}; if (meta.t === 'p') meta.agenda = defAgenda(1);
+    r = await SB.auth.signUp({email:a.mail, password:DEMO_PASS, options:{data:meta}}); nuevo = true;
+    if (!r.error && !r.data.session) { toast('Para usar las cuentas de prueba, desactivá la confirmación por mail en Supabase'); return; }
+  }
+  if (r.error) { toast(authError(r.error)); return; }
+  try { await cloudLoad(); } catch (e) { toast(authError(e)); return; }
+  const u = me();
+  if (DB.cur.t === 'u' && !u.seeded) seedSofia(u);
+  if (DB.cur.t === 'p' && (nuevo || !DB.jobs.some(j => j.uid === 'demo' && j.estado === 'nuevo'))) seedProvJobs(u);
+  save(); enter();
+}
+async function cloudLogout() {
+  try { if (RT) SB.removeChannel(RT); RT = null; await SB.auth.signOut(); } catch (e) {}
+  DB = {users:[], provs:[], jobs:[], cur:null}; SNAP = {jobs:{}, me:null}; CH = null; chatEl = null; welcome();
+}
+
 /* ---------- arranque ---------- */
-render();
+async function boot() {
+  let cfg = null;
+  try { const r = await fetch('/api/config', {cache:'no-store'}); if (r.ok) cfg = await r.json(); } catch (e) {}
+  if (!cfg || !cfg.ok) return render();                          // sin Supabase: modo local
+  $('#top').hidden = true; $('#nav').hidden = true;
+  view(`<div class="splash"><div class="brandc">${MARK}<h1>HandyGo</h1><p class="slogan">Cargando…</p></div></div>`, true);
+  try {
+    await loadSB();
+    SB = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'handygo-auth'}});
+    CLOUD = true;
+    DB = {users:[], provs:[], jobs:[], cur:null};
+    const { data:{ session } } = await SB.auth.getSession();
+    if (session && await cloudLoad()) return enter();
+  } catch (e) { console.warn('Nube:', e); if (!CLOUD) return render(); }
+  welcome();
+}
+boot();
 if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude|claudeusercontent/.test(location.hostname)) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
