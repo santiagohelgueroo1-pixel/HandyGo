@@ -340,19 +340,6 @@ img.av{object-fit:cover;background:var(--sunk)}
 .port label.add{aspect-ratio:1;border:2px dashed var(--line);border-radius:10px;display:grid;place-items:center;color:var(--mut);cursor:pointer;font-size:14px;text-align:center;padding:8px}
 .port label.add svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75}
 .bio{font-size:16px;margin:12px 0 0}
-.track{list-style:none;margin:0;padding:4px 0 0;display:grid}
-.track li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:12px;position:relative;padding-bottom:16px}
-.track li:last-child{padding-bottom:0}
-.track li::before{content:"";position:absolute;left:12px;top:24px;bottom:0;width:2px;background:var(--line)}
-.track li:last-child::before{display:none}
-.track li.done::before{background:var(--pri)}
-.track .dt{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--priInk);z-index:1}
-.track .dt svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-.track li.done .dt{background:var(--pri);border-color:var(--pri)}
-.track li.cur .dt{border-color:var(--acc);background:var(--acc);color:var(--accInk);box-shadow:0 0 0 5px var(--warnSoft)}
-.track b{display:block;font:600 16px/1.3 var(--f-display)}
-.track span{font-size:14px;color:var(--mut)}
-.track li.todo b{color:var(--mut);font-weight:500}
 .m.sysl{align-self:center;max-width:100%;background:var(--sunk);border:0;color:var(--mut);font-size:14px;border-radius:99px;padding:8px 12px;text-align:center}
 .seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:4px;gap:4px}
 .seg button{border:0;background:none;padding:8px 16px;border-radius:9px;font:600 14px/1 var(--f-body);color:var(--mut)}
@@ -879,32 +866,23 @@ PROVS.forEach((p, i) => { p.agenda = defAgenda(i); });
 const agendaOf = pid => { const s = PROVS.find(x => x.id === pid); if (s) return s.agenda; const p = DB.provs.find(x => x.id === pid); return (p && p.agenda) || defAgenda(); };
 
 /* ---------- seguimiento por etapas ---------- */
-const STAGES = ['Presupuesto aceptado', 'En camino', 'Trabajando', 'Terminado'];
-const STAGE_SUB = ['Quedó confirmado el turno', 'El prestador salió para tu casa', 'El prestador está haciendo el trabajo', 'El trabajo quedó listo'];
-const stageName = j => j.estado === 'cancelado' ? 'Cancelado' : j.estado === 'nuevo' ? 'Buscando presupuestos' : STAGES[j.etapa || 0];
+const stageName = j => j.estado === 'cancelado' ? 'Cancelado' : j.estado === 'nuevo' ? 'Buscando presupuestos' : j.estado === 'finalizado' ? 'Terminado' : 'Turno confirmado';
 const isUnseen = j => !!(j.unseenBy && DB.cur && j.unseenBy[DB.cur.id]);
 function markUnseen(j, who) { if (!who || (who === DB.cur.id && V.job === j.id)) return; j.unseenBy = {...(j.unseenBy || {}), [who]:true}; }
 function clearUnseen(j) { if (isUnseen(j)) { const u = {...j.unseenBy}; delete u[DB.cur.id]; j.unseenBy = u; return true; } return false; }
 function advance(jid, k, actor) {
   const j = DB.jobs.find(x => x.id === jid); if (!j || j.estado === 'finalizado' || (j.etapa || 0) >= k) return;
   j.etapa = k; j.hist = j.hist || {}; j.hist[k] = Date.now();
-  const pn = first(provInfo(j.prov).n), un = first(j.un);
-  const txt = [null, `${pn} está en camino`, `${pn} empezó el trabajo`, `Trabajo terminado`][k];
+  const un = first(j.un);
+  const txt = (DB.cur && DB.cur.id === j.uid ? 'Marcaste el trabajo como terminado' : first(provInfo(j.prov).n) + ' marcó el trabajo como terminado');
   j.msgs.push({f:'s', t:txt});
   if (k === 3) { j.estado = 'finalizado'; j.fin = Date.now(); }
   const viewing = V.job === j.id;
   const act = actor || DB.cur.id; markUnseen(j, act === j.uid ? j.prov : j.uid);
   save();
-  if (DB.cur && DB.cur.t === 'u' && DB.cur.id === j.uid) toast(k === 3 ? 'Trabajo terminado: contanos cómo te fue' : txt);
+  if (DB.cur && DB.cur.t === 'u' && DB.cur.id === j.uid) toast('Trabajo terminado: contanos cómo te fue');
   if (DB.cur && DB.cur.t === 'p' && DB.cur.id === j.prov && k === 3 && j.uid === 'demo') toast(`${un} confirmó que el trabajo terminó`);
   if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
-}
-function demoProgress(jid) { const pv = () => (DB.jobs.find(x => x.id === jid) || {}).prov; setTimeout(() => advance(jid, 1, pv()), 7000); setTimeout(() => advance(jid, 2, pv()), 16000); }
-function trackHTML(j) {
-  const e = j.estado === 'finalizado' ? 3 : (j.etapa || 0), h = j.hist || {};
-  const tm = ts => ts ? new Date(ts).toLocaleString('es-AR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) : '';
-  return `<ol class="track">${STAGES.map((n, i) => { const st = i < e || (i === e && i === 3) ? 'done' : i === e ? 'cur' : 'todo';
-    return `<li class="${st}"><span class="dt">${st === 'done' ? ico('check').replace(/<circle[^>]*\/>/, '') : ''}</span><div><b>${n}</b><span>${h[i] ? tm(h[i]) : i === 0 && j.turno ? 'Turno: ' + slotLabel(j.turno) : STAGE_SUB[i]}</span></div></li>`; }).join('')}</ol>`;
 }
 
 /* ---------- mantenimiento por temporada (hemisferio sur) ---------- */
@@ -1154,7 +1132,7 @@ const TOURS = {
   u:[
     {t:'¡Bienvenido a HandyGo!', d:'Te muestro en un minuto cómo funciona la app para que le saques el jugo.', logo:true},
     {sel:'#nav [data-v="chat"]', ic:'chat', t:'Handy, tu asistente', d:'Contale qué se rompió, con texto, foto o audio. Te ayuda a entender el problema y, si es seguro, te guía paso a paso para arreglarlo vos.'},
-    {sel:'#nav [data-v="ped"]', ic:'clip', t:'Pedidos', d:'Si hace falta un profesional, acá recibís los presupuestos, elegís el turno y seguís el trabajo en tiempo real.'},
+    {sel:'#nav [data-v="ped"]', ic:'clip', t:'Pedidos', d:'Si hace falta un profesional, acá recibís los presupuestos, elegís el turno y hablás con el prestador por chat.'},
     {sel:'#nav [data-v="casa"]', ic:'home', t:'Mi casa', d:'El historial de todo lo que arreglaste, el mantenimiento recomendado para cada temporada y las ferreterías cerca tuyo.'},
     {sel:'#hpill', ic:'chat', t:'Tus consultas', d:'Cada problema nuevo que le contás a Handy usa una consulta. Hablar del mismo problema no gasta más. Tocá acá para sumar.'},
     {sel:'#nav [data-v="per"]', ic:'user', t:'Tu perfil', d:'Tus datos, tu foto y los ajustes de la cuenta. Desde ahí también podés volver a ver este tutorial.'},
@@ -1163,7 +1141,7 @@ const TOURS = {
   p:[
     {t:'¡Bienvenido a HandyGo!', d:'Te muestro en un minuto cómo recibir trabajos con el problema ya explicado.', logo:true},
     {sel:'#nav [data-v="ped"]', ic:'inbox', t:'Pedidos nuevos', d:'Te llegan los pedidos de tu rubro y tu zona, con el resumen del caso armado por Handy. Desde ahí mandás tu presupuesto.'},
-    {sel:'#nav [data-v="trab"]', ic:'clip', t:'Trabajos', d:'Seguí tus presupuestos y trabajos. Avisale al cliente cuando estás en camino, cuando empezás y cuando terminás.'},
+    {sel:'#nav [data-v="trab"]', ic:'clip', t:'Trabajos', d:'Seguí tus presupuestos y trabajos, y hablá con cada cliente por chat. Cuando terminás, marcalo como terminado.'},
     {sel:'#nav [data-v="agenda"]', ic:'cal', t:'Agenda', d:'Marcá qué días y horarios trabajás. Los clientes eligen el turno según tu disponibilidad.'},
     {sel:'#hpill', ic:'check', t:'Disponible', d:'Tocá acá para pausar los pedidos nuevos cuando no podés tomar trabajos.'},
     {sel:'#nav [data-v="per"]', ic:'user', t:'Tu perfil', d:'Tu foto, tu matrícula, tus especialidades y fotos de trabajos. Un perfil completo genera más confianza.'},
@@ -1868,7 +1846,7 @@ function vJob() {
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
     <div class="row" style="margin-bottom:12px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
-    ${!['nuevo', 'cancelado'].includes(j.estado) ? `<div class="card" style="margin-bottom:12px"><h3 class="sh">Seguimiento</h3>${trackHTML(j)}</div>` : ''}
+    ${j.estado === 'aceptado' && j.turno ? `<div class="card" style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('cal').replace('<svg', '<svg style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"')}</span><div><span class="small mut">Tu turno</span><h3>${esc(slotLabel(j.turno))}</h3></div></div>` : ''}
     ${ticketHTML({...j, zona:j.zona})}`;
   if (isU && j.estado === 'nuevo') {
     const B = bestOf(j);
@@ -1882,7 +1860,7 @@ function vJob() {
        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
       : `<div class="list" aria-hidden="true">${[1, 2].map(() => `<div class="card skcard"><div class="skrow"><div class="skel" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:grid;gap:8px"><div class="skel" style="height:15px;width:55%"></div><div class="skel" style="height:12px;width:75%"></div></div><div class="skel" style="height:22px;width:70px"></div></div><div class="skel" style="height:34px;border-radius:12px"></div></div>`).join('')}</div><p class="hint" style="text-align:center">Los prestadores están viendo tu caso…</p>`) + `</div>`;
   }
-  if (isU && j.uid === DB.cur.id && (j.estado === 'nuevo' || (j.estado === 'aceptado' && !(j.etapa > 0))))
+  if (isU && j.uid === DB.cur.id && ['nuevo', 'aceptado'].includes(j.estado))
     h += `<div class="sec"><button class="btn g w" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito · cancelar pedido' : 'Cancelar el trabajo'}</button></div>`;
   if (!['nuevo', 'cancelado'].includes(j.estado)) {
     const p = provInfo(j.prov);
@@ -1892,9 +1870,7 @@ function vJob() {
       <div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
       ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
       <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Toda la comunicación queda dentro de HandyGo.</p></div>`;
-    if (j.estado === 'aceptado') { const e = j.etapa || 0;
-      h += `<div class="sec">${isU ? (e >= 2 ? `<button class="btn p w" data-a="fin">El trabajo está terminado</button>` : `<p class="hint" style="text-align:center">Te avisamos cuando ${esc(first(provInfo(j.prov).n))} salga para tu casa.</p>`)
-        : `<button class="btn p w" data-a="stage" data-v="${e + 1}">${['', 'Estoy en camino', 'Empecé el trabajo', 'Terminé el trabajo'][e + 1]}</button>`}</div>`; }
+    if (j.estado === 'aceptado') h += `<div class="sec"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint" style="text-align:center;margin-top:8px">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
     if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec card"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
       <div class="ratebtns" style="margin:12px 0">${[1, 2, 3, 4, 5].map(n => `<button data-a="rate" data-v="${n}" aria-label="${n} estrellas">${n}★</button>`).join('')}</div>
       <label class="f" for="rc">Comentario (opcional)<textarea id="rc" rows="2" placeholder="Ej: llegó a horario y explicó todo"></textarea></label>
@@ -1953,7 +1929,6 @@ ACT.confAcc = () => {
   j.msgs.push({f:'s', t:'Presupuesto aceptado' + (turno ? ' · turno ' + slotLabel(turno) : '')});
   j.msgs.push({f:'p', t:`¡Gracias por elegirme! ${turno ? 'Te espero el ' + slotLabel(turno).toLowerCase() + '.' : 'Coordinemos el día por acá.'} Ya leí el resumen del caso.`});
   save(); toast('Presupuesto aceptado'); render();
-  if (PROVS.some(p => p.id === o.pid)) demoProgress(j.id);
 };
 ACT.stage = k => {
   const j = DB.jobs.find(x => x.id === V.job); advance(j.id, +k);
@@ -1986,7 +1961,7 @@ ACT.msg = () => {
   const auto = DB.cur.t === 'u' ? PROVS.some(p => p.id === j.prov) : j.uid === 'demo';
   if (auto) setTimeout(() => { j.msgs.push({f:DB.cur.t === 'u' ? 'p' : 'u', t:DB.cur.t === 'u' ? 'Perfecto, te confirmo. Cualquier cosa me escribís por acá.' : 'Dale, te espero. Gracias.'}); save(); if (V.job === j.id) render(); }, 1400);
 };
-ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); advance(j.id, 3); render(); };
+ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); if (DB.cur.t === 'p') return ACT.stage(3); advance(j.id, 3); render(); };
 
 /* ============================================================
    PRESTADOR
