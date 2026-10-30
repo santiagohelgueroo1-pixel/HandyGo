@@ -20,7 +20,9 @@ TU TRABAJO
        "materiales": [["nombre","cómo pedirlo en una ferretería o comercio argentino"]] (puede ser lista vacía);
        "nivel": "Fácil" o "Media"; "minutos": número estimado; "alerta": una frase de precaución si corresponde, o "".
        "glosario": las piezas, partes o herramientas que nombran los pasos y que alguien sin experiencia puede no conocer (2 a 6),
-         cada una {"termino":"tal cual aparece en los pasos","que_es":"1 frase simple, sin tecnicismos","donde":"dónde está o dónde se compra","imagen":"descripción en inglés del objeto para dibujarlo"}.
+         cada una {"termino":"tal cual aparece en los pasos","que_es":"1 o 2 frases simples: qué es ESA pieza en ESE artefacto y para qué sirve en este arreglo","donde":"dónde está en ese artefacto y dónde se compra o cómo se pide","imagen":"descripción en inglés del objeto exacto, nombrando el artefacto (ej: the dust filter of a wall split air conditioner)"}.
+         Una misma palabra puede ser piezas distintas según el artefacto (el filtro del aire no es el del lavarropas ni el de la campana):
+         la explicación y la imagen tienen que ser de la pieza de ESTE problema, nunca genéricas.
      Escribí los pasos con palabras simples: si usás un término técnico, que esté en el glosario.
      Preferí SIEMPRE ayudar a resolverlo antes que derivar cuando el arreglo es simple y seguro.
    - "derivar": solo si es riesgoso, requiere herramientas o habilidades profesionales, o el usuario ya intentó y no pudo.
@@ -225,7 +227,7 @@ function normalize(text, ids) {
     nivel: o.nivel === 'Media' ? 'Media' : 'Fácil',
     minutos: Math.max(5, Math.min(180, parseInt(o.minutos, 10) || 20)),
     alerta: typeof o.alerta === 'string' ? o.alerta.slice(0, 240) : '',
-    glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 200), donde: String(g.donde || '').slice(0, 200), imagen: String(g.imagen || '').slice(0, 200) })).map(g => ({ ...g, firma: firmar(g.imagen || g.termino) })) : [],
+    glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 320), donde: String(g.donde || '').slice(0, 260), imagen: String(g.imagen || '').slice(0, 200) })).map(g => ({ ...g, firma: firmar(g.imagen || g.termino) })) : [],
     transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : ''
   };
   if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; out.glosario = []; }
