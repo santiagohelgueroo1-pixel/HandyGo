@@ -408,6 +408,47 @@ h3.sh{font:600 17px/1.25 var(--f-display);margin:0 0 10px;color:var(--ink)}
 .cats button:hover{border-color:var(--pri)}
 .cats button.full{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0}
 .matcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;color:var(--ink)}
+#tour{position:absolute;inset:0;z-index:45}
+#tour .hole{position:absolute;border-radius:16px;box-shadow:0 0 0 9999px rgba(14,24,19,.66);transition:all .35s ease;pointer-events:none}
+#tour .hole.none{left:50%;top:42%;width:0;height:0}
+#tour .tcard{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));background:var(--surface);color:var(--ink);border-radius:18px;padding:18px;box-shadow:0 18px 40px -12px rgba(0,0,0,.45);transition:top .35s ease,bottom .35s ease}
+#tour .tcard .ti{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+#tour .tcard .ti .ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center}
+#tour .tcard .ti .ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#tour .tcard .ti img{width:40px;height:40px;border-radius:12px}
+#tour .tcard h3{font:700 18px/1.2 var(--f-display);margin:0}
+#tour .tcard p{margin:0 0 14px;font-size:15px;line-height:1.5;color:var(--mut)}
+#tour .tfoot{display:flex;align-items:center;gap:10px}
+#tour .dots{display:flex;gap:6px;flex:1}
+#tour .dots i{width:7px;height:7px;border-radius:99px;background:var(--line);transition:all .25s}
+#tour .dots i.on{width:20px;background:var(--pri)}
+#tour .skip{border:0;background:none;color:var(--mut);font:600 14px var(--f-body);padding:8px}
+@media (prefers-reduced-motion:no-preference){#tour .tcard{animation:in .3s ease-out}}
+#launch{position:absolute;inset:0;z-index:60;background:var(--head);color:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;
+  padding:env(safe-area-inset-top,0px) max(24px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(24px,env(safe-area-inset-left,0px));transition:opacity .45s ease,transform .45s ease}
+#launch.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#launch .lm{position:relative;width:120px;height:120px}
+#launch .lm img{width:120px;height:120px;border-radius:26%;display:block;position:relative;z-index:1}
+#launch .lm::after{content:"";position:absolute;inset:-3px;border-radius:28%;border:3px solid var(--mint)}
+#launch h1{margin:0;font:700 44px/1 var(--f-display);letter-spacing:-.02em;color:#FFFFFF;overflow:hidden;padding-bottom:4px}
+#launch h1 span{display:inline-block}
+#launch p{margin:0;font:500 16px/1.45 var(--f-body);color:var(--mint);max-width:26ch}
+#launch .tape{position:absolute;left:0;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);height:10px;width:100%;
+  background:linear-gradient(var(--acc),var(--acc)) top/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) top/100% 10px no-repeat}
+@media (prefers-reduced-motion:no-preference){
+  #launch .lm{animation:lpop .7s cubic-bezier(.2,1.5,.4,1) both}
+  #launch .lm img{animation:ltwist .6s ease-in-out .65s both}
+  #launch .lm::after{animation:lring 1.1s ease-out .5s both}
+  #launch h1 span{animation:lup .5s cubic-bezier(.2,.8,.2,1) both}
+  #launch p{animation:lfade .6s ease-out 1.15s both}
+  #launch .tape{animation:ltape 1.2s cubic-bezier(.6,0,.2,1) .25s both}
+}
+@keyframes lpop{from{opacity:0;transform:scale(.4) rotate(-10deg)}}
+@keyframes ltwist{0%,100%{transform:rotate(0)}35%{transform:rotate(-14deg)}70%{transform:rotate(6deg)}}
+@keyframes lring{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.5)}}
+@keyframes lup{from{opacity:0;transform:translateY(110%)}}
+@keyframes lfade{from{opacity:0;transform:translateY(8px)}}
+@keyframes ltape{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 .review{border-top:1px solid var(--line);padding-top:10px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -422,6 +463,7 @@ h3.sh{font:600 17px/1.25 var(--f-display);margin:0 0 10px;color:var(--ink)}
   <main id="view"></main>
   <nav id="nav" hidden></nav>
   <div id="toast" hidden></div>
+  <div id="launch" aria-hidden="true"><div class="lm"><img src="data:image/jpeg;base64,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" alt=""></div><h1><span style="animation-delay:0.55s">H</span><span style="animation-delay:0.60s">a</span><span style="animation-delay:0.65s">n</span><span style="animation-delay:0.70s">d</span><span style="animation-delay:0.75s">y</span><span style="animation-delay:0.80s">G</span><span style="animation-delay:0.85s">o</span></h1><p>Te ayudamos a resolverlo, te conectamos si hace falta.</p><div class="tape"></div></div>
   <div id="offline" role="status" hidden>Sin conexión: tus cambios se guardan cuando vuelva internet</div>
 </div>
 <script>
@@ -998,7 +1040,74 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLO
    ============================================================ */
 const TABS = {u:[['chat', 'Asistente', 'chat'], ['ped', 'Pedidos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
               p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['agenda', 'Agenda', 'cal'], ['per', 'Perfil', 'user']]};
-function enter() { V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null; render(); }
+function enter() {
+  V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null;
+  const needTour = !me().tour; if (needTour) TOUR_ON = true;
+  render();
+  if (needTour) setTimeout(startTour, LAUNCH_ON ? Math.max(500, 2500 - (performance.now() - T0)) : 450);
+}
+/* ---------- tutorial de bienvenida ---------- */
+let TOUR_ON = false, TOUR_I = 0, TOUR_STEPS = [];
+const TOURS = {
+  u:[
+    {t:'¡Bienvenido a HandyGo!', d:'Te muestro en un minuto cómo funciona la app para que le saques el jugo.', logo:true},
+    {sel:'#nav [data-v="chat"]', ic:'chat', t:'Handy, tu asistente', d:'Contale qué se rompió, con texto, foto o audio. Te ayuda a entender el problema y, si es seguro, te guía paso a paso para arreglarlo vos.'},
+    {sel:'#nav [data-v="ped"]', ic:'clip', t:'Pedidos', d:'Si hace falta un profesional, acá recibís los presupuestos, elegís el turno y seguís el trabajo en tiempo real.'},
+    {sel:'#nav [data-v="casa"]', ic:'home', t:'Mi casa', d:'El historial de todo lo que arreglaste, el mantenimiento recomendado para cada temporada y las ferreterías cerca tuyo.'},
+    {sel:'#hpill', ic:'chat', t:'Tus consultas', d:'Cada problema nuevo que le contás a Handy usa una consulta. Hablar del mismo problema no gasta más. Tocá acá para sumar.'},
+    {sel:'#nav [data-v="per"]', ic:'user', t:'Tu perfil', d:'Tus datos, tu foto y los ajustes de la cuenta. Desde ahí también podés volver a ver este tutorial.'},
+    {t:'¡Listo!', d:'Handy te está esperando. Contale qué pasa en tu casa.', logo:true, last:'Empezar'}
+  ],
+  p:[
+    {t:'¡Bienvenido a HandyGo!', d:'Te muestro en un minuto cómo recibir trabajos con el problema ya explicado.', logo:true},
+    {sel:'#nav [data-v="ped"]', ic:'inbox', t:'Pedidos nuevos', d:'Te llegan los pedidos de tu rubro y tu zona, con el resumen del caso armado por Handy. Desde ahí mandás tu presupuesto.'},
+    {sel:'#nav [data-v="trab"]', ic:'clip', t:'Trabajos', d:'Seguí tus presupuestos y trabajos. Avisale al cliente cuando estás en camino, cuando empezás y cuando terminás.'},
+    {sel:'#nav [data-v="agenda"]', ic:'cal', t:'Agenda', d:'Marcá qué días y horarios trabajás. Los clientes eligen el turno según tu disponibilidad.'},
+    {sel:'#hpill', ic:'check', t:'Disponible', d:'Tocá acá para pausar los pedidos nuevos cuando no podés tomar trabajos.'},
+    {sel:'#nav [data-v="per"]', ic:'user', t:'Tu perfil', d:'Tu foto, tu matrícula, tus especialidades y fotos de trabajos. Un perfil completo genera más confianza.'},
+    {t:'¡Listo!', d:'Ya podés empezar a recibir pedidos.', logo:true, last:'Empezar'}
+  ]
+};
+function startTour() {
+  if (!DB.cur) return;
+  TOUR_ON = true; TOUR_I = 0; TOUR_STEPS = TOURS[DB.cur.t];
+  closeSheet();
+  let el = $('#tour'); if (el) el.remove();
+  el = document.createElement('div'); el.id = 'tour'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+  el.innerHTML = '<div class="hole none"></div><div class="tcard"></div>';
+  $('#device').appendChild(el);
+  tourStep();
+}
+function tourStep() {
+  const el = $('#tour'); if (!el) return;
+  const st = TOUR_STEPS[TOUR_I], dev = $('#device').getBoundingClientRect(), hole = el.querySelector('.hole'), card = el.querySelector('.tcard');
+  const tg = st.sel && document.querySelector(st.sel);
+  card.innerHTML = `<div class="ti">${st.logo ? MARK.replace('class="mark"', '') : `<span class="ic">${ico(st.ic)}</span>`}<h3>${st.t}</h3></div><p>${st.d}</p>
+    <div class="tfoot"><div class="dots">${TOUR_STEPS.map((x, i) => `<i class="${i === TOUR_I ? 'on' : ''}"></i>`).join('')}</div>
+    ${st.last ? '' : '<button class="skip" data-a="tourEnd">Saltar</button>'}<button class="btn p sm" data-a="tourNext">${st.last || (TOUR_I ? 'Siguiente' : 'Arrancar')}</button></div>`;
+  card.style.top = card.style.bottom = '';
+  if (tg) {
+    const r = tg.getBoundingClientRect(), pad = 6;
+    Object.assign(hole.style, {left:(r.left - dev.left - pad) + 'px', top:(r.top - dev.top - pad) + 'px', width:(r.width + pad * 2) + 'px', height:(r.height + pad * 2) + 'px'});
+    hole.classList.remove('none');
+    const mid = r.top - dev.top + r.height / 2;
+    if (mid > dev.height / 2) card.style.bottom = (dev.bottom - r.top + 18) + 'px'; else card.style.top = (r.bottom - dev.top + 18) + 'px';
+  } else {
+    hole.removeAttribute('style'); hole.classList.add('none');
+    card.style.top = '50%'; card.style.transform = 'translateY(-50%)';
+  }
+  if (tg) card.style.transform = '';
+  card.querySelector('[data-a="tourNext"]').focus();
+}
+ACT.tourNext = () => { if (TOUR_I < TOUR_STEPS.length - 1) { TOUR_I++; tourStep(); } else ACT.tourEnd(); };
+ACT.tourEnd = () => {
+  const el = $('#tour'); if (el) el.remove();
+  TOUR_ON = false;
+  const u = me(); if (u && !u.tour) { u.tour = true; save(); }
+  if (GREET_PENDING && chatEl) { GREET_PENDING = false; greet(); }
+};
+ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'ped'; V.job = null; render(); setTimeout(startTour, 200); };
+window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
 ACT.tab = t => { V.tab = t; V.job = null; V.edit = false; render(); };
 function badge(t) {
   const c = DB.cur;
@@ -1060,7 +1169,7 @@ function vChat() {
       <div class="composer"><div class="attach" id="att" hidden></div>
       <div class="bar"><label class="iconbtn" title="Adjuntar foto" for="pic" style="cursor:pointer">${ico('cam')}<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adjuntar foto</span></label>
       <input type="file" id="pic" accept="image/*" hidden>
-      <textarea id="inp" rows="1" placeholder="Contanos qué se rompió…"></textarea>
+      <textarea id="inp" rows="1" placeholder="Escribile a Handy…"></textarea>
       <button class="iconbtn p" id="micBtn" data-a="mic" aria-label="Grabar audio">${ico('mic')}</button>
       <button class="iconbtn p" id="sendBtn" data-a="send" aria-label="Enviar" hidden>${ico('send')}</button></div>
       <div class="recbar" id="recbar" hidden><button class="iconbtn" data-a="recCancel" aria-label="Cancelar audio">${ico('trash')}</button>
@@ -1075,12 +1184,12 @@ function vChat() {
   } else { view('', true); $('#view').appendChild(chatEl); }
   setMode(); scrollLog();
 }
-function setMode() { const m = chatEl && chatEl.querySelector('#mode'); if (!m) return; m.className = 'mode' + (AI_OK === false ? ' off' : ''); m.querySelector('span').textContent = AI_OK === false ? 'Asistente sin conexión' : 'Asistente con IA'; }
+function setMode() { const m = chatEl && chatEl.querySelector('#mode'); if (!m) return; m.className = 'mode' + (AI_OK === false ? ' off' : ''); m.querySelector('span').textContent = AI_OK === false ? 'Handy · sin conexión' : 'Handy · tu asistente'; }
 const LOG = () => chatEl.querySelector('#log');
 function scrollLog() { const l = chatEl && chatEl.querySelector('#log'); if (l) requestAnimationFrame(() => l.scrollTop = l.scrollHeight); }
 function say(html, cls = '', who = true) {
   const l = LOG();
-  if (who && !/\bu\b/.test(cls) && !cls.includes('sys')) { const last = l.lastElementChild; if (!last || !last.classList.contains('bot')) { const w = document.createElement('div'); w.className = 'who'; w.innerHTML = MARK + 'HandyGo'; l.appendChild(w); } }
+  if (who && !/\bu\b/.test(cls) && !cls.includes('sys')) { const last = l.lastElementChild; if (!last || !last.classList.contains('bot')) { const w = document.createElement('div'); w.className = 'who bot'; w.innerHTML = MARK + 'Handy'; l.appendChild(w); } }
   const d = document.createElement('div'); d.className = 'm ' + cls + (/\bu\b/.test(cls) || cls.includes('sys') ? '' : ' bot'); d.innerHTML = html; l.appendChild(d); scrollLog();
   if (!cls.includes('sys') && !/class="typing"/.test(html)) { const t = (d.textContent || '').trim() || (d.querySelector('audio') ? '(audio)' : d.querySelector('img') ? '(foto)' : ''); if (t) logTrans(/\bu\b/.test(cls) ? 'u' : 'b', t); }
   return d;
@@ -1126,12 +1235,41 @@ function catGrid() {
   });
   LOG().appendChild(d); scrollLog();
 }
-function greet() {
-  say(`Hola, ${esc(first(me().nombre))}. ¿Qué se rompió? Elegí un tema o contámelo con tus palabras: también podés mandarme una foto o un audio.`);
-  return catGrid();
-  chips([['La canilla gotea', () => go('La canilla gotea')], ['El inodoro pierde agua', () => go('El inodoro pierde agua, se escucha correr')], ['Huelo gas en la cocina', () => go('Huelo gas en la cocina')], ['Tengo una grieta en la pared', () => go('Tengo una grieta en la pared')]]);
+let GREET_TOKEN = 0, GREET_PENDING = false;
+function themeChips() {
+  say('Elegí el tema que más se parece:');
+  chips(CATS.map(c => [c.n, () => {
+    say(c.n, 'u');
+    say('¿Cuál de estos se parece a lo que te pasa? Si no está, contámelo con tus palabras.');
+    chips([...c.items.map(k => [TUT[k].n, () => go(TUT[k].n)]), ...(c.extra || []).map(t => [t, () => go(t)])]);
+  }]));
 }
-ACT.newCase = () => { LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
+async function sayTyped(msgs, token) {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (const m of msgs) {
+    if (token !== GREET_TOKEN || !chatEl) return false;
+    const th = say('<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>', '', true);
+    await new Promise(r => setTimeout(r, reduce ? 150 : Math.min(1300, 450 + m.length * 9)));
+    th.remove(); if (token !== GREET_TOKEN || !chatEl) return false;
+    say(m);
+  }
+  return true;
+}
+async function greet() {
+  if (TOUR_ON) { GREET_PENDING = true; return; }
+  const token = ++GREET_TOKEN, u = me(), nom = esc(first(u.nombre));
+  const firstTime = !u.conoceHandy;
+  const msgs = firstTime ? [
+    `¡Hola, ${nom}! Soy <b>Handy</b>, el asistente de HandyGo.`,
+    'Estoy para ayudarte con los problemas de todos los días en tu casa: una canilla que gotea, una puerta que roza, una luz que no prende.',
+    'Contame qué pasa con tus palabras, o mandame una foto o un audio. Si lo podés arreglar vos, te explico cómo paso a paso. Si es peligroso o hace falta un profesional, te conecto con uno de confianza.'
+  ] : [`Hola de nuevo, ${nom}. Soy Handy. ¿Qué pasa hoy en casa? Contámelo, o mandame una foto o un audio.`];
+  const ok = await sayTyped(msgs, token);
+  if (!ok) return;
+  if (firstTime) { u.conoceHandy = true; save(); }
+  chips([['No sé cómo explicarlo', () => { say('No sé cómo explicarlo', 'u'); themeChips(); }]]);
+}
+ACT.newCase = () => { GREET_TOKEN++; LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
 ACT.credits = () => {
   const u = me();
   sheet(`<span class="eyebrow">Plan gratuito</span><h2><span class="num">${u.cr}</span> consultas disponibles</h2>
@@ -1940,7 +2078,7 @@ ACT.doDelAcc = async (v, btn) => {
 function tail() {
   const row = (a, ic, t) => `<button data-a="${a}">${ico(ic)}<span>${t}</span>${ico('back').replace('<svg', '<svg class="go"')}</button>`;
   return `<div class="sec"><h3 class="sh">Ajustes</h3><div class="settings">
-   ${row('edit', 'edit', 'Editar perfil')}${row('legal', 'shield', 'Términos y privacidad')}${row('reset', 'trash', 'Borrar datos de este dispositivo')}${row('logout', 'user', 'Cerrar sesión')}</div>
+   ${row('edit', 'edit', 'Editar perfil')}${row('tourAgain', 'eye', 'Ver el tutorial de nuevo')}${row('legal', 'shield', 'Términos y privacidad')}${row('reset', 'trash', 'Borrar datos de este dispositivo')}${row('logout', 'user', 'Cerrar sesión')}</div>
    <button class="dangerlink" data-a="delAcc">Eliminar cuenta</button>
    <p class="hint" style="text-align:center;margin-top:10px">HandyGo · Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>`;
 }
@@ -2137,12 +2275,18 @@ window.addEventListener('online', () => { netUI(); if (CLOUD) cloudSave(); toast
 setTimeout(netUI, 0);
 
 /* ---------- arranque ---------- */
+const T0 = performance.now(); let LAUNCH_ON = true;
+function hideLaunch() {
+  const el = $('#launch'); if (!el) { LAUNCH_ON = false; return; }
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = Math.max(0, (reduce ? 700 : 2000) - (performance.now() - T0));
+  setTimeout(() => { el.classList.add('out'); setTimeout(() => { el.remove(); LAUNCH_ON = false; }, 460); }, wait);
+}
 async function boot() {
   let cfg = null;
   try { const r = await fetch('/api/config', {cache:'no-store'}); if (r.ok) cfg = await r.json(); } catch (e) {}
   if (!cfg || !cfg.ok) return render();                          // sin Supabase: modo local
   $('#top').hidden = true; $('#nav').hidden = true;
-  view(`<div class="splash"><div class="brandc">${MARK}<h1>HandyGo</h1><p class="slogan">Cargando…</p></div></div>`, true);
   try {
     await loadSB();
     SB = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'handygo-auth'}});
@@ -2156,7 +2300,7 @@ async function boot() {
   } catch (e) { console.warn('Nube:', e); if (!CLOUD) return render(); }
   welcome();
 }
-boot();
+boot().catch(e => console.warn(e)).finally(hideLaunch);
 if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude|claudeusercontent/.test(location.hostname)) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
