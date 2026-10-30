@@ -133,6 +133,19 @@ h3{font:600 16px/1.3 var(--f-display);margin:0}
 label.f{display:block;font:600 14px/1.3 var(--f-body)}
 label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:8px;border:2px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);font-weight:400}
 label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--pri);outline:none}
+.telrow{display:flex;gap:8px;align-items:stretch;margin-top:8px}
+.telrow input{margin-top:0!important;flex:1;min-width:0}
+.telrow .btn{flex:none;padding:8px 14px;font-size:14px}
+.hint.ok{color:var(--ok);font-weight:600}
+#code{letter-spacing:.4em;font-variant-numeric:tabular-nums}
+#sms{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:70;background:var(--surface);color:var(--ink);border-radius:18px;padding:12px 14px;
+  box-shadow:0 16px 40px -12px rgba(0,0,0,.45);display:flex;gap:12px;align-items:flex-start;transform:translateY(-140%);transition:transform .35s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+#sms.in{transform:none}
+#sms .si{flex:none;width:36px;height:36px;border-radius:10px;background:#34C759;color:#fff;display:grid;place-items:center}
+#sms .si svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75}
+#sms small{display:block;color:var(--mut);font-size:12px}
+#sms b{font-size:14px}
+#sms p{margin:2px 0 0;font-size:14px;line-height:1.35}
 .hint{font-size:14px;color:var(--mut);font-weight:400;margin-top:4px;display:block}
 .err{color:var(--bad);font-weight:600;font-size:14px;min-height:20px}
 
@@ -942,6 +955,54 @@ function toast(t) { const d = $('#toast'); const k = /presupuesto/i.test(t) ? 'c
   d.innerHTML = `<span class="ti">${ico(k)}</span><span>${esc(t)}</span>`; d.hidden = true; void d.offsetWidth; d.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => d.hidden = true, 2600); }
 let NEXT_ANIM = '';
 function view(html, flush) { const v = $('#view'); v.className = (flush ? 'flush' : '') + (NEXT_ANIM ? ' a-' + NEXT_ANIM : ''); NEXT_ANIM = ''; v.innerHTML = html; v.scrollTop = 0; }
+// Celular argentino → 10 dígitos (código de área + número, sin 0 ni 15)
+function normTel(s) {
+  let d = String(s || '').replace(/\D/g, '');
+  if (d.startsWith('54')) d = d.slice(2);
+  if (d.startsWith('9') && d.length === 11) d = d.slice(1);
+  if (d.startsWith('0')) d = d.slice(1);
+  if (d.length === 12) for (const n of [2, 3, 4]) if (d.slice(n, n + 2) === '15') { d = d.slice(0, n) + d.slice(n + 2); break; }
+  return /^\d{10}$/.test(d) ? d : '';
+}
+const USU_RE = /^[a-z0-9._]{3,20}$/;
+// Verificación del celular (el SMS está simulado: el código aparece como notificación en pantalla)
+let VER = {tel:'', code:'', ok:'', until:0};
+const telBlock = (id, val, okTel) => `<div class="stack" style="gap:8px"><label class="f" for="${id}">Celular<div class="telrow"><input id="${id}" type="tel" value="${esc(val || '')}" placeholder="11 2345 6789" autocomplete="off" data-tel="1"><button type="button" class="btn sm" data-a="sendCode" data-v="${id}">${okTel ? 'Cambiar' : 'Enviar código'}</button></div>
+  <span class="hint ${okTel ? 'ok' : ''}" id="${id}Hint">${okTel ? '✓ Celular verificado' : 'Te mandamos un código por SMS para confirmarlo. Solo se comparte cuando confirmás un trabajo.'}</span></label>
+  <div id="${id}Code" hidden><label class="f" for="code">Código de 6 números<div class="telrow"><input id="code" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="one-time-code"><button type="button" class="btn sm p" data-a="checkCode" data-v="${id}">Verificar</button></div></label>
+  <button type="button" class="linkbtn" style="margin-top:8px" data-a="sendCode" data-v="${id}">Reenviar código</button></div></div>`;
+async function libre(usuario, tel) {
+  if (CLOUD) { await SB_P; const r = await SB.rpc('disponible', {p_usuario:usuario || null, p_tel:tel || null}); if (r.error) throw r.error; return r.data; }
+  const otros = [...DB.users, ...DB.provs].filter(x => !DB.cur || x.id !== DB.cur.id);
+  return {usuario:!usuario || !otros.some(x => (x.usuario || '') === usuario), tel:!tel || !otros.some(x => x.telN === tel)};
+}
+function showSms(code) {
+  let el = $('#sms'); if (!el) { el = document.createElement('div'); el.id = 'sms'; el.setAttribute('role', 'status'); $('#device').appendChild(el); el.onclick = () => el.classList.remove('in'); }
+  el.innerHTML = `<span class="si">${ico('chat')}</span><div><small>Mensajes · ahora</small><b>HandyGo</b><p>Tu código de verificación es <b class="num">${code}</b>. No lo compartas con nadie.</p></div>`;
+  requestAnimationFrame(() => el.classList.add('in')); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('in'), 9000);
+}
+ACT.sendCode = async (id, btn) => {
+  const inp = $('#' + id), hint = $('#' + id + 'Hint'), box = $('#' + id + 'Code'), tel = normTel(inp.value);
+  if (!tel) { hint.className = 'hint'; hint.textContent = 'Revisá el celular: código de área y número, sin 0 ni 15. Ej: 11 2345 6789.'; inp.focus(); return; }
+  if (VER.ok === tel) { hint.className = 'hint ok'; hint.textContent = '✓ Celular verificado'; box.hidden = true; return; }
+  if (VER.tel === tel && Date.now() < VER.until) { hint.className = 'hint'; hint.textContent = `Esperá ${Math.ceil((VER.until - Date.now()) / 1000)} segundos para pedir otro código.`; return; }
+  const old = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
+  try { const d = await libre(null, tel); if (!d.tel) { hint.className = 'hint'; hint.textContent = 'Ese celular ya está registrado en otra cuenta.'; return; } }
+  catch (e) { hint.className = 'hint'; hint.textContent = 'No pudimos conectarnos. Probá de nuevo.'; return; }
+  finally { btn.disabled = false; btn.textContent = old; }
+  VER = {tel, code:String(Math.floor(100000 + Math.random() * 900000)), ok:VER.ok, until:Date.now() + 30000};
+  box.hidden = false; hint.className = 'hint'; hint.textContent = 'Te mandamos un SMS con el código.';
+  const c = $('#code'); c.value = ''; setTimeout(() => showSms(VER.code), 700); c.focus();
+};
+ACT.checkCode = id => {
+  const hint = $('#' + id + 'Hint'), c = $('#code');
+  if (!VER.code || normTel($('#' + id).value) !== VER.tel) { hint.className = 'hint'; hint.textContent = 'Pedí un código para este número.'; return; }
+  if (c.value.trim() !== VER.code) { hint.className = 'hint'; hint.textContent = 'El código no coincide. Revisalo e intentá de nuevo.'; c.select(); return; }
+  VER.ok = VER.tel; VER.code = ''; $('#' + id + 'Code').hidden = true; hint.className = 'hint ok'; hint.textContent = '✓ Celular verificado';
+  const sm = $('#sms'); if (sm) sm.classList.remove('in');
+};
+document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.tel) { const id = e.target.id, h = $('#' + id + 'Hint');
+  if (h && normTel(e.target.value) !== VER.ok && h.classList.contains('ok')) { h.className = 'hint'; h.textContent = 'Número nuevo: tocá “Enviar código” para confirmarlo.'; } } });
 const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
 function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
 function closeSheet() { const s = $('#scrim'); if (!s) return; s.id = ''; if (matchMedia('(prefers-reduced-motion: reduce)').matches) return s.remove(); s.classList.add('out'); setTimeout(() => s.remove(), 210); }
@@ -991,16 +1052,17 @@ ACT.role = () => { NEXT_ANIM = 'right'; view(`${ahead('welcome', '¿Cómo vas a 
   </div>`); };
 let REG = {t:'u', dni:false};
 ACT.reg = t => {
-  REG = {t, dni:false, foto:null};
+  REG = {t, dni:false, foto:null}; VER = {tel:'', code:'', ok:'', until:0};
   const p = t === 'p';
   NEXT_ANIM = 'right';
   view(`<div id="regHead">${ahead('role', p ? 'Creá tu perfil de prestador' : 'Creá tu cuenta', p ? 'Paso 1 de 2 · Tus datos' : 'Te lleva un minuto.', p ? 1 : 0)}</div>
    <div class="stack" id="step1">
    ${fotoPicker('regFoto', 'reg', REG.foto)}
    ${field('nombre', 'Nombre y apellido', 'text', 'Ej: Sofía Martínez')}
+   ${field('usuario', 'Nombre de usuario', 'text', 'Ej: sofi.martinez', 'Para ingresar sin el mail. De 3 a 20 letras o números, sin espacios (podés usar . y _)')}
    ${field('mail', 'Mail', 'email', 'vos@mail.com')}
    ${field('pass', 'Contraseña', 'password', '', 'Mínimo 6 caracteres')}
-   ${field('tel', 'Celular', 'tel', '11 2345 6789', 'Solo se comparte cuando confirmás un trabajo')}
+   ${telBlock('tel', '', false)}
    ${field('zona', p ? 'Zona donde trabajás' : 'Barrio', 'text', 'Ej: Almagro, CABA', 'Por ahora HandyGo funciona solo en CABA')}
    ${p ? '<div class="err" id="err1" role="alert"></div><button class="btn p w" data-a="regNext">Siguiente</button>' : ''}
    </div>
@@ -1015,11 +1077,21 @@ ACT.reg = t => {
    <button class="btn p w" data-a="doReg">Crear cuenta</button>
    ${p ? '<button class="btn g w" data-a="regPrev">Volver a tus datos</button>' : ''}</div>`);
 };
-ACT.regNext = () => {
-  const val = id => ($('#' + id)?.value || '').trim(); let e = '';
-  if (!val('nombre') || !val('zona')) e = 'Completá tu nombre y tu zona.';
-  else if (!/^\S+@\S+\.\S+$/.test(val('mail'))) e = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
-  else if (val('pass').length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
+// Validación de los datos de la cuenta (usuario, mail, contraseña y celular verificado)
+async function checkCuenta(val) {
+  const usu = val('usuario').toLowerCase(), tel = normTel(val('tel'));
+  if (!val('nombre') || !val('zona')) return 'Completá tu nombre y tu zona.';
+  if (!USU_RE.test(usu)) return 'Revisá el nombre de usuario: de 3 a 20 letras o números, sin espacios ni acentos (podés usar . y _).';
+  if (!/^\S+@\S+\.\S+$/.test(val('mail'))) return 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
+  if (val('pass').length < 6) return 'La contraseña necesita al menos 6 caracteres.';
+  if (!tel || VER.ok !== tel) return 'Verificá tu celular con el código que te mandamos.';
+  try { const d = await libre(usu, tel); if (!d.usuario) return 'Ese nombre de usuario ya existe. Probá con otro.'; if (!d.tel) return 'Ese celular ya está registrado en otra cuenta.'; }
+  catch (e) { return 'No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.'; }
+  return '';
+}
+ACT.regNext = async (x, btn) => {
+  const val = id => ($('#' + id)?.value || '').trim();
+  const done = busy(btn, 'Revisando…'); const e = await checkCuenta(val); done();
   if (e) { $('#err1').textContent = e; return; }
   $('#err1').textContent = ''; $('#step1').hidden = true; $('#step2').hidden = false;
   $('#regHead').innerHTML = ahead('role', 'Creá tu perfil de prestador', 'Paso 2 de 2 · Tu oficio', 2);
@@ -1033,11 +1105,10 @@ ACT.regPrev = () => {
 ACT.dni = (v, b) => { b.disabled = true; b.textContent = 'Validando con RENAPER…'; setTimeout(() => { REG.dni = true; b.disabled = false; b.className = 'btn w'; b.style.cssText = 'border-color:var(--ok);color:var(--ok)'; b.innerHTML = ico('check') + ' Identidad verificada'; }, 1200); };
 ACT.doReg = async (v, btn) => {
   const val = id => ($('#' + id)?.value || '').trim();
-  const d = {id:uid(), nombre:val('nombre'), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona'), tel:val('tel'), foto:REG.foto || null};
+  const d = {id:uid(), nombre:val('nombre'), usuario:val('usuario').toLowerCase(), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona'), tel:val('tel'), telN:normTel(val('tel')), foto:REG.foto || null};
   let e = '';
-  if (!d.nombre || !d.zona) e = 'Completá tu nombre y tu barrio.';
-  else if (!/^\S+@\S+\.\S+$/.test(d.mail)) e = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
-  else if (d.pass.length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
+  if (REG.t === 'u') { const done = busy(btn, 'Revisando…'); e = await checkCuenta(val); done(); }
+  if (e) {}
   else if (!CLOUD && [...DB.users, ...DB.provs].some(x => x.mail === d.mail)) e = 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
   if (!e && REG.t === 'p') {
     d.rubro = val('rubro'); d.mat = val('mat'); d.anios = +val('anios') || 0; d.bio = val('bio'); d.esp = []; d.port = []; d.hor = 'Lunes a viernes, 8 a 18 h'; d.agenda = defAgenda();
@@ -1060,7 +1131,7 @@ function seedProvJobs(p) {
     hard:/seguridad/.test(intentos), code:code(), resp:[], desc, intentos, img:null, estado:'nuevo', offers:[], msgs:[], ts:Date.now() - (i + 1) * 3600e3}));
 }
 ACT.login = () => { NEXT_ANIM = 'right'; view(`${ahead('welcome', 'Ingresá', 'Qué bueno verte de nuevo.')}
-  <div class="stack">${field('mail', 'Mail', 'email')}${field('pass', 'Contraseña', 'password')}
+  <div class="stack">${field('mail', 'Mail, usuario o celular', 'text', 'Ej: sofi.martinez o 11 2345 6789')}${field('pass', 'Contraseña', 'password')}
   <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button>
   <button class="linkbtn" style="justify-self:center" data-a="forgot">Olvidé mi contraseña</button></div>`); };
 ACT.forgot = () => { NEXT_ANIM = 'right'; view(`${ahead('login', 'Recuperar contraseña', 'Te mandamos un link para crear una nueva.')}
@@ -1096,9 +1167,11 @@ ACT.savePass = async (v, btn) => {
 };
 ACT.doLogin = (v, btn) => {
   const m = $('#mail').value.trim().toLowerCase(), p = $('#pass').value;
+  if (!m || !p) { $('#err').textContent = 'Completá tu mail, usuario o celular y tu contraseña.'; return; }
   if (CLOUD) return cloudLogin(m, p, btn);
-  const u = DB.users.find(x => x.mail === m && x.pass === p), pr = DB.provs.find(x => x.mail === m && x.pass === p);
-  if (!u && !pr) { $('#err').textContent = 'El mail o la contraseña no coinciden. Revisalos e intentá de nuevo.'; return; }
+  const t = normTel(m), es = x => x.pass === p && (x.mail === m || (x.usuario && x.usuario === m) || (t && x.telN === t));
+  const u = DB.users.find(es), pr = DB.provs.find(es);
+  if (!u && !pr) { $('#err').textContent = 'Los datos o la contraseña no coinciden. Revisalos e intentá de nuevo.'; return; }
   DB.cur = {t:u ? 'u' : 'p', id:(u || pr).id}; save(); enter();
 };
 let TAPS = 0, TAPT = 0;
@@ -2130,7 +2203,7 @@ function vPer() {
   const u = me(), t = DB.cur.t;
   if (t === 'u') {
     const js = DB.jobs.filter(j => j.uid === u.id);
-    view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
+    view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${u.usuario ? '@' + esc(u.usuario) + ' · ' : ''}${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
      <div class="card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
      ${tail()}`);
   } else {
@@ -2148,21 +2221,22 @@ function vPer() {
 }
 /* ---------- editar perfil ---------- */
 let EDIT = null;
-ACT.edit = () => { const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; V.edit = true; vEdit(); };
+ACT.edit = () => { const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; VER = {tel:"", code:"", ok:u.telN || "", until:0}; V.edit = true; vEdit(); };
 ACT.quitarFoto = () => { EDIT.foto = null; vEdit(); };
 ACT.quitarPort = i => { EDIT.port.splice(+i, 1); vEdit(); };
 ACT.cancelEdit = () => { V.edit = false; EDIT = null; render(); };
 function vEdit() {
   const u = me(), p = DB.cur.t === 'p';
   const keep = id => { const el = $('#' + id); return el ? el.value : null; };
-  const cur = {nombre:keep('e_nombre') ?? u.nombre, tel:keep('e_tel') ?? (u.tel || ''), zona:keep('e_zona') ?? u.zona, dir:keep('e_dir') ?? (u.dir || ''),
+  const cur = {nombre:keep('e_nombre') ?? u.nombre, usuario:keep('e_usuario') ?? (u.usuario || ''), tel:keep('e_tel') ?? (u.tel || ''), zona:keep('e_zona') ?? u.zona, dir:keep('e_dir') ?? (u.dir || ''),
     bio:keep('e_bio') ?? (u.bio || ''), esp:keep('e_esp') ?? (u.esp || []).join(', '), hor:keep('e_hor') ?? (u.hor || ''), mat:keep('e_mat') ?? (u.mat || ''), anios:keep('e_anios') ?? (u.anios || '')};
   const inp = (id, l, v, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
   view(`<button class="back" data-a="cancelEdit">${ico('back')} Perfil</button>
    <div class="stack" style="margin-top:16px">
     ${fotoPicker('editFoto', 'edit', EDIT.foto)}
     ${inp('e_nombre', 'Nombre y apellido', cur.nombre)}
-    ${inp('e_tel', 'Celular', cur.tel, 'tel', '11 2345 6789', 'Solo se comparte cuando confirmás un trabajo')}
+    ${inp('e_usuario', 'Nombre de usuario', cur.usuario, 'text', 'Ej: sofi.martinez', 'Para ingresar sin el mail')}
+    ${telBlock('e_tel', cur.tel, !!u.telN && normTel(cur.tel) === u.telN)}
     ${inp('e_zona', p ? 'Zona donde trabajás' : 'Barrio', cur.zona)}
     ${p ? `
     ${inp('e_mat', 'Matrícula', cur.mat, 'text', '', ['Gas', 'Electricidad'].includes(u.rubro) ? 'Obligatoria para ' + u.rubro : 'Opcional en ' + u.rubro)}
@@ -2185,7 +2259,18 @@ ACT.saveEdit = async (x, btn) => {
     EDIT.foto = await upPhoto(EDIT.foto); EDIT.port = await Promise.all((EDIT.port || []).map(upPhoto)); if (btn) { btn.disabled = false; btn.textContent = 'Guardar cambios'; } }
   if (!v('e_nombre') || !v('e_zona')) { $('#err').textContent = 'Completá tu nombre y tu zona.'; return; }
   if (p && ['Gas', 'Electricidad'].includes(u.rubro) && !v('e_mat')) { $('#err').textContent = `Para ${u.rubro} la matrícula es obligatoria.`; return; }
+  const usu = v('e_usuario').toLowerCase(), tel = normTel(v('e_tel'));
+  if ((usu || u.usuario) && !USU_RE.test(usu)) { $('#err').textContent = 'Revisá el nombre de usuario: de 3 a 20 letras o números, sin espacios ni acentos (podés usar . y _).'; return; }
+  if (v('e_tel') && !tel) { $('#err').textContent = 'Revisá el celular: código de área y número, sin 0 ni 15.'; return; }
+  if (tel && tel !== u.telN && VER.ok !== tel) { $('#err').textContent = 'Verificá el celular nuevo con el código que te mandamos.'; return; }
+  if ((usu && usu !== u.usuario) || (tel && tel !== u.telN)) {
+    try { const d = await libre(usu !== u.usuario ? usu : null, tel !== u.telN ? tel : null);
+      if (!d.usuario) { $('#err').textContent = 'Ese nombre de usuario ya existe. Probá con otro.'; return; }
+      if (!d.tel) { $('#err').textContent = 'Ese celular ya está registrado en otra cuenta.'; return; } }
+    catch (e) { $('#err').textContent = 'No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.'; return; }
+  }
   Object.assign(u, {nombre:v('e_nombre'), tel:v('e_tel'), zona:v('e_zona'), foto:EDIT.foto});
+  if (usu) u.usuario = usu; if (tel) u.telN = tel;
   if (p) Object.assign(u, {mat:v('e_mat'), anios:+v('e_anios') || 0, bio:v('e_bio'), esp:v('e_esp').split(',').map(x => x.trim()).filter(Boolean).slice(0, 8), hor:v('e_hor'), port:EDIT.port});
   else u.dir = v('e_dir');
   try { save(); } catch (e) {}
@@ -2263,8 +2348,11 @@ function loadSB() {
 function busy(btn, txt) { if (!btn) return () => {}; const old = btn.innerHTML; btn.disabled = true; btn.textContent = txt; return () => { btn.disabled = false; btn.innerHTML = old; }; }
 function authError(e) {
   const m = String((e && e.message) || e || '');
+  if (/usuario_repetido/i.test(m)) return 'Ese nombre de usuario ya existe. Probá con otro.';
+  if (/telefono_repetido/i.test(m)) return 'Ese celular ya está registrado en otra cuenta.';
+  if (/database error saving new user/i.test(m)) return 'Ese nombre de usuario o celular ya está en otra cuenta.';
   if (/already registered|already exists/i.test(m)) return 'Ese mail ya tiene una cuenta. Probá con “Ya tengo cuenta”.';
-  if (/invalid login/i.test(m)) return 'El mail o la contraseña no coinciden. Revisalos e intentá de nuevo.';
+  if (/invalid login/i.test(m)) return 'Los datos o la contraseña no coinciden. Revisalos e intentá de nuevo.';
   if (/not confirmed/i.test(m)) return 'Todavía no confirmaste tu mail. Buscá el mail de HandyGo (fijate en spam) y tocá el link.';
   if (/rate limit|too many/i.test(m)) return 'Hubo demasiados intentos seguidos. Esperá unos minutos y probá de nuevo.';
   if (/password/i.test(m)) return 'La contraseña no es válida: usá al menos 6 caracteres.';
@@ -2404,8 +2492,18 @@ async function cloudRegister(d, btn) {
 async function cloudLogin(mail, pass, btn) {
   const done = busy(btn, 'Ingresando…');
   try { await SB_P; } catch (e) { done(); $('#err').textContent = 'No hay conexión. Probá de nuevo en un momento.'; return; }
-  const { error } = await SB.auth.signInWithPassword({email:mail, password:pass});
-  if (error) { done(); $('#err').textContent = authError(error); return; }
+  if (mail.includes('@')) {
+    const { error } = await SB.auth.signInWithPassword({email:mail, password:pass});
+    if (error) { done(); $('#err').textContent = authError(error); return; }
+  } else {
+    // Usuario o celular: el servidor busca la cuenta y devuelve la sesión
+    let r = null, d = null;
+    try { r = await fetch('/api/login', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({id:mail, pass})}); d = await r.json().catch(() => null); } catch (e) {}
+    if (!r || !d || !d.ok) { done(); $('#err').textContent = !r ? authError('') : r.status === 401 ? 'Los datos o la contraseña no coinciden. Revisalos e intentá de nuevo.'
+      : r.status === 429 ? 'Hubo demasiados intentos seguidos. Esperá un minuto y probá de nuevo.' : r.status === 501 ? 'Por ahora ingresá con tu mail.' : authError(''); return; }
+    const { error } = await SB.auth.setSession({access_token:d.access_token, refresh_token:d.refresh_token});
+    if (error) { done(); $('#err').textContent = authError(error); return; }
+  }
   try { await cloudLoad(); } catch (e) { done(); $('#err').textContent = authError(e); return; }
   enter();
 }
