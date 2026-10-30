@@ -298,7 +298,12 @@ details.offerf[open] summary{display:none}
 .adfull{position:absolute;inset:0;z-index:30;background:#1E2A24;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px 24px;gap:14px}
 .adfull .big{font:700 40px/1 var(--f-display);color:var(--acc)}
 .adfull .cd{position:absolute;top:calc(env(safe-area-inset-top,0px) + 16px);right:16px;font:700 13px/1 var(--f-mono);background:rgba(255,255,255,.12);padding:8px 12px;border-radius:99px}
-#toast{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 78px);box-shadow:0 8px 24px -8px rgba(0,0,0,.4);z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:700;font-size:14px;max-width:90%;text-align:center}
+#toast{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 76px);z-index:40;display:flex;align-items:center;gap:10px;
+  margin:0 auto;max-width:360px;width:max-content;background:var(--ink);color:var(--bg);padding:9px 14px 9px 10px;border-radius:14px;font:600 13.5px/1.3 var(--f-body);box-shadow:0 10px 26px -10px rgba(0,0,0,.5)}
+#toast .ti{flex:none;width:24px;height:24px;border-radius:8px;background:var(--mint);color:#1E2A24;display:grid;place-items:center}
+#toast .ti svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion:no-preference){#toast:not([hidden]){animation:tdrop .28s cubic-bezier(.2,.9,.3,1.2)}}
+@keyframes tdrop{from{opacity:0;transform:translateY(-10px) scale(.97)}}
 .tag svg,.btn svg,.back svg,.hint svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 img.av{object-fit:cover;background:var(--sunk)}
 .avpick{display:flex;gap:14px;align-items:center}
@@ -449,6 +454,41 @@ h3.sh{font:600 17px/1.25 var(--f-display);margin:0 0 10px;color:var(--ink)}
 @keyframes lup{from{opacity:0;transform:translateY(110%)}}
 @keyframes lfade{from{opacity:0;transform:translateY(8px)}}
 @keyframes ltape{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.a-fade{animation:vfade .22s ease-out}
+.a-right{animation:vright .28s cubic-bezier(.2,.8,.2,1)}
+.a-left{animation:vleft .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes vfade{from{opacity:0}}
+@keyframes vright{from{opacity:0;transform:translateX(28px)}}
+@keyframes vleft{from{opacity:0;transform:translateX(-28px)}}
+@media (prefers-reduced-motion:no-preference){
+  .scrim{animation:sfade .22s ease-out}
+  .scrim .sheet{animation:sup .32s cubic-bezier(.2,.9,.25,1)}
+  .scrim.out{animation:sfade .2s ease-in reverse forwards}
+  .scrim.out .sheet{animation:sdown .2s ease-in forwards}
+}
+@media (prefers-reduced-motion:reduce){.a-fade,.a-right,.a-left{animation:none}}
+@keyframes sfade{from{opacity:0}}
+@keyframes sup{from{transform:translateY(100%)}}
+@keyframes sdown{to{transform:translateY(100%)}}
+.ahead{position:relative;background:var(--head);color:#FFFFFF;margin:-18px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 18px calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+  padding:calc(env(safe-area-inset-top,0px) + 14px) max(20px,env(safe-area-inset-right,0px)) 26px max(20px,env(safe-area-inset-left,0px))}
+.ahead::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;background:linear-gradient(var(--acc),var(--acc)) bottom/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) bottom/100% 9px no-repeat}
+.ahead .back{color:var(--mint);margin-bottom:14px}
+.ahead .ar{display:flex;align-items:center;gap:14px}
+.ahead .mark{width:48px;height:48px;box-shadow:0 0 0 2px var(--mint)}
+.ahead h2{margin:0;color:#FFFFFF;font-size:24px}
+.ahead p{margin:4px 0 0;color:var(--mint);font-size:14.5px}
+.ahead .stepper{display:flex;gap:6px;margin-top:14px}
+.ahead .stepper i{flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.22)}
+.ahead .stepper i.on{background:var(--acc)}
+.empty svg.illo{width:132px;height:110px;margin:0 auto 10px;display:block;stroke:none;fill:none}
+.empty .btn{margin-top:14px}
+.skel{position:relative;overflow:hidden;background:var(--sunk);border-radius:8px}
+.skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent)}
+@media (prefers-reduced-motion:no-preference){.skel::after{animation:shim2 1.3s infinite}}
+@keyframes shim2{to{transform:translateX(100%)}}
+.skcard{display:grid;gap:10px}
+.skrow{display:flex;gap:12px;align-items:center}
 .review{border-top:1px solid var(--line);padding-top:10px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -855,11 +895,14 @@ const avg = p => p.rev && p.rev.length ? +(p.rev.reduce((a, r) => a + r.s, 0) / 
 /* ---------- utilidades de interfaz ---------- */
 const ACT = {};
 document.addEventListener('click', e => { const a = e.target.closest('[data-a]'); if (a && ACT[a.dataset.a]) { e.preventDefault(); ACT[a.dataset.a](a.dataset.v, a, e); } });
-function toast(t) { const d = $('#toast'); d.textContent = t; d.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => d.hidden = true, 2600); }
-function view(html, flush) { const v = $('#view'); v.className = flush ? 'flush' : ''; v.innerHTML = html; v.scrollTop = 0; }
+function toast(t) { const d = $('#toast'); const k = /presupuesto/i.test(t) ? 'clip' : /mensaje/i.test(t) ? 'chat' : /camino|empezó|terminado|aceptó/i.test(t) ? 'truck' : /conexión|No se pudo|No pudimos|Revisá/i.test(t) ? 'alert' : 'check';
+  const top = $('#top'); d.style.top = (top && !top.hidden ? top.offsetHeight + 10 : 16) + 'px';
+  d.innerHTML = `<span class="ti">${ico(k)}</span><span>${esc(t)}</span>`; d.hidden = true; void d.offsetWidth; d.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => d.hidden = true, 2600); }
+let NEXT_ANIM = '';
+function view(html, flush) { const v = $('#view'); v.className = (flush ? 'flush' : '') + (NEXT_ANIM ? ' a-' + NEXT_ANIM : ''); NEXT_ANIM = ''; v.innerHTML = html; v.scrollTop = 0; }
 const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
 function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
-function closeSheet() { const s = $('#scrim'); if (s) s.remove(); }
+function closeSheet() { const s = $('#scrim'); if (!s) return; s.id = ''; if (matchMedia('(prefers-reduced-motion: reduce)').matches) return s.remove(); s.classList.add('out'); setTimeout(() => s.remove(), 210); }
 ACT.close = closeSheet;
 const avatar = (name, foto, cls = '', style = '') => foto ? `<img class="av ${cls}" src="${foto}" alt="" style="${style}">` : `<span class="av ${cls}" style="${style}">${ini(name)}</span>`;
 function readPhoto(file, max) {
@@ -897,33 +940,53 @@ function welcome() {
       <button class="btn o w" data-a="login">Ya tengo cuenta</button>
     </div></div>`, true);
 }
-ACT.welcome = welcome;
-ACT.role = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button>
-  <h2>¿Cómo vas a usar HandyGo?</h2><p class="mut">La app cambia según tu perfil.</p>
-  <div class="stack" style="margin-top:16px">
+ACT.welcome = () => { NEXT_ANIM = 'left'; welcome(); };
+const ahead = (back, title, sub, step) => `<div class="ahead"><button class="back" data-a="${back}">${ico('back')} Volver</button><div class="ar">${MARK}<div><h2>${title}</h2>${sub ? `<p>${sub}</p>` : ''}</div></div>${step ? `<div class="stepper">${[1, 2].map(i => `<i class="${i <= step ? 'on' : ''}"></i>`).join('')}</div>` : ''}</div>`;
+ACT.role = () => { NEXT_ANIM = 'right'; view(`${ahead('welcome', '¿Cómo vas a usar HandyGo?', 'La app cambia según tu perfil.')}
+  <div class="stack">
     <button class="role" data-a="reg" data-v="u"><span class="ico">${ico('home')}</span><div><b>Necesito ayuda en casa</b><span>Diagnóstico con IA, tutoriales y presupuestos de profesionales.</span></div></button>
     <button class="role" data-a="reg" data-v="p"><span class="ico y">${ico('tool')}</span><div><b>Soy prestador de servicios</b><span>Recibí pedidos con el problema ya explicado y construí tu reputación.</span></div></button>
-  </div>`);
+  </div>`); };
 let REG = {t:'u', dni:false};
 ACT.reg = t => {
   REG = {t, dni:false, foto:null};
-  view(`<button class="back" data-a="role">${ico('back')} Volver</button>
-   <h2>${t === 'u' ? 'Creá tu cuenta' : 'Creá tu perfil de prestador'}</h2>
-   <div class="stack" style="margin-top:14px">
+  const p = t === 'p';
+  NEXT_ANIM = 'right';
+  view(`<div id="regHead">${ahead('role', p ? 'Creá tu perfil de prestador' : 'Creá tu cuenta', p ? 'Paso 1 de 2 · Tus datos' : 'Te lleva un minuto.', p ? 1 : 0)}</div>
+   <div class="stack" id="step1">
    ${fotoPicker('regFoto', 'reg', REG.foto)}
    ${field('nombre', 'Nombre y apellido', 'text', 'Ej: Sofía Martínez')}
    ${field('mail', 'Mail', 'email', 'vos@mail.com')}
    ${field('pass', 'Contraseña', 'password', '', 'Mínimo 6 caracteres')}
    ${field('tel', 'Celular', 'tel', '11 2345 6789', 'Solo se comparte cuando confirmás un trabajo')}
-   ${field('zona', t === 'u' ? 'Barrio' : 'Zona donde trabajás', 'text', 'Ej: Almagro, CABA', 'Por ahora HandyGo funciona solo en CABA')}
-   ${t === 'p' ? `<label class="f" for="rubro">Rubro<select id="rubro">${RUBROS.map(r => `<option>${r}</option>`).join('')}</select></label>
+   ${field('zona', p ? 'Zona donde trabajás' : 'Barrio', 'text', 'Ej: Almagro, CABA', 'Por ahora HandyGo funciona solo en CABA')}
+   ${p ? '<div class="err" id="err1" role="alert"></div><button class="btn p w" data-a="regNext">Siguiente</button>' : ''}
+   </div>
+   <div class="stack" id="step2" ${p ? 'hidden' : ''}>
+   ${p ? `<label class="f" for="rubro">Rubro<select id="rubro">${RUBROS.map(r => `<option>${r}</option>`).join('')}</select></label>
      ${field('mat', 'Matrícula', 'text', 'N.º de matrícula', 'Obligatoria para Gas y Electricidad')}
      ${field('anios', 'Años de experiencia', 'number', '5')}
      <label class="f" for="bio">Contá sobre vos<textarea id="bio" rows="3" placeholder="Ej: Plomero hace 10 años, trabajo prolijo y explico qué hice"></textarea><span class="hint">Es lo primero que leen los clientes en tu perfil</span></label>
      <button class="btn w" id="dniBtn" data-a="dni">${ico('shield')} Verificar identidad con DNI</button>` : ''}
    <label class="chk" for="terms"><input type="checkbox" id="terms"><span>Leí y acepto los <button type="button" class="linkbtn" data-a="legal">Términos y la Política de privacidad</button></span></label>
    <div class="err" id="err" role="alert"></div>
-   <button class="btn p w" data-a="doReg">Crear cuenta</button></div>`);
+   <button class="btn p w" data-a="doReg">Crear cuenta</button>
+   ${p ? '<button class="btn g w" data-a="regPrev">Volver a tus datos</button>' : ''}</div>`);
+};
+ACT.regNext = () => {
+  const val = id => ($('#' + id)?.value || '').trim(); let e = '';
+  if (!val('nombre') || !val('zona')) e = 'Completá tu nombre y tu zona.';
+  else if (!/^\S+@\S+\.\S+$/.test(val('mail'))) e = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
+  else if (val('pass').length < 6) e = 'La contraseña necesita al menos 6 caracteres.';
+  if (e) { $('#err1').textContent = e; return; }
+  $('#err1').textContent = ''; $('#step1').hidden = true; $('#step2').hidden = false;
+  $('#regHead').innerHTML = ahead('role', 'Creá tu perfil de prestador', 'Paso 2 de 2 · Tu oficio', 2);
+  const v = $('#view'); v.scrollTop = 0; v.classList.remove('a-right', 'a-left'); void v.offsetWidth; v.classList.add('a-right');
+};
+ACT.regPrev = () => {
+  $('#step2').hidden = true; $('#step1').hidden = false;
+  $('#regHead').innerHTML = ahead('role', 'Creá tu perfil de prestador', 'Paso 1 de 2 · Tus datos', 1);
+  const v = $('#view'); v.scrollTop = 0; v.classList.remove('a-right', 'a-left'); void v.offsetWidth; v.classList.add('a-left');
 };
 ACT.dni = (v, b) => { b.disabled = true; b.textContent = 'Validando con RENAPER…'; setTimeout(() => { REG.dni = true; b.disabled = false; b.className = 'btn w'; b.style.cssText = 'border-color:var(--ok);color:var(--ok)'; b.innerHTML = ico('check') + ' Identidad verificada'; }, 1200); };
 ACT.doReg = async (v, btn) => {
@@ -954,14 +1017,13 @@ function seedProvJobs(p) {
     id:'d' + uid(), uid:'demo', un:CLIENTS[i % CLIENTS.length], zona:['Almagro','Caballito','Palermo'][i % 3], caso, rubro:p.rubro,
     hard:/seguridad/.test(intentos), code:code(), resp:[], desc, intentos, img:null, estado:'nuevo', offers:[], msgs:[], ts:Date.now() - (i + 1) * 3600e3}));
 }
-ACT.login = () => view(`<button class="back" data-a="welcome">${ico('back')} Volver</button><h2>Ingresá</h2>
-  <div class="stack" style="margin-top:14px">${field('mail', 'Mail', 'email')}${field('pass', 'Contraseña', 'password')}
+ACT.login = () => { NEXT_ANIM = 'right'; view(`${ahead('welcome', 'Ingresá', 'Qué bueno verte de nuevo.')}
+  <div class="stack">${field('mail', 'Mail', 'email')}${field('pass', 'Contraseña', 'password')}
   <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button>
-  <button class="linkbtn" style="justify-self:center" data-a="forgot">Olvidé mi contraseña</button></div>`);
-ACT.forgot = () => view(`<button class="back" data-a="login">${ico('back')} Volver</button><h2>Recuperar contraseña</h2>
-  <p class="mut small">Te mandamos un mail con un link para crear una contraseña nueva.</p>
-  <div class="stack" style="margin-top:14px">${field('fmail', 'Mail de tu cuenta', 'email', 'vos@mail.com')}<div class="err" id="err" role="alert"></div>
-  <button class="btn p w" data-a="sendReset">Enviar el link</button></div>`);
+  <button class="linkbtn" style="justify-self:center" data-a="forgot">Olvidé mi contraseña</button></div>`); };
+ACT.forgot = () => { NEXT_ANIM = 'right'; view(`${ahead('login', 'Recuperar contraseña', 'Te mandamos un link para crear una nueva.')}
+  <div class="stack">${field('fmail', 'Mail de tu cuenta', 'email', 'vos@mail.com')}<div class="err" id="err" role="alert"></div>
+  <button class="btn p w" data-a="sendReset">Enviar el link</button></div>`); };
 ACT.sendReset = async (v, btn) => {
   const m = ($('#fmail').value || '').trim().toLowerCase();
   if (!/^\S+@\S+\.\S+$/.test(m)) { $('#err').textContent = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.'; return; }
@@ -975,8 +1037,8 @@ ACT.sendReset = async (v, btn) => {
 };
 function vNewPass() {
   $('#top').hidden = true; $('#nav').hidden = true;
-  view(`<h2>Nueva contraseña</h2><p class="mut small">Elegí una contraseña nueva para tu cuenta.</p>
-   <div class="stack" style="margin-top:14px">${field('np1', 'Contraseña nueva', 'password', '', 'Mínimo 6 caracteres')}${field('np2', 'Repetila', 'password')}
+  view(`<div class="ahead"><div class="ar">${MARK}<div><h2>Nueva contraseña</h2><p>Elegí una contraseña nueva para tu cuenta.</p></div></div></div>
+   <div class="stack">${field('np1', 'Contraseña nueva', 'password', '', 'Mínimo 6 caracteres')}${field('np2', 'Repetila', 'password')}
    <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="savePass">Guardar contraseña</button></div>`);
 }
 ACT.savePass = async (v, btn) => {
@@ -1108,7 +1170,7 @@ ACT.tourEnd = () => {
 };
 ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'ped'; V.job = null; render(); setTimeout(startTour, 200); };
 window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
-ACT.tab = t => { V.tab = t; V.job = null; V.edit = false; render(); };
+ACT.tab = t => { if (V.tab !== t || V.job || V.edit) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; render(); };
 function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
@@ -1673,7 +1735,7 @@ let STORE_REQ = 0;
 async function loadStores(c) {
   const list = $('#ferList'); if (!list) return;
   const my = ++STORE_REQ;
-  list.innerHTML = '<div class="card"><span class="typing"><i></i><i></i><i></i></span> <span class="mut small">Buscando ferreterías…</span></div>';
+  list.innerHTML = [1, 2, 3].map(() => `<div class="card skcard" aria-hidden="true"><div class="skrow"><div class="skel" style="height:16px;flex:1"></div><div class="skel" style="height:14px;width:48px"></div></div><div class="skel" style="height:12px;width:60%"></div><div class="skel" style="height:24px;width:110px;border-radius:99px"></div></div>`).join('') + '<p class="hint" style="text-align:center">Buscando ferreterías cerca…</p>';
   let st;
   try {
     const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
@@ -1719,7 +1781,19 @@ ACT.locate = () => {
    PEDIDOS · USUARIO
    ============================================================ */
 const EST = {nuevo:'Buscando presupuestos', aceptado:'En curso', finalizado:'Finalizado'};
-function emptyState(icon, t, s) { return `<div class="empty">${ico(icon)}<h3 style="color:var(--ink)">${t}</h3><p class="small">${s}</p></div>`; }
+const ILLO = {
+  clip:`<rect x="38" y="20" width="56" height="74" rx="8" fill="var(--surface)" stroke="var(--pri)" stroke-width="3"/><rect x="52" y="14" width="28" height="12" rx="4" fill="var(--acc)"/>
+    <path d="M50 46h32M50 58h32M50 70h20" stroke="var(--mint)" stroke-width="4" stroke-linecap="round"/><circle cx="92" cy="84" r="13" fill="var(--pri)"/><path d="M86 84l4 4 8-8" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  inbox:`<path d="M24 60l14-32h56l14 32v26a6 6 0 01-6 6H30a6 6 0 01-6-6z" fill="var(--surface)" stroke="var(--pri)" stroke-width="3" stroke-linejoin="round"/><path d="M24 60h24l6 10h24l6-10h24" fill="none" stroke="var(--pri)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M66 18v26M56 34l10 10 10-10" stroke="var(--acc)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  home:`<path d="M26 54l40-32 40 32" fill="none" stroke="var(--pri)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 50v40h64V50" fill="var(--surface)" stroke="var(--pri)" stroke-width="3"/>
+    <rect x="56" y="64" width="20" height="26" rx="2" fill="var(--acc)"/><path d="M86 30v12" stroke="var(--pri)" stroke-width="5" stroke-linecap="round"/>`,
+  tool:`<path d="M80 22a16 16 0 00-17 21L30 76l10 10 33-33a16 16 0 0021-17l-9 9-9-3-3-9z" fill="var(--surface)" stroke="var(--pri)" stroke-width="3" stroke-linejoin="round"/><circle cx="40" cy="80" r="4" fill="var(--acc)"/>`
+};
+function emptyState(kind, t, s, btn) {
+  return `<div class="empty"><svg class="illo" viewBox="0 0 132 110" aria-hidden="true"><ellipse cx="66" cy="62" rx="58" ry="44" fill="var(--priSoft)"/>${ILLO[kind] || ILLO.clip}</svg>
+    <h3 style="color:var(--ink)">${t}</h3><p class="small">${s}</p>${btn ? `<button class="btn p" data-a="tab" data-v="${btn[1]}">${btn[0]}</button>` : ''}</div>`;
+}
 function vPedU() {
   const js = DB.jobs.filter(j => j.uid === DB.cur.id);
   view(`<h2>Mis pedidos</h2>
@@ -1728,10 +1802,10 @@ function vPedU() {
       <div class="meta"><span class="tag">${esc(j.rubro)}</span><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : j.estado === 'cancelado' ? 'r' : ''}">${stageName(j)}</span>${isUnseen(j) ? '<span class="tag r">Novedades</span>' : ''}
       ${j.turno && j.estado === 'aceptado' ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}
       ${j.estado === 'nuevo' && j.offers.length ? `<span class="tag y">${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''}</span>` : ''}${j.hard ? '<span class="tag r">Matriculado</span>' : ''}</div></button>`).join('')}</div>`
-   : emptyState('clip', 'Todavía no pediste nada', 'Contale tu problema al asistente. Si hace falta un profesional, el pedido aparece acá.')}`);
+   : emptyState('clip', 'Todavía no pediste nada', 'Si Handy ve que hace falta un profesional, tu pedido aparece acá con sus presupuestos.', ['Contale a Handy', 'chat'])}`);
 }
-ACT.job = id => { V.job = id; render(); };
-ACT.backJob = () => { V.job = null; render(); };
+ACT.job = id => { NEXT_ANIM = 'right'; V.job = id; render(); };
+ACT.backJob = () => { NEXT_ANIM = 'left'; V.job = null; render(); };
 function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
@@ -1751,7 +1825,7 @@ function vJob() {
        <div class="meta"><span class="tag v">${ico('shield')} Identidad verificada</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : ''}<span class="tag">${ico('cal')} ${esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when)}</span></div>
        <div class="quote">“${esc(o.msg)}”</div>
        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
-      : `<div class="card" style="display:flex;gap:12px;align-items:center"><span class="typing"><i></i><i></i><i></i></span><span class="mut small">Los prestadores están viendo tu caso…</span></div>`) + `</div>`;
+      : `<div class="list" aria-hidden="true">${[1, 2].map(() => `<div class="card skcard"><div class="skrow"><div class="skel" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:grid;gap:8px"><div class="skel" style="height:15px;width:55%"></div><div class="skel" style="height:12px;width:75%"></div></div><div class="skel" style="height:22px;width:70px"></div></div><div class="skel" style="height:34px;border-radius:12px"></div></div>`).join('')}</div><p class="hint" style="text-align:center">Los prestadores están viendo tu caso…</p>`) + `</div>`;
   }
   if (isU && j.uid === DB.cur.id && (j.estado === 'nuevo' || (j.estado === 'aceptado' && !(j.etapa > 0))))
     h += `<div class="sec"><button class="btn g w" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito · cancelar pedido' : 'Cancelar el trabajo'}</button></div>`;
@@ -1871,7 +1945,7 @@ function vPedP() {
      <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
      <div class="small mut">${esc(j.desc)}</div>
      <div class="meta"><span class="tag">${ico('pin').replace('<svg', '<svg style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2"')} ${esc(j.zona.split(',')[0])}</span>${j.hard ? '<span class="tag r">Derivado por seguridad</span>' : ''}${j.img ? '<span class="tag b">Con foto</span>' : ''}</div></button>`).join('')}</div>`
-   : emptyState('inbox', 'No hay pedidos nuevos', 'Cuando un vecino de tu zona necesite ' + esc(p.rubro.toLowerCase()) + ', te llega acá con el resumen del caso.')}`);
+   : emptyState('inbox', 'No hay pedidos nuevos', 'Cuando un vecino de tu zona necesite ' + esc(p.rubro.toLowerCase()) + ', te llega acá con el resumen del caso.', ['Revisar mi agenda', 'agenda'])}`);
 }
 function offerForm(j) {
   return `<div class="sec card"><h3>Enviar presupuesto</h3><p class="mut small">El cliente compara precio, reseñas y disponibilidad.</p>
@@ -1901,7 +1975,7 @@ function vTrab() {
   view(`<h2>Mis trabajos</h2>${js.length ? `<div class="list" style="margin-top:12px">${js.map(j => { const st = j.prov === p.id ? stageName(j) : (j.estado === 'nuevo' ? 'Presupuesto enviado' : j.estado === 'cancelado' ? 'El cliente canceló' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
      <div class="r1"><h3>${esc(j.caso)}</h3><span class="price" style="font-size:17px">${j.prov === p.id ? money(j.precio) : ''}</span></div>
      <div class="meta"><span class="tag ${j.estado === 'finalizado' && j.prov === p.id ? 'v' : j.estado === 'aceptado' && j.prov === p.id ? 'b' : ''}">${st}</span><span class="tag">${esc(j.un)}</span>${j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado) ? `<span class="tag">${ico('cal')} ${esc(slotLabel(j.turno))}</span>` : ''}${isUnseen(j) && j.prov === p.id ? '<span class="tag r">Novedades</span>' : ''}</div></button>`; }).join('')}</div>`
-   : emptyState('clip', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.')}`);
+   : emptyState('tool', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.', ['Ver pedidos nuevos', 'ped'])}`);
 }
 ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
 
@@ -1932,7 +2006,7 @@ function vCasa() {
       <div style="min-width:0"><h3 style="font-size:15px">${esc(x.caso)}</h3><div class="small mut">${x.t === 'pro' ? `${esc(x.prov)} · <span class="num">${money(x.precio)}</span>` : x.t === 'mant' ? 'Mantenimiento preventivo' : `Lo resolviste vos · ahorraste ≈ ${money(x.ahorro || 0)}`}</div></div>
       <span class="when">${ago(x.ts)}</span></li>`).join('')}</ul></div>
       <p class="hint" style="margin-top:8px">Gastado en profesionales: <b class="num">${money(gastado)}</b></p>`
-    : emptyState('home', 'Todavía no hay arreglos', 'Cada problema que resuelvas o trabajo que contrates queda guardado acá.')}</div>`);
+    : emptyState('home', 'Todavía no hay arreglos', 'Cada problema que resuelvas o trabajo que contrates queda guardado acá.', ['Contale a Handy', 'chat'])}</div>`);
 }
 ACT.mantDone = id => { const u = me(), S = SEASONS[seasonNow()], t = S.tasks.find(x => x.id === id);
   (u.mant = u.mant || {})[seasonKey() + '-' + id] = Date.now(); (u.hist = u.hist || []).push({t:'mant', caso:t.n, ts:Date.now()}); save(); toast('Guardado en tu historial'); render(); };
@@ -1965,8 +2039,7 @@ function vPer() {
   if (t === 'u') {
     const js = DB.jobs.filter(j => j.uid === u.id);
     view(`<div style="display:flex;gap:14px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
-     <div class="stat" style="margin-top:16px"><div class="card"><b>${u.resueltos || 0}</b><span>problemas resueltos por tu cuenta</span></div><div class="card"><b>${js.length}</b><span>pedidos a profesionales</span></div></div>
-     <div class="card" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
+     <div class="card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
      ${tail()}`);
   } else {
     const fin = DB.jobs.filter(j => j.prov === u.id && j.estado === 'finalizado');
