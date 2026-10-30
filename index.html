@@ -72,7 +72,7 @@ button{cursor:pointer}
 .top .mark{width:36px;height:36px;box-shadow:0 0 0 1.5px var(--mint)}
 .top h1{margin:0;font:700 20px/1.1 var(--f-display);letter-spacing:-.01em}
 .top small{display:block;font:500 12.5px/1.3 var(--f-body);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pill{flex:none;border:0;border-radius:99px;padding:7px 12px;font:700 13px/1 var(--f-body);background:var(--acc);color:var(--accInk);display:inline-flex;gap:6px;align-items:center}
+.pill{flex:none;border:0;border-radius:99px;padding:7px 12px;font:700 13px/1 var(--f-body);background:var(--mint);color:#1E2A24;display:inline-flex;gap:6px;align-items:center}
 .pill.off{background:rgba(255,255,255,.16);color:var(--headInk)}
 body.prov .top{background:var(--dark)}
 
@@ -392,6 +392,22 @@ button.term{border:0;background:none;padding:0;font:inherit;color:var(--pri);fon
 .tr{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .tr .m{max-width:90%}
 .tr .mk{align-self:center;font-size:12.5px;color:var(--mut);background:var(--sunk);border-radius:99px;padding:4px 10px}
+h3.sh{font:600 17px/1.25 var(--f-display);margin:0 0 10px;color:var(--ink)}
+.row>h3.sh{margin:0}
+.settings{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.settings button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:14px;text-align:left;font:500 15.5px/1.2 var(--f-body);color:var(--ink)}
+.settings button+button{border-top:1px solid var(--line)}
+.settings button svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--mut)}
+.settings button .go{margin-left:auto;transform:rotate(180deg)}
+.dangerlink{border:0;background:none;color:var(--bad);font:600 14px/1 var(--f-body);padding:10px;margin:6px auto 0;display:block}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.cats button{display:flex;flex-direction:column;align-items:flex-start;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px;text-align:left;color:var(--ink);font:600 14.5px/1.2 var(--f-display);min-height:84px}
+.cats button .ci{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--priSoft);color:var(--pri)}
+.cats button .ci.w{background:var(--warnSoft);color:var(--warnInk)}
+.cats button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cats button:hover{border-color:var(--pri)}
+.cats button.full{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0}
+.matcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;color:var(--ink)}
 .review{border-top:1px solid var(--line);padding-top:10px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -980,7 +996,7 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLO
 /* ============================================================
    ESTRUCTURA DE LA APP
    ============================================================ */
-const TABS = {u:[['chat', 'Asistente', 'chat'], ['mat', 'Materiales', 'box'], ['ped', 'Pedidos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
+const TABS = {u:[['chat', 'Asistente', 'chat'], ['ped', 'Pedidos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
               p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['agenda', 'Agenda', 'cal'], ['per', 'Perfil', 'user']]};
 function enter() { V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null; render(); }
 ACT.tab = t => { V.tab = t; V.job = null; V.edit = false; render(); };
@@ -1010,7 +1026,8 @@ function render() {
 function renderNav() {
   const c = DB.cur; if (!c) return;
   const n = $('#nav'); n.hidden = false;
-  n.innerHTML = TABS[c.t].map(([k, l, i]) => { const b = badge(k); return `<button data-a="tab" data-v="${k}" class="${V.tab === k ? 'on' : ''}" aria-current="${V.tab === k ? 'page' : 'false'}">${ico(i)}<span>${l}</span>${b ? `<span class="dot num">${b}</span>` : ''}</button>`; }).join('');
+  const cur = V.tab === 'mat' ? (CH && CH.tutObj ? 'chat' : 'casa') : V.tab;
+  n.innerHTML = TABS[c.t].map(([k, l, i]) => { const b = badge(k); return `<button data-a="tab" data-v="${k}" class="${cur === k ? 'on' : ''}" aria-current="${cur === k ? 'page' : 'false'}">${ico(i)}<span>${l}</span>${b ? `<span class="dot num">${b}</span>` : ''}</button>`; }).join('');
 }
 function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML = `<span class="num">${me().cr}</span> consultas`; }
 
@@ -1091,8 +1108,27 @@ ACT.histOpen = id => {
 };
 function block(html) { const l = LOG(); const d = document.createElement('div'); d.className = 'bot'; d.style.cssText = 'align-self:stretch;display:flex'; d.innerHTML = html; l.appendChild(d); scrollLog(); return d; }
 function chips(list) { const d = document.createElement('div'); d.className = 'chips bot'; list.forEach(([t, f, c]) => { const b = document.createElement('button'); b.textContent = t; if (c) b.className = c; b.onclick = () => { d.remove(); f(); }; d.appendChild(b); }); LOG().appendChild(d); scrollLog(); }
+const CATS = [
+  {id:'agua', n:'Agua y plomería', ic:'drop', items:['canilla', 'inodoro', 'inodoro_tapado', 'pileta', 'ducha', 'aireador', 'rejilla', 'lavarropas']},
+  {id:'luz', n:'Electricidad', ic:'bulb', items:['enchufe', 'lampara'], extra:['Salta la térmica', 'Hay olor a quemado en un enchufe']},
+  {id:'gas', n:'Gas', ic:'alert', w:true, items:[], extra:['Huelo gas', 'Quiero revisar el calefón', 'La llama de la estufa está amarilla']},
+  {id:'mueble', n:'Puertas, ventanas y muebles', ic:'hinge', items:['puerta', 'cerradura', 'burlete', 'persiana', 'cajon', 'mueble', 'silla']},
+  {id:'pared', n:'Paredes y baño', ic:'brush', items:['cuadro', 'agujero', 'hongos', 'silicona'], extra:['Tengo una grieta en la pared']}
+];
+function catGrid() {
+  const d = document.createElement('div'); d.className = 'chips bot'; d.style.width = '100%';
+  d.innerHTML = `<div class="cats">${CATS.map((c, i) => `<button type="button" data-cat="${c.id}" class="${i === CATS.length - 1 ? 'full' : ''}"><span class="ci ${c.w ? 'w' : ''}">${ico(c.ic)}</span>${c.n}</button>`).join('')}</div>`;
+  d.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => {
+    const c = CATS.find(x => x.id === b.dataset.cat); d.remove();
+    say(c.n, 'u');
+    say('¿Cuál de estos se parece a lo que te pasa? Si no está, contámelo con tus palabras.');
+    chips([...c.items.map(k => [TUT[k].n, () => go(TUT[k].n)]), ...(c.extra || []).map(t => [t, () => go(t)])]);
+  });
+  LOG().appendChild(d); scrollLog();
+}
 function greet() {
-  say(`Hola, ${esc(first(me().nombre))}. Contame qué se rompió (podés escribirme, mandarme una foto o un audio) y te ayudo a entenderlo antes de que gastes plata. Si es peligroso, te lo digo y te conecto con un profesional.`);
+  say(`Hola, ${esc(first(me().nombre))}. ¿Qué se rompió? Elegí un tema o contámelo con tus palabras: también podés mandarme una foto o un audio.`);
+  return catGrid();
   chips([['La canilla gotea', () => go('La canilla gotea')], ['El inodoro pierde agua', () => go('El inodoro pierde agua, se escucha correr')], ['Huelo gas en la cocina', () => go('Huelo gas en la cocina')], ['Tengo una grieta en la pared', () => go('Tengo una grieta en la pared')]]);
 }
 ACT.newCase = () => { LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
@@ -1457,11 +1493,12 @@ function pedir() {
 function vMat() {
   const tut = CH && CH.tutObj && CH.tutObj.mat && CH.tutObj.mat.length ? CH.tutObj : null;
   const items = tut ? tut.mat : KIT;
-  view(`<span class="eyebrow">${tut ? 'Para tu arreglo' : 'Kit básico de la casa'}</span>
+  view(`<button class="back" data-a="tab" data-v="${tut ? 'chat' : 'casa'}">${ico('back')} ${tut ? 'Volver a la guía' : 'Mi casa'}</button>
+   <span class="eyebrow">${tut ? 'Para tu arreglo' : 'Kit básico de la casa'}</span>
    <h2>${tut ? esc(tut.n) : 'Lo que conviene tener'}</h2>
    <p class="mut small">${tut ? 'Qué comprar y cómo pedirlo en el mostrador.' : 'Cuando el asistente te guíe en un arreglo, acá vas a ver la lista exacta.'}</p>
    <div class="list" style="margin-top:12px">${items.map(([ic, n, a]) => `<div class="card mat"><span class="ic">${ico(ic)}</span><div style="min-width:0"><h3>${esc(n)}</h3><span class="ask">${esc(a)}</span></div></div>`).join('')}</div>
-   <div class="sec"><span class="eyebrow">Ferreterías cerca</span>
+   <div class="sec"><h3 class="sh">Ferreterías cerca</h3>
     <div id="mapBox" class="mapbox"></div>
     <div class="row" style="margin-top:10px;flex-wrap:nowrap"><button class="btn sm" data-a="locate" id="locBtn" style="flex:none">${ico('pin')} ${LOC ? 'Actualizar ubicación' : 'Usar mi ubicación'}</button><span class="hint" id="locMsg" style="margin:0">${LOC ? 'Mostrando lo que hay cerca tuyo' : 'Mostrando el centro de CABA'}</span></div>
     <div class="list" id="ferList" style="margin-top:10px"></div></div>
@@ -1564,11 +1601,11 @@ function vJob() {
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
     <div class="row" style="margin-bottom:10px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
-    ${!['nuevo', 'cancelado'].includes(j.estado) ? `<div class="card" style="margin-bottom:12px"><span class="eyebrow" style="display:block;margin-bottom:10px">Seguimiento</span>${trackHTML(j)}</div>` : ''}
+    ${!['nuevo', 'cancelado'].includes(j.estado) ? `<div class="card" style="margin-bottom:12px"><h3 class="sh">Seguimiento</h3>${trackHTML(j)}</div>` : ''}
     ${ticketHTML({...j, zona:j.zona})}`;
   if (isU && j.estado === 'nuevo') {
     const B = bestOf(j);
-    h += `<div class="sec"><div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="eyebrow">Presupuestos recibidos</span>
+    h += `<div class="sec"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h3 class="sh">Presupuestos recibidos</h3>
       ${j.offers.length > 1 ? `<div class="seg" role="tablist"><button class="${V.cmp ? '' : 'on'}" data-a="cmp" data-v="0">Lista</button><button class="${V.cmp ? 'on' : ''}" data-a="cmp" data-v="1">Comparar</button></div>` : ''}</div>`
       + (j.offers.length > 1 && V.cmp ? compareHTML(j, B) : j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
        ${j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i) ? `<div class="meta">${B.precio === i ? '<span class="tag y">Mejor precio</span>' : ''}${B.cal === i ? '<span class="tag b">Mejor calificado</span>' : ''}${B.turno === i ? '<span class="tag">Puede antes</span>' : ''}</div>` : ''}
@@ -1582,7 +1619,7 @@ function vJob() {
     h += `<div class="sec"><button class="btn g w" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito · cancelar pedido' : 'Cancelar el trabajo'}</button></div>`;
   if (!['nuevo', 'cancelado'].includes(j.estado)) {
     const p = provInfo(j.prov);
-    h += `<div class="sec"><span class="eyebrow">${isU ? 'Tu prestador' : 'Tu cliente'}</span><div class="card offer"><div class="top2">
+    h += `<div class="sec"><h3 class="sh">${isU ? 'Tu prestador' : 'Tu cliente'}</h3><div class="card offer"><div class="top2">
       ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
       ${isU ? `<button class="btn g sm" data-a="prof" data-v="${j.prov}">Ver perfil</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div>
       <div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
@@ -1618,9 +1655,9 @@ ACT.prof = id => {
    <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : '<span class="tag">Oficio sin matrícula obligatoria</span>'}</div>
    <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
    <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}${p.hor ? ' · ' + esc(p.hor) : ''}</p>
-   ${(p.esp || []).length ? `<span class="eyebrow">Especialidades</span><div class="meta" style="margin:8px 0 14px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
-   ${(p.port || []).length ? `<span class="eyebrow">Trabajos realizados</span><div class="port" style="margin:8px 0 14px">${p.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
-   <span class="eyebrow">Reseñas</span><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
+   ${(p.esp || []).length ? `<h3 class="sh">Especialidades</h3><div class="meta" style="margin:8px 0 14px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
+   ${(p.port || []).length ? `<h3 class="sh">Trabajos realizados</h3><div class="port" style="margin:8px 0 14px">${p.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
+   <h3 class="sh">Reseñas</h3><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
    <button class="btn g w" style="margin-top:14px" data-a="close">Cerrar</button>`);
 };
 let ACC = null;
@@ -1743,13 +1780,15 @@ function vCasa() {
   const pend = S.tasks.filter(t => !done[key + '-' + t.id]).length;
   view(`<h2>Mi casa</h2><p class="mut small">${esc(u.zona)}</p>
    <div class="stat" style="margin-top:12px"><div class="card"><b class="num">${items.filter(x => x.t !== 'mant').length}</b><span>arreglos registrados</span></div><div class="card"><b class="num" style="font-size:21px">${money(ahorro)}</b><span>ahorrados resolviendo por tu cuenta</span></div></div>
+   <div class="sec"><button class="card matcard" data-a="tab" data-v="mat"><span class="ic" style="width:42px;height:42px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('box')}</span>
+     <span style="min-width:0;flex:1"><b style="display:block;font:600 15.5px/1.3 var(--f-display)">Herramientas y ferreterías cerca</b><span class="small mut">El kit básico de la casa y el mapa de comercios</span></span>${ico('back').replace('<svg', '<svg style="width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:currentColor;stroke-width:2;color:var(--mut)"')}</button></div>
    <div class="sec"><div class="season"><span class="eyebrow">Mantenimiento de ${S.n.toLowerCase()}</span><h3>${pend ? `Tenés ${pend} ${pend === 1 ? 'tarea' : 'tareas'} para esta temporada` : 'Tu casa está al día'}</h3><p>Lo que conviene revisar de ${S.meses}.</p></div>
     <div class="list" style="margin-top:10px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<div class="card task ${ok ? 'done' : ''}">
       <div class="r1"><span class="ic">${ico(t.quien === 'pro' ? 'tool' : S.ico)}</span><div style="min-width:0;flex:1"><h3>${esc(t.n)}</h3><div class="small mut">${esc(t.why)}</div>
       <div class="meta" style="margin-top:6px">${t.quien === 'pro' ? `<span class="tag r">Con ${t.rubro === 'Gas' ? 'gasista matriculado' : t.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}</span>` : '<span class="tag b">Lo podés hacer vos</span>'}${ok ? `<span class="tag v">${ico('check')} Hecho · ${ago(ok)}</span>` : ''}</div></div></div>
       ${ok ? '' : `<div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="mantDone" data-v="${t.id}">Ya lo hice</button><button class="btn p sm" style="flex:1" data-a="mantGo" data-v="${t.id}">${t.quien === 'pro' ? 'Pedir profesional' : 'Cómo se hace'}</button></div>`}</div>`; }).join('')}</div>
     <p class="hint" style="margin-top:8px">${ico(next.ico).replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:2"')} Próxima temporada (${next.n.toLowerCase()}): ${esc(next.tasks.map(t => t.n.toLowerCase()).join(', '))}.</p></div>
-   <div class="sec"><span class="eyebrow">Historial de la casa</span>
+   <div class="sec"><h3 class="sh">Historial de la casa</h3>
     ${items.length ? `<div class="card"><ul class="hist">${items.map(x => `<li ${x.jid ? `data-a="job" data-v="${x.jid}" style="cursor:pointer"` : ''}>
       <span class="ic ${x.t}">${ico(x.t === 'pro' ? 'tool' : x.t === 'mant' ? S.ico : 'check')}</span>
       <div style="min-width:0"><h3 style="font-size:15px">${esc(x.caso)}</h3><div class="small mut">${x.t === 'pro' ? `${esc(x.prov)} · <span class="num">${money(x.precio)}</span>` : x.t === 'mant' ? 'Mantenimiento preventivo' : `Lo resolviste vos · ahorraste ≈ ${money(x.ahorro || 0)}`}</div></div>
@@ -1768,11 +1807,11 @@ function vAgenda() {
   const p = me(); p.agenda = p.agenda || defAgenda();
   const js = DB.jobs.filter(j => j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).sort((a, b) => a.turno.localeCompare(b.turno));
   view(`<h2>Agenda</h2><p class="mut small">Tus turnos confirmados y los horarios en que podés trabajar.</p>
-   <div class="sec"><span class="eyebrow">Próximos turnos</span>
+   <div class="sec"><h3 class="sh">Próximos turnos</h3>
     ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}"><div class="r1"><h3>${esc(slotLabel(j.turno))}</h3><span class="price" style="font-size:16px">${money(j.precio)}</span></div>
       <div class="small mut">${esc(j.caso)} · ${esc(j.un)} · ${esc(j.zona.split(',')[0])}</div><div class="meta"><span class="tag y">${stageName(j)}</span></div></button>`).join('')}</div>`
       : `<div class="card small mut">Todavía no tenés turnos. Cuando un cliente acepte tu presupuesto y elija horario, aparece acá.</div>`}</div>
-   <div class="sec"><span class="eyebrow">Tu disponibilidad semanal</span>
+   <div class="sec"><h3 class="sh">Tu disponibilidad semanal</h3>
     <div class="card"><div class="agrid"><span></span><span class="h">Mañana<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.m}</span></span><span class="h">Tarde<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.t}</span></span>
      ${[1, 2, 3, 4, 5, 6, 0].map(d => `<b style="font:600 14px var(--f-display)">${DOW[d]}</b>${['m', 't'].map(f => { const on = (p.agenda[d] || []).includes(f); return `<button class="${on ? 'on' : ''}" data-a="agTog" data-v="${d}|${f}" aria-pressed="${on}" aria-label="${DOWL[d]} ${FRN[f]}">${on ? 'Disponible' : '—'}</button>`; }).join('')}`).join('')}</div></div>
     <p class="hint">Cuando mandás un presupuesto, la app ofrece solo estos horarios y saca los que ya están reservados.</p></div>`);
@@ -1788,7 +1827,6 @@ function vPer() {
   if (t === 'u') {
     const js = DB.jobs.filter(j => j.uid === u.id);
     view(`<div style="display:flex;gap:14px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
-     <button class="btn w sm" style="margin-top:14px" data-a="edit">${ico('edit')} Editar perfil</button>
      <div class="stat" style="margin-top:16px"><div class="card"><b>${u.resueltos || 0}</b><span>problemas resueltos por tu cuenta</span></div><div class="card"><b>${js.length}</b><span>pedidos a profesionales</span></div></div>
      <div class="card" style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
      ${tail()}`);
@@ -1796,13 +1834,12 @@ function vPer() {
     const fin = DB.jobs.filter(j => j.prov === u.id && j.estado === 'finalizado');
     view(`<div style="display:flex;gap:14px;align-items:center">${avatar(u.nombre, u.foto, 'lg', 'background:var(--acc);color:var(--accInk)')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
      ${u.bio ? `<p class="bio">${esc(u.bio)}</p>` : ''}
-     <button class="btn w sm" style="margin-top:14px" data-a="edit">${ico('edit')} Editar perfil</button>
      <div class="meta" style="margin:14px 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}${u.anios ? `<span class="tag">${u.anios} años de experiencia</span>` : ''}</div>
      <div class="card switch"><div><b>Disponible para pedidos</b><div class="small mut">Los clientes te ven en las búsquedas</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
      <div class="stat" style="margin-top:10px"><div class="card"><b>${avg(u) === 'Nuevo' ? '—' : String(avg(u)).replace('.', ',')}</b><span>${u.rev.length} reseñas</span></div><div class="card"><b class="num" style="font-size:21px">${money(fin.reduce((a, j) => a + j.precio, 0))}</b><span>cobrado en ${fin.length} trabajo${fin.length === 1 ? '' : 's'}</span></div></div>
-     ${(u.esp || []).length ? `<div class="sec"><span class="eyebrow">Especialidades</span><div class="meta">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div></div>` : ''}
-     ${(u.port || []).length ? `<div class="sec"><span class="eyebrow">Trabajos realizados</span><div class="port">${u.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
-     ${u.rev.length ? `<div class="sec"><span class="eyebrow">Tus reseñas</span><div class="card stack">${u.rev.slice().reverse().map(r => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>`).join('')}</div></div>` : ''}
+     ${(u.esp || []).length ? `<div class="sec"><h3 class="sh">Especialidades</h3><div class="meta">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div></div>` : ''}
+     ${(u.port || []).length ? `<div class="sec"><h3 class="sh">Trabajos realizados</h3><div class="port">${u.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
+     ${u.rev.length ? `<div class="sec"><h3 class="sh">Tus reseñas</h3><div class="card stack">${u.rev.slice().reverse().map(r => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>`).join('')}</div></div>` : ''}
      ${tail()}`);
   }
 }
@@ -1830,7 +1867,7 @@ function vEdit() {
     <label class="f" for="e_bio">Sobre vos<textarea id="e_bio" rows="3" placeholder="Contá tu experiencia y cómo trabajás">${esc(cur.bio)}</textarea></label>
     ${inp('e_esp', 'Especialidades', cur.esp, 'text', 'Ej: pérdidas, destapaciones, griferías', 'Separalas con comas')}
     <label class="f" for="e_hor">Horario de atención<select id="e_hor">${['Lunes a viernes, 8 a 18 h', 'Lunes a sábado, 8 a 19 h', 'Todos los días, 8 a 20 h', 'Urgencias 24 h'].map(o => `<option ${o === cur.hor ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
-    <div><span class="eyebrow" style="display:block;margin-bottom:8px">Fotos de trabajos realizados</span>
+    <div><h3 class="sh">Fotos de trabajos realizados</h3>
      <div class="port">${(EDIT.port || []).map((x, i) => `<div class="ph"><img src="${x}" alt="Trabajo ${i + 1}"><button data-a="quitarPort" data-v="${i}" aria-label="Quitar foto">${ico('x')}</button></div>`).join('')}
       ${(EDIT.port || []).length < 6 ? `<label class="add" for="e_port">${ico('plus')}<span>Agregar foto</span></label><input type="file" id="e_port" accept="image/*" data-ph="port" hidden>` : ''}</div>
      <span class="hint">Hasta 6 fotos. Los clientes las ven en tu perfil.</span></div>`
@@ -1901,9 +1938,11 @@ ACT.doDelAcc = async (v, btn) => {
   closeSheet(); toast('Cuenta eliminada'); cloudLogout();
 };
 function tail() {
-  return `<div class="sec stack"><button class="btn w" data-a="logout">Cerrar sesión</button><button class="btn g w" data-a="legal">Términos y privacidad</button>
-   <button class="btn g w" data-a="reset">Borrar datos del dispositivo</button><button class="btn bad w" data-a="delAcc">Eliminar cuenta</button>
-   <p class="hint" style="text-align:center">HandyGo · Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>`;
+  const row = (a, ic, t) => `<button data-a="${a}">${ico(ic)}<span>${t}</span>${ico('back').replace('<svg', '<svg class="go"')}</button>`;
+  return `<div class="sec"><h3 class="sh">Ajustes</h3><div class="settings">
+   ${row('edit', 'edit', 'Editar perfil')}${row('legal', 'shield', 'Términos y privacidad')}${row('reset', 'trash', 'Borrar datos de este dispositivo')}${row('logout', 'user', 'Cerrar sesión')}</div>
+   <button class="dangerlink" data-a="delAcc">Eliminar cuenta</button>
+   <p class="hint" style="text-align:center;margin-top:10px">HandyGo · Te ayudamos a resolverlo, te conectamos si hace falta.</p></div>`;
 }
 
 /* ============================================================
