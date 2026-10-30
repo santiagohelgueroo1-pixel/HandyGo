@@ -230,11 +230,15 @@ const T = {
  "destornillador": "two screwdrivers side by side, one with a cross Phillips tip and one with a flat tip"
 };
 
+const { proteger, firmaValida } = require('./_seguridad');
+const PERMITIDOS = new Set(['t', 'g', 'i', 'p', 's', 'v', 'r']);
+
 module.exports = async (req, res) => {
   const acct = process.env.CF_ACCOUNT_ID, token = process.env.CF_API_TOKEN;
 
   if (req.method === 'POST') {
     res.setHeader('Cache-Control', 'no-store');
+    if (!(await proteger(req, res, 'img'))) return;
     let body = req.body;
     if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
     body = body || {};
@@ -250,6 +254,14 @@ module.exports = async (req, res) => {
   if (!acct || !token) { res.setHeader('Cache-Control', 'no-store'); return res.status(501).json({ ok: false, error: 'sin_configurar' }); }
 
   const q = req.query || {};
+  const no = msg => { res.setHeader('Cache-Control', 'no-store'); return res.status(400).json({ ok: false, error: msg }); };
+  // Solo se aceptan las direcciones que arma la app: así nadie puede saltear la caché con parámetros inventados
+  if (Object.keys(q).some(k => !PERMITIDOS.has(k) || Array.isArray(q[k]))) return no('Parámetro inválido');
+  if (q.v !== undefined && q.v !== '3') return no('Versión inválida');
+  if (q.r !== undefined && q.r !== '1') return no('Parámetro inválido');
+  if (q.g !== undefined && !/^\d{1,2}$/.test(String(q.i || ''))) return no('Paso inválido');
+  if (q.p !== undefined && (String(q.p).length > 400 || !firmaValida(String(q.p), q.s))) return no('Imagen no autorizada');
+  if (!(require('./_seguridad').origenValido(req))) return no('Origen no permitido');
   let subject = '';
   if (q.t) subject = T[String(q.t)] ? 'Identification picture of ' + T[String(q.t)] + ', shown clearly so a beginner can recognize it' : '';
   else if (q.g) { const list = P[String(q.g)]; const i = parseInt(q.i, 10); subject = list && list[i]; }

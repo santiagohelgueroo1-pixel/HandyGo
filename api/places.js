@@ -11,7 +11,10 @@ const MIRRORS = [
 ];
 const TYPES = 'hardware|doityourself|paint|trade|bathroom_furnishing|houseware|building_materials';
 
+const { proteger } = require('./_seguridad');
+
 module.exports = async (req, res) => {
+  if (!(await proteger(req, res, 'places'))) return;
   const q = req.query || {};
   const lat = Math.round(parseFloat(q.lat) * 1000) / 1000, lon = Math.round(parseFloat(q.lon) * 1000) / 1000;
   if (!isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return res.status(400).json({ ok: false, error: 'Ubicación inválida' });
@@ -36,7 +39,7 @@ module.exports = async (req, res) => {
 
   if (!items.length && !source) return res.status(502).json({ ok: false, error: 'No se pudieron consultar los comercios' });
   items = items.map(x => ({ ...x, d: Math.round(dist(lat, lon, x.lat, x.lon)) })).filter(x => x.d <= 6000).sort((a, b) => a.d - b.d).slice(0, 15);
-  res.setHeader('Cache-Control', 's-maxage=43200, stale-while-revalidate=604800');
+  res.setHeader('Cache-Control', 'private, max-age=3600');
   return res.status(200).json({ ok: true, source, items });
 };
 

@@ -47,6 +47,8 @@ Si el mensaje no tiene que ver con el hogar, estado "fuera_de_tema" y explicá e
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
 {"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"tema_nuevo":false,"transcripcion":""}`;
 
+const { proteger, firmar } = require('./_seguridad');
+
 const ESTADOS = ['preguntar', 'guiar', 'derivar', 'fuera_de_tema'];
 const RUBROS = ['Plomería', 'Gas', 'Electricidad', 'Carpintería', 'Albañilería'];
 
@@ -54,18 +56,24 @@ module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method === 'GET') return diagnose(req, res);
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Usá POST' });
+  if (!(await proteger(req, res, 'chat'))) return;
 
   let body = req.body;
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
-  const messages = Array.isArray(body && body.messages) ? body.messages.slice(-12) : [];
+  const messages = (Array.isArray(body && body.messages) ? body.messages.slice(-12) : []).filter(m => m && typeof m === 'object').map(m => ({
+    role: m.role === 'assistant' ? 'assistant' : 'user',
+    text: String(m.text || '').slice(0, 2000),
+    image: m.image && typeof m.image.data === 'string' && m.image.data.length < 2.8e6 && /^image\/(jpeg|png|webp)$/.test(m.image.mime) ? { mime: m.image.mime, data: m.image.data } : null,
+    audio: m.audio && typeof m.audio.data === 'string' && m.audio.data.length < 3.5e6 && /^audio\//.test(String(m.audio.mime || '')) ? { mime: String(m.audio.mime), data: m.audio.data } : null
+  }));
   const catalog = Array.isArray(body && body.catalog) ? body.catalog.slice(0, 40) : [];
   const tema = typeof (body && body.tema_actual) === 'string' ? body.tema_actual.slice(0, 120) : '';
   if (!messages.length) return res.status(400).json({ ok: false, error: 'Faltan mensajes' });
 
   const system = SYSTEM + '\n\nCATÁLOGO DE GUÍAS REVISADAS (id: título · rubro · cuándo usarla):\n' +
-    catalog.map(c => `- ${String(c.id)}: ${String(c.titulo)} · ${String(c.rubro)} · ${String(c.cuando)}`).join('\n') +
+    catalog.map(c => `- ${String(c && c.id).slice(0, 40)}: ${String(c && c.titulo).slice(0, 100)} · ${String(c && c.rubro).slice(0, 20)} · ${String(c && c.cuando).slice(0, 300)}`).join('\n') +
     '\n\nTEMA ACTUAL: ' + (tema || '(ninguno, es el primer mensaje)');
-  const ids = catalog.map(c => String(c.id));
+  const ids = catalog.map(c => String(c && c.id).slice(0, 40));
 
   const errors = [], t0 = Date.now(), left = () => 26000 - (Date.now() - t0);
   const hasAudio = messages.some(m => m.audio && m.audio.data);
@@ -98,7 +106,7 @@ module.exports = async (req, res) => {
   }
   if (!process.env.GEMINI_API_KEY && !process.env.GROQ_API_KEY) errors.push('No hay ninguna clave configurada (GEMINI_API_KEY)');
   console.error('HandyGo IA sin respuesta:', errors.join(' | '));
-  return res.status(502).json({ ok: false, error: 'La IA no respondió', detail: errors });
+  return res.status(502).json({ ok: false, error: 'La IA no respondió' });
 };
 
 const SKIP = {};
@@ -175,8 +183,17 @@ async function cloudflare(system, messages, ms = 15000) {
 }
 
 // Abrí /api/chat en el navegador para ver el estado de la IA
+// Diagnóstico: abrí /api/chat en el navegador para ver si las claves están cargadas.
+// La prueba completa de los modelos (gasta cupo) solo corre con ?clave=<DIAG_KEY> si cargaste esa variable en Vercel.
 async function diagnose(req, res) {
-  const out = { claves: { GEMINI_API_KEY: !!process.env.GEMINI_API_KEY, GROQ_API_KEY: !!process.env.GROQ_API_KEY, CF_ACCOUNT_ID: !!process.env.CF_ACCOUNT_ID, CF_API_TOKEN: !!process.env.CF_API_TOKEN }, modelos: {} };
+  const q = req.query || {};
+  const claves = { GEMINI_API_KEY: !!process.env.GEMINI_API_KEY, GROQ_API_KEY: !!process.env.GROQ_API_KEY, CF_ACCOUNT_ID: !!process.env.CF_ACCOUNT_ID, CF_API_TOKEN: !!process.env.CF_API_TOKEN, SUPABASE: !!(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY) };
+  res.setHeader('content-type', 'application/json; charset=utf-8');
+  const dk = process.env.DIAG_KEY;
+  if (!dk || String(q.clave || '') !== dk) {
+    return res.status(200).send(JSON.stringify({ claves, resumen: Object.values(claves).some(Boolean) ? 'Claves cargadas' : 'Faltan claves' }, null, 2));
+  }
+  const out = { claves, modelos: {} };
   const msg = [{ role: 'user', text: 'Respondé {"ok":true}' }];
   if (process.env.GEMINI_API_KEY) {
     await Promise.all(geminiModels().map(async m => {
@@ -186,7 +203,6 @@ async function diagnose(req, res) {
   if (process.env.GROQ_API_KEY) { try { await groq('Respondé solo JSON.', msg, 9000); out.modelos.groq = 'funciona'; } catch (e) { out.modelos.groq = e.message; } }
   if (process.env.CF_ACCOUNT_ID && process.env.CF_API_TOKEN) { try { await cloudflare('Respondé solo JSON.', msg, 12000); out.modelos.cloudflare = 'funciona'; } catch (e) { out.modelos.cloudflare = e.message; } }
   out.resumen = Object.values(out.modelos).includes('funciona') ? 'La IA está funcionando' : 'Ningún modelo respondió: revisá las claves o el cupo diario';
-  res.setHeader('content-type', 'application/json; charset=utf-8');
   return res.status(200).send(JSON.stringify(out, null, 2));
 }
 
@@ -209,7 +225,7 @@ function normalize(text, ids) {
     nivel: o.nivel === 'Media' ? 'Media' : 'Fácil',
     minutos: Math.max(5, Math.min(180, parseInt(o.minutos, 10) || 20)),
     alerta: typeof o.alerta === 'string' ? o.alerta.slice(0, 240) : '',
-    glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 200), donde: String(g.donde || '').slice(0, 200), imagen: String(g.imagen || '').slice(0, 200) })) : [],
+    glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 200), donde: String(g.donde || '').slice(0, 200), imagen: String(g.imagen || '').slice(0, 200) })).map(g => ({ ...g, firma: firmar(g.imagen || g.termino) })) : [],
     transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : ''
   };
   if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; out.glosario = []; }
