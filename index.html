@@ -177,16 +177,33 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .chips button.p{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
 .composer{flex:none;background:var(--surface);border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px))}
 .composer .bar{display:flex;gap:8px;align-items:flex-end}
-.composer textarea{flex:1;min-width:0;resize:none;border:2px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--bg);max-height:110px;line-height:1.35}
-.composer textarea:focus{outline:none;border-color:var(--pri)}
-.recbar{display:flex;align-items:center;gap:10px}
-.recbar .t{flex:1;display:flex;align-items:center;gap:10px;font-weight:600;font-variant-numeric:tabular-nums;border:2px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--bg)}
-.recdot{width:10px;height:10px;border-radius:50%;background:var(--bad)}
+.pillin{flex:1;min-width:0;display:flex;align-items:flex-end;background:var(--sunk);border-radius:24px;padding:3px 4px 3px 16px;border:1px solid transparent;transition:border-color .15s,background .15s}
+.pillin:focus-within{border-color:var(--line);background:var(--surface)}
+.composer textarea{flex:1;min-width:0;resize:none;border:0;background:transparent;padding:10px 0;max-height:110px;line-height:1.35;font-size:15.5px}
+.composer textarea:focus{outline:none}
+.pillin .cam{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--mut);cursor:pointer}
+.pillin .cam:hover{color:var(--pri)}
+.pillin .cam svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.actbtn{flex:none;width:46px;height:46px;border-radius:50%;border:0;background:var(--pri);color:var(--priInk);display:grid;place-items:center;position:relative;transition:transform .12s}
+.actbtn:active{transform:scale(.92)}
+.actbtn svg{position:absolute;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s ease,opacity .18s ease}
+.actbtn .i-send{opacity:0;transform:scale(.4) rotate(-45deg)}
+.actbtn.send .i-mic{opacity:0;transform:scale(.4)}
+.actbtn.send .i-send{opacity:1;transform:none}
+.recbar{display:flex;align-items:center;gap:8px}
+.recbar .t{flex:1;min-width:0;display:flex;align-items:center;gap:10px;font-weight:600;font-variant-numeric:tabular-nums;border-radius:24px;padding:12px 16px;background:var(--badSoft);color:var(--bad)}
+.recdot{width:10px;height:10px;border-radius:50%;background:var(--bad);flex:none}
+.wave{display:flex;align-items:center;gap:3px;height:18px;flex:1;min-width:0;overflow:hidden}
+.wave i{width:3px;height:30%;border-radius:2px;background:currentColor;opacity:.75}
+@media (prefers-reduced-motion:no-preference){.wave i{animation:wv .9s ease-in-out infinite}}
+.wave i:nth-child(2n){animation-delay:.15s}.wave i:nth-child(3n){animation-delay:.3s}.wave i:nth-child(5n){animation-delay:.45s}
+@keyframes wv{50%{height:100%}}
 @media (prefers-reduced-motion:no-preference){.recdot{animation:blink 1s infinite}}
 .m audio{display:block;width:230px;max-width:100%;height:40px}
 .m .tr{font-size:14px;opacity:.9;margin-top:6px;font-style:italic}
-.iconbtn{flex:none;width:46px;height:46px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--mut);display:grid;place-items:center}
-.iconbtn.p{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.iconbtn{flex:none;width:46px;height:46px;border-radius:50%;border:0;background:transparent;color:var(--mut);display:grid;place-items:center}
+.iconbtn:hover{background:var(--sunk)}
+.iconbtn.p{background:var(--pri);color:var(--priInk)}
 .iconbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .attach{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13.5px;color:var(--mut)}
 .attach img{width:46px;height:46px;object-fit:cover;border-radius:10px}
@@ -256,7 +273,8 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .thread{display:flex;flex-direction:column;gap:8px;margin:12px 0}
 .thread .m{font-size:15px}
 .sendrow{display:flex;gap:8px}
-.sendrow input{flex:1;min-width:0;border:2px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--surface)}
+.sendrow input{flex:1;min-width:0;border:1px solid transparent;border-radius:24px;padding:12px 16px;background:var(--sunk)}
+.sendrow input:focus{outline:none;border-color:var(--line);background:var(--surface)}
 .back{border:0;background:none;color:var(--pri);font-weight:700;padding:0;margin-bottom:8px;display:inline-flex;align-items:center;gap:4px}
 .ratebtns{display:flex;gap:6px}
 .ratebtns button{flex:1;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 0;font:700 18px/1 var(--f-display)}
@@ -1234,14 +1252,13 @@ function vChat() {
     chatEl.innerHTML = `<div class="chatbar"><span class="mode" id="mode"><i></i> <span>Asistente HandyGo</span></span><span class="row" style="gap:6px;flex-wrap:nowrap"><button class="btn sm g" data-a="history" style="padding:5px 10px;white-space:nowrap">Historial</button><button class="btn sm g" data-a="newCase" style="padding:5px 10px;white-space:nowrap">${ico('plus')} Nueva</button></span></div>
       <div id="log" aria-live="polite"></div>
       <div class="composer"><div class="attach" id="att" hidden></div>
-      <div class="bar"><label class="iconbtn" title="Adjuntar foto" for="pic" style="cursor:pointer">${ico('cam')}<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Adjuntar foto</span></label>
-      <input type="file" id="pic" accept="image/*" hidden>
-      <textarea id="inp" rows="1" placeholder="Escribile a Handy…"></textarea>
-      <button class="iconbtn p" id="micBtn" data-a="mic" aria-label="Grabar audio">${ico('mic')}</button>
-      <button class="iconbtn p" id="sendBtn" data-a="send" aria-label="Enviar" hidden>${ico('send')}</button></div>
+      <div class="bar"><div class="pillin"><textarea id="inp" rows="1" placeholder="Escribile a Handy…" aria-label="Mensaje para Handy"></textarea>
+      <label class="cam" title="Mandar una foto" for="pic">${ico('cam')}<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Mandar una foto</span></label>
+      <input type="file" id="pic" accept="image/*" hidden></div>
+      <button class="actbtn" id="actBtn" data-a="compose" aria-label="Grabar audio">${ico('mic').replace('<svg', '<svg class="i-mic"')}${ico('send').replace('<svg', '<svg class="i-send"')}</button></div>
       <div class="recbar" id="recbar" hidden><button class="iconbtn" data-a="recCancel" aria-label="Cancelar audio">${ico('trash')}</button>
-      <div class="t"><span class="recdot"></span><span id="recT">0:00</span><span class="mut small" style="font-weight:500">Grabando…</span></div>
-      <button class="iconbtn p" data-a="recStop" aria-label="Enviar audio">${ico('send')}</button></div></div>`;
+      <div class="t"><span class="recdot"></span><span id="recT">0:00</span><span class="wave" aria-hidden="true">${'<i></i>'.repeat(18)}</span></div>
+      <button class="actbtn send" data-a="recStop" aria-label="Enviar audio">${ico('send').replace('<svg', '<svg class="i-send"')}</button></div></div>`;
     view('', true); $('#view').appendChild(chatEl);
     const inp = chatEl.querySelector('#inp');
     inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ACT.send(); } });
@@ -1381,9 +1398,10 @@ function onPic(e) {
 }
 function clearPic() { pendingImg = null; const at = chatEl && chatEl.querySelector('#att'); if (at) { at.hidden = true; at.innerHTML = ''; } syncSend(); }
 function syncSend() {
-  if (!chatEl) return; const has = chatEl.querySelector('#inp').value.trim() || pendingImg;
-  chatEl.querySelector('#sendBtn').hidden = !has; chatEl.querySelector('#micBtn').hidden = !!has;
+  if (!chatEl) return; const has = !!(chatEl.querySelector('#inp').value.trim() || pendingImg), b = chatEl.querySelector('#actBtn');
+  b.classList.toggle('send', has); b.setAttribute('aria-label', has ? 'Enviar' : 'Grabar audio');
 }
+ACT.compose = () => { if (chatEl && chatEl.querySelector('#actBtn').classList.contains('send')) ACT.send(); else ACT.mic(); };
 
 /* ---------- audios ---------- */
 let REC = null;
