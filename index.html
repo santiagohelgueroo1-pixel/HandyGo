@@ -16,7 +16,9 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preload" as="script" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <style>
 /* Layout: una sola columna tipo teléfono; en compu se muestra dentro de un marco de celular.
    Identidad HandyGo: verde bosque, verde menta, ámbar para botones y alertas; Poppins + Inter. */
@@ -462,12 +464,12 @@ h3.sh{font:600 18px/1.25 var(--f-display);margin:0 0 12px;color:var(--ink)}
 #launch .tape{position:absolute;left:0;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);height:10px;width:100%;
   background:linear-gradient(var(--acc),var(--acc)) top/100% 3px no-repeat,repeating-linear-gradient(90deg,var(--acc) 0 2px,transparent 2px 12px) top/100% 10px no-repeat}
 @media (prefers-reduced-motion:no-preference){
-  #launch .lm{animation:lpop .7s cubic-bezier(.2,1.5,.4,1) both}
-  #launch .lm img{animation:ltwist .6s ease-in-out .65s both}
-  #launch .lm::after{animation:lring 1.1s ease-out .5s both}
-  #launch h1 span{animation:lup .5s cubic-bezier(.2,.8,.2,1) both}
-  #launch p{animation:lfade .6s ease-out 1.15s both}
-  #launch .tape{animation:ltape 1.2s cubic-bezier(.6,0,.2,1) .25s both}
+  #launch .lm{animation:lpop .45s cubic-bezier(.2,1.5,.4,1) both}
+  #launch .lm img{animation:ltwist .4s ease-in-out .35s both}
+  #launch .lm::after{animation:lring .7s ease-out .3s both}
+  #launch h1 span{animation:lup .35s cubic-bezier(.2,.8,.2,1) both}
+  #launch p{animation:lfade .35s ease-out .55s both}
+  #launch .tape{animation:ltape .7s cubic-bezier(.6,0,.2,1) .1s both}
 }
 @keyframes lpop{from{opacity:0;transform:scale(.4) rotate(-10deg)}}
 @keyframes ltwist{0%,100%{transform:rotate(0)}35%{transform:rotate(-14deg)}70%{transform:rotate(6deg)}}
@@ -544,7 +546,7 @@ h3.sh{font:600 18px/1.25 var(--f-display);margin:0 0 12px;color:var(--ink)}
   <main id="view"></main>
   <nav id="nav" hidden></nav>
   <div id="toast" hidden></div>
-  <div id="launch" aria-hidden="true"><div class="lm"><img src="data:image/jpeg;base64,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" alt=""></div><h1><span style="animation-delay:0.55s">H</span><span style="animation-delay:0.60s">a</span><span style="animation-delay:0.65s">n</span><span style="animation-delay:0.70s">d</span><span style="animation-delay:0.75s">y</span><span style="animation-delay:0.80s">G</span><span style="animation-delay:0.85s">o</span></h1><p>Te ayudamos a resolverlo, te conectamos si hace falta.</p><div class="tape"></div></div>
+  <div id="launch" aria-hidden="true"><div class="lm"><img src="data:image/jpeg;base64,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" alt=""></div><h1><span style="animation-delay:0.22s">H</span><span style="animation-delay:0.25s">a</span><span style="animation-delay:0.28s">n</span><span style="animation-delay:0.31s">d</span><span style="animation-delay:0.34s">y</span><span style="animation-delay:0.37s">G</span><span style="animation-delay:0.40s">o</span></h1><p>Te ayudamos a resolverlo, te conectamos si hace falta.</p><div class="tape"></div></div>
   <div id="offline" role="status" hidden>Sin conexión: tus cambios se guardan cuando vuelva internet</div>
 </div>
 <script>
@@ -1069,6 +1071,7 @@ ACT.sendReset = async (v, btn) => {
   if (!/^\S+@\S+\.\S+$/.test(m)) { $('#err').textContent = 'Revisá el mail: tiene que tener el formato nombre@dominio.com.'; return; }
   if (!CLOUD) { $('#err').textContent = 'Para recuperar la contraseña necesitás conexión a internet.'; return; }
   const done = busy(btn, 'Enviando…');
+  try { await SB_P; } catch (e) { done(); $('#err').textContent = 'No hay conexión. Probá de nuevo en un momento.'; return; }
   const { error } = await SB.auth.resetPasswordForEmail(m, {redirectTo:location.origin + location.pathname});
   done();
   if (error) { $('#err').textContent = authError(error); return; }
@@ -1146,7 +1149,7 @@ function enter() {
   V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null;
   const needTour = !me().tour; if (needTour) TOUR_ON = true;
   render();
-  if (needTour) setTimeout(startTour, LAUNCH_ON ? Math.max(500, 2500 - (performance.now() - T0)) : 450);
+  if (needTour) setTimeout(startTour, LAUNCH_ON ? Math.max(500, 1600 - (performance.now() - T0)) : 450);
 }
 /* ---------- tutorial de bienvenida ---------- */
 let TOUR_ON = false, TOUR_I = 0, TOUR_STEPS = [];
@@ -2252,9 +2255,10 @@ function tail() {
 let SB = null, SNAP = {jobs:{}, me:null}, SYNC_T = null, RT = null, SYNCING = null, UNDO_ME = null;
 const isUuid = x => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(x || ''));
 const snapJob = j => { SNAP.jobs[j.id] = JSON.stringify(j); };
+let SB_LIB = null, SB_P = null;
 function loadSB() {
   if (window.supabase && window.supabase.createClient) return Promise.resolve();
-  return new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+  return SB_LIB || (SB_LIB = new Promise((res, rej) => { const sc = document.createElement('script'); sc.crossOrigin = 'anonymous'; sc.onerror = () => { SB_LIB = null; rej(new Error('No se pudo cargar Supabase')); }; sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }));
 }
 function busy(btn, txt) { if (!btn) return () => {}; const old = btn.innerHTML; btn.disabled = true; btn.textContent = txt; return () => { btn.disabled = false; btn.innerHTML = old; }; }
 function authError(e) {
@@ -2267,7 +2271,7 @@ function authError(e) {
   return 'No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.';
 }
 async function cloudLoad() {
-  const { data:{ user } } = await SB.auth.getUser(); if (!user) return false;
+  const { data:{ session } } = await SB.auth.getSession(); const user = session && session.user; if (!user) return false;
   const [pr, js] = await Promise.all([SB.from('profiles').select('id,tipo,data'), SB.from('jobs').select('id,data').order('updated_at', {ascending:false})]);
   if (pr.error) throw pr.error; if (js.error) throw js.error;
   const mine = pr.data.find(x => x.id === user.id); if (!mine) throw new Error('Falta el perfil');
@@ -2379,6 +2383,7 @@ async function upPhoto(dataUrl) {
 }
 async function cloudRegister(d, btn) {
   const done = busy(btn, 'Creando cuenta…');
+  try { await SB_P; } catch (e) { done(); $('#err').textContent = 'No hay conexión. Probá de nuevo en un momento.'; return; }
   const meta = {...d}; ['id', 'mail', 'pass', 'foto'].forEach(k => delete meta[k]); meta.t = REG.t;
   if (REG.t === 'u') Object.assign(meta, {cr:5, resueltos:0}); else Object.assign(meta, {rev:[], on:true, desc:[]});
   const { data, error } = await SB.auth.signUp({email:d.mail, password:d.pass, options:{data:meta, emailRedirectTo:location.origin}});
@@ -2398,6 +2403,7 @@ async function cloudRegister(d, btn) {
 }
 async function cloudLogin(mail, pass, btn) {
   const done = busy(btn, 'Ingresando…');
+  try { await SB_P; } catch (e) { done(); $('#err').textContent = 'No hay conexión. Probá de nuevo en un momento.'; return; }
   const { error } = await SB.auth.signInWithPassword({email:mail, password:pass});
   if (error) { done(); $('#err').textContent = authError(error); return; }
   try { await cloudLoad(); } catch (e) { done(); $('#err').textContent = authError(e); return; }
@@ -2411,6 +2417,7 @@ const DEMO_ACC = {
 const DEMO_PASS = 'HandyGo-demo-2026';
 async function cloudDemo(v) {
   const a = DEMO_ACC[v]; toast('Ingresando…');
+  try { await SB_P; } catch (e) { toast('No hay conexión. Probá de nuevo en un momento.'); return; }
   let r = await SB.auth.signInWithPassword({email:a.mail, password:DEMO_PASS}), nuevo = false;
   if (r.error && /invalid login/i.test(r.error.message)) {
     const meta = {...a.meta}; if (meta.t === 'p') meta.agenda = defAgenda(1);
@@ -2441,21 +2448,30 @@ const T0 = performance.now(); let LAUNCH_ON = true;
 function hideLaunch() {
   const el = $('#launch'); if (!el) { LAUNCH_ON = false; return; }
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const wait = Math.max(0, (reduce ? 700 : 2000) - (performance.now() - T0));
+  const wait = Math.max(0, (reduce ? 300 : 1100) - (performance.now() - T0));
   setTimeout(() => { el.classList.add('out'); setTimeout(() => { el.remove(); LAUNCH_ON = false; }, 460); }, wait);
 }
+// Arranque: todo en paralelo. Si no hay sesión guardada, la bienvenida aparece sin esperar a la red.
 async function boot() {
-  let cfg = null;
-  try { const r = await fetch('/api/config', {cache:'no-store'}); if (r.ok) cfg = await r.json(); } catch (e) {}
+  const recovery = /type=recovery/.test(location.hash);
+  let cfg = null; try { cfg = JSON.parse(localStorage.getItem('hg-cfg') || 'null'); } catch (e) {}
+  const fresh = fetch('/api/config', {cache:'no-store'}).then(r => r.ok ? r.json() : null).catch(() => null)
+    .then(c => { if (c && c.ok) { try { localStorage.setItem('hg-cfg', JSON.stringify(c)); } catch (e) {} } return c; });
+  if (!cfg || !cfg.ok) cfg = await fresh;
   if (!cfg || !cfg.ok) return render();                          // sin Supabase: modo local
+  const localDB = DB;
   $('#top').hidden = true; $('#nav').hidden = true;
-  try {
-    await loadSB();
+  CLOUD = true; DB = {users:[], provs:[], jobs:[], cur:null};
+  SB_P = loadSB().then(() => {
     SB = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey, {auth:{persistSession:true, autoRefreshToken:true, storageKey:'handygo-auth'}});
-    CLOUD = true;
-    DB = {users:[], provs:[], jobs:[], cur:null};
-    const recovery = /type=recovery/.test(location.hash);
     SB.auth.onAuthStateChange(ev => { if (ev === 'PASSWORD_RECOVERY') vNewPass(); });
+    return SB;
+  });
+  SB_P.catch(e => { console.warn('Nube:', e); if (!DB.cur) { CLOUD = false; DB = localDB; } });
+  let saved = false; try { saved = !!localStorage.getItem('handygo-auth'); } catch (e) {}
+  if (!saved && !recovery) return welcome();                     // sin sesión: directo a la bienvenida
+  try {
+    await SB_P;
     const { data:{ session } } = await SB.auth.getSession();
     if (recovery && session) { history.replaceState(null, '', location.pathname); return vNewPass(); }
     if (session && await cloudLoad()) return enter();
