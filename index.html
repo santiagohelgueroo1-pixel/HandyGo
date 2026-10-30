@@ -70,6 +70,14 @@ button{cursor:pointer}
 .top .mark{display:none}
 .top h1{margin:0;font:600 24px/1.15 var(--f-display);letter-spacing:-.01em}
 small#hs{display:none}
+small#hs.on{display:flex;align-items:center;gap:6px;margin-top:2px}
+small#hs.on i{width:8px;height:8px;border-radius:50%;background:var(--mint);flex:none}
+small#hs.on.off i{background:rgba(255,255,255,.4)}
+.hacts{display:flex;gap:4px;flex:none}
+.hacts[hidden]{display:none}
+.hbtn{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:var(--headInk);display:grid;place-items:center;cursor:pointer}
+.hbtn:hover,.hbtn:focus-visible{background:rgba(255,255,255,.14)}
+.hbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .top small{display:block;font:500 12px/1.3 var(--f-body);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill{flex:none;border:0;border-radius:99px;padding:8px 12px;font:600 14px/1 var(--f-body);background:var(--mint);color:#1E2A24;display:inline-flex;gap:8px;align-items:center}
 .pill.off{background:rgba(255,255,255,.16);color:var(--headInk)}
@@ -99,6 +107,11 @@ h3{font:600 16px/1.3 var(--f-display);margin:0}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:2px solid var(--pri);background:var(--surface);color:var(--pri);border-radius:12px;padding:12px 16px;font:600 16px/1.1 var(--f-body);text-align:center}
 .btn.p{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.stickbar{position:sticky;bottom:-24px;z-index:3;margin:16px -16px -24px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--bg);box-shadow:0 -1px 0 var(--line),0 -8px 16px -12px rgba(20,40,30,.25);display:flex;flex-direction:column;gap:8px}
+.stickbar .row{display:flex;gap:8px;flex-wrap:nowrap}
+.stickbar .row .btn{flex:1}
+.stickbar .row .btn.g{flex:0 0 auto}
+.stickbar .hint{text-align:center;margin:0}
 .btn.y{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
 .btn.g{border-color:var(--line);color:var(--mut);background:transparent}
 .btn.bad{border-color:var(--bad);color:var(--bad);background:transparent}
@@ -215,8 +228,6 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .attach{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:14px;color:var(--mut)}
 .attach img{width:46px;height:46px;object-fit:cover;border-radius:10px}
 .attach button{border:0;background:none;color:var(--bad);font-weight:700}
-.chatbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));background:var(--sunk);border-bottom:1px solid var(--line);font-size:14px;color:var(--mut)}
-.chatbar b{color:var(--ink)}
 .mode{display:inline-flex;align-items:center;gap:8px}
 .mode i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
 .mode.off i{background:var(--mut)}
@@ -360,10 +371,12 @@ table.cmp .best::after{content:" ★";color:var(--acc)}
 .agrid .h{font:600 12px/1 var(--f-body);color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
 .agrid button{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 4px;font:600 14px/1 var(--f-body);color:var(--mut)}
 .agrid button.on{border-color:var(--pri);background:var(--pri);color:var(--priInk)}
-.season{background:var(--head);color:var(--headInk);border-radius:16px;padding:16px;position:relative;overflow:hidden}
-.season .eyebrow{color:var(--mint)}
-.season h3{color:#FFFFFF;font-size:18px;margin:4px 0 2px}
-.season p{margin:0;font-size:14px;opacity:.9}
+.season{display:flex;gap:12px;align-items:center;background:var(--priSoft);color:var(--ink);border-radius:16px;padding:16px}
+.season .sic{width:40px;height:40px;border-radius:12px;background:var(--card);color:var(--pri);display:grid;place-items:center;flex:none}
+.season .sic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75}
+.season .eyebrow{color:var(--pri)}
+.season h3{color:var(--ink);font-size:16px;margin:2px 0}
+.season p{margin:0;font-size:14px;color:var(--mut)}
 .task{display:grid;gap:8px}
 .task .r1{display:flex;gap:12px;align-items:flex-start}
 .task .ic{flex:none;width:42px;height:42px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center}
@@ -525,6 +538,7 @@ h3.sh{font:600 18px/1.25 var(--f-display);margin:0 0 12px;color:var(--ink)}
   <header class="top" id="top" hidden>
     <div class="brand"><img class="mark" src="data:image/jpeg;base64,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" alt="">
       <div style="min-width:0"><h1 id="ht">HandyGo</h1><small id="hs"></small></div></div>
+    <div class="hacts" id="hacts" hidden></div>
     <button class="pill" id="hpill" hidden></button>
   </header>
   <main id="view"></main>
@@ -541,6 +555,14 @@ h3.sh{font:600 18px/1.25 var(--f-display);margin:0 0 12px;color:var(--ink)}
    Si la IA no responde, la app sigue funcionando con reglas.
    ============================================================ */
 const API_URL = '/api/chat';
+// Las funciones del servidor solo responden a cuentas con sesión iniciada: se manda el token de Supabase.
+async function apiFetch(url, opt = {}) {
+  const headers = {...(opt.headers || {})};
+  try { if (typeof SB !== 'undefined' && SB) { const { data } = await SB.auth.getSession(); const tk = data && data.session && data.session.access_token; if (tk) headers.Authorization = 'Bearer ' + tk; } } catch (e) {}
+  return fetch(url, {...opt, headers});
+}
+// Solo se muestran fotos con direcciones seguras (evita que alguien meta código en una foto de perfil)
+const safeImg = u => /^(data:image\/(png|jpe?g|webp|gif);base64,[A-Za-z0-9+/=]+|https:\/\/[^\s"'<>`]+|blob:[^\s"'<>`]+)$/.test(String(u || '')) ? esc(u) : '';
 const KEY = 'handygo_proto_v3';
 const $ = s => document.querySelector(s);
 const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -922,7 +944,7 @@ const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="
 function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
 function closeSheet() { const s = $('#scrim'); if (!s) return; s.id = ''; if (matchMedia('(prefers-reduced-motion: reduce)').matches) return s.remove(); s.classList.add('out'); setTimeout(() => s.remove(), 210); }
 ACT.close = closeSheet;
-const avatar = (name, foto, cls = '', style = '') => foto ? `<img class="av ${cls}" src="${foto}" alt="" style="${style}">` : `<span class="av ${cls}" style="${style}">${ini(name)}</span>`;
+const avatar = (name, foto, cls = '', style = '') => foto ? `<img class="av ${cls}" src="${safeImg(foto)}" alt="" style="${style}">` : `<span class="av ${cls}" style="${style}">${esc(ini(name))}</span>`;
 function readPhoto(file, max) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const img = new Image(); img.onerror = rej; img.onload = () => {
     const k = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas');
@@ -934,12 +956,12 @@ document.addEventListener('change', async e => {
   const el = e.target; if (!el.dataset || !el.dataset.ph || !el.files || !el.files[0]) return;
   const f = el.files[0]; el.value = '';
   try {
-    if (el.dataset.ph === 'reg') { REG.foto = await readPhoto(f, 256); $('#regAv').innerHTML = `<img src="${REG.foto}" alt="Tu foto">`; }
+    if (el.dataset.ph === 'reg') { REG.foto = await readPhoto(f, 256); $('#regAv').innerHTML = `<img src="${safeImg(REG.foto)}" alt="Tu foto">`; }
     if (el.dataset.ph === 'edit') { EDIT.foto = await readPhoto(f, 256); vEdit(); }
     if (el.dataset.ph === 'port') { if ((EDIT.port || []).length >= 6) { toast('Podés subir hasta 6 fotos'); return; } EDIT.port = [...(EDIT.port || []), await readPhoto(f, 700)]; vEdit(); }
   } catch (err) { toast('No se pudo cargar esa imagen'); }
 });
-const fotoPicker = (id, ph, foto, name) => `<div class="avpick"><label class="av lg" for="${id}" id="${ph === 'reg' ? 'regAv' : 'editAv'}" aria-label="Elegir foto">${foto ? `<img src="${foto}" alt="Tu foto">` : ico('cam')}</label>
+const fotoPicker = (id, ph, foto, name) => `<div class="avpick"><label class="av lg" for="${id}" id="${ph === 'reg' ? 'regAv' : 'editAv'}" aria-label="Elegir foto">${foto ? `<img src="${safeImg(foto)}" alt="Tu foto">` : ico('cam')}</label>
   <input type="file" id="${id}" accept="image/*" data-ph="${ph}" hidden><div><b>Foto de perfil</b><span class="hint">${ph === 'reg' ? 'Opcional. Ayuda a generar confianza.' : 'Tocá la imagen para cambiarla.'}</span>${foto && ph === 'edit' ? '<button class="back" style="margin:8px 0 0;color:var(--bad)" data-a="quitarFoto">Quitar foto</button>' : ''}</div></div>`;
 const stars = s => typeof s === 'number' ? `<span class="stars" aria-label="${s} de 5">★</span> <b class="num">${String(s).replace('.', ',')}</b>` : `<span class="tag b">Nuevo</span>`;
 
@@ -1203,7 +1225,11 @@ function render() {
   $('#top').hidden = false;
   const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Mis pedidos' : 'Pedidos nuevos', casa:'Mi casa', per:'Perfil', trab:'Mis trabajos', agenda:'Agenda'};
   $('#ht').textContent = V.job ? (c.t === 'u' ? 'Mi pedido' : 'Pedido') : V.edit ? 'Editar perfil' : (TT[V.tab] || 'HandyGo');
-  $('#hs').textContent = '';
+  const inChat = V.tab === 'chat' && !V.job && c.t === 'u';
+  const hs = $('#hs'); hs.className = ''; hs.textContent = '';
+  const ha = $('#hacts'); ha.hidden = !inChat;
+  ha.innerHTML = inChat ? `<button class="hbtn" data-a="history" aria-label="Historial de consultas" title="Historial">${ico('clock')}</button><button class="hbtn" data-a="newCase" aria-label="Nueva consulta" title="Nueva consulta">${ico('plus')}</button>` : '';
+  if (inChat) setMode();
   const hp = $('#hpill'); hp.hidden = false;
   if (c.t === 'u') { hp.className = 'pill'; hp.dataset.a = 'credits'; hp.innerHTML = `<span class="num">${u.cr}</span> consultas`; }
   else { hp.className = 'pill' + (u.on ? '' : ' off'); hp.dataset.a = 'tog'; hp.textContent = u.on ? '● Disponible' : '○ No disponible'; }
@@ -1244,7 +1270,7 @@ function vChat() {
     newCase();
     chatEl = document.createElement('div');
     chatEl.style.cssText = 'display:flex;flex-direction:column;flex:1;min-height:0';
-    chatEl.innerHTML = `<div class="chatbar"><span class="mode" id="mode"><i></i> <span>Asistente HandyGo</span></span><span class="row" style="gap:8px;flex-wrap:nowrap"><button class="btn sm g" data-a="history" style="padding:4px 12px;white-space:nowrap">Historial</button><button class="btn sm g" data-a="newCase" style="padding:4px 12px;white-space:nowrap">${ico('plus')} Nueva</button></span></div>
+    chatEl.innerHTML = `
       <div id="log" aria-live="polite"></div>
       <div class="composer"><div class="attach" id="att" hidden></div>
       <div class="bar"><div class="pillin"><textarea id="inp" rows="1" placeholder="Escribile a Handy…" aria-label="Mensaje para Handy"></textarea>
@@ -1263,7 +1289,7 @@ function vChat() {
   } else { view('', true); $('#view').appendChild(chatEl); }
   setMode(); scrollLog();
 }
-function setMode() { const m = chatEl && chatEl.querySelector('#mode'); if (!m) return; m.className = 'mode' + (AI_OK === false ? ' off' : ''); m.querySelector('span').textContent = AI_OK === false ? 'Sin conexión' : 'En línea'; }
+function setMode() { const hs = $('#hs'); if (!hs || !DB.cur || V.tab !== 'chat' || V.job || DB.cur.t !== 'u') return; hs.className = 'on' + (AI_OK === false ? ' off' : ''); hs.innerHTML = '<i></i>' + (AI_OK === false ? 'Sin conexión · guías revisadas' : 'En línea'); }
 const LOG = () => chatEl.querySelector('#log');
 function scrollLog() { const l = chatEl && chatEl.querySelector('#log'); if (l) requestAnimationFrame(() => l.scrollTop = l.scrollHeight); }
 function say(html, cls = '', who = true) {
@@ -1387,7 +1413,7 @@ function onPic(e) {
       const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       pendingImg = c.toDataURL('image/jpeg', .8);
-      const at = chatEl.querySelector('#att'); at.hidden = false; at.innerHTML = `<img src="${pendingImg}" alt="Foto adjunta"><span>Foto lista para enviar</span><button data-a="clearPic">Quitar</button>`; syncSend();
+      const at = chatEl.querySelector('#att'); at.hidden = false; at.innerHTML = `<img src="${safeImg(pendingImg)}" alt="Foto adjunta"><span>Foto lista para enviar</span><button data-a="clearPic">Quitar</button>`; syncSend();
     }; img.src = r.result; };
   r.readAsDataURL(f);
 }
@@ -1459,7 +1485,7 @@ ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.tri
 function go(txt, isReply) {
   const img = isReply ? null : pendingImg; clearPic();
   LOG().querySelectorAll('.chips').forEach(c => c.remove());
-  say((img ? `<img src="${img}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
+  say((img ? `<img src="${safeImg(img)}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
   const t = (txt || '').toLowerCase();
   const h = HARD.find(x => x.re.test(t));
   if (!CH.started) { if (!useCredit(false)) return; CH.started = true; CH.trans = CH.trans.filter(x => x.r !== 'b' || x.t.indexOf('Hola, ') !== 0); }
@@ -1482,8 +1508,9 @@ async function ai(txt, img, t, audio, bub) {
       if (intento) await new Promise(r => setTimeout(r, 1500));
       const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 32000);
       try {
-        const res = await fetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal, body});
+        const res = await apiFetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal, body});
         const j = await res.json().catch(() => null);
+        if (res.status === 429 || res.status === 401) { lastErr = new Error(res.status === 429 ? 'limite' : 'sin_sesion'); break; }
         if (res.ok && j && j.ok) d = j; else { lastErr = new Error((j && j.error) || 'api'); if (j && j.detail) console.warn('IA:', j.detail); }
       } catch (err) { lastErr = err; }
       clearTimeout(to);
@@ -1494,6 +1521,7 @@ async function ai(txt, img, t, audio, bub) {
     handleAI(d.reply, t);
   } catch (e) {
     th.remove(); console.warn('IA no disponible:', e);
+    if (e && e.message === 'limite') { CH.h.pop(); say('Hiciste muchas consultas seguidas. Esperá un minuto y seguimos.', 'sys', false); return; }
     AI_OK = false; setMode(); CH.h.pop();
     clearTimeout(AI_RETRY); AI_RETRY = setTimeout(() => { AI_OK = null; setMode(); }, 60000);
     if (audio) { say('Ahora no me puedo conectar para escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
@@ -1532,7 +1560,7 @@ function handleAI(r, t) {
     say(msg);
     return showTut({id:'gen', gen:true, n:r.caso || 'Tu arreglo', rubro:CH.rubro || 'Carpintería', lvl:r.nivel || 'Fácil', min:r.minutos || 20,
       steps:r.pasos.map(x => [pickIcon(x), x]), alert:r.alerta || '', mat:(r.materiales || []).map(([n, a]) => [pickIcon(n), n, a || '']),
-      glos:(r.glosario || []).filter(g => g && g.termino && !termsIn(g.termino).length).map(g => ({n:g.termino, q:g.que_es || '', d:g.donde || '', p:g.imagen || g.termino}))});
+      glos:(r.glosario || []).filter(g => g && g.termino && !termsIn(g.termino).length).map(g => ({n:g.termino, q:g.que_es || '', d:g.donde || '', p:g.imagen || g.termino, s:g.firma || ''}))});
   }
   if (r.estado === 'guiar' && !tut) { say('Para esto no quiero improvisar pasos. Lo mejor es que lo vea un profesional.'); return derivar(); }
   if (r.estado === 'derivar') { say(msg); return derivar(); }
@@ -1624,11 +1652,18 @@ function termIdsFor(tut) {
   const add = id => { if (id && !ids.includes(id)) ids.push(id); };
   tut.steps.forEach(([, tx]) => termsIn(tx).forEach(add));
   (tut.mat || []).forEach(([, n]) => termsIn(n).forEach(add));
-  (tut.glos || []).forEach((g, i) => { const id = 'ai' + i + ':' + g.n; TERMS[id] = {id, n:g.n, q:g.q, d:g.d, p:g.p}; add(id); });
+  (tut.glos || []).forEach((g, i) => { const id = 'ai' + i + ':' + g.n; TERMS[id] = {id, n:g.n, q:g.q, d:g.d, p:g.p, s:g.s}; add(id); });
   return ids;
 }
 const termInfo = id => TERMS[id] || GLOS_ID[id];
-const termSrc = t => t.p ? `/api/img?p=${encodeURIComponent(t.p)}&v=3` : `/api/img?t=${encodeURIComponent(t.id)}&v=3`;
+// Ícono de cada pieza mientras carga (o si no hay imagen)
+const PZ_ICO = [[/lavandina|lubricante|silicona|aerosol|grafito/, 'spray'], [/persiana|enrollador|tablillas/, 'blind'], [/llave de paso|llave_paso/, 'valve'],
+  [/ducha|flor/, 'shower'], [/bacha|rejilla|sif[oó]n|sopapa|cisterna|mochila|rebalse|flotante|sarro|filtro|aireador|ca[ñn]o/, 'drop'], [/francesa|tuerca|allen|manija|cuerito/, 'wrench'],
+  [/tefl[oó]n|cinta/, 'tape'], [/junta|burlete/, 'drop'], [/bisagra|pestillo|escuadra/, 'hinge'], [/cola|enduido|esp[aá]tula|pistola/, 'brush'], [/lija/, 'sand'],
+  [/t[eé]rmica|tablero/, 'power'], [/buscapolo/, 'probe'], [/enchufe/, 'plug'], [/l[aá]mpara|portal/, 'bulb'], [/rueda|eje|regat[oó]n/, 'wheel'], [/trincheta|cuchill/, 'knife'],
+  [/gu[ií]as|riel|caj[oó]n/, 'box'], [/nivel/, 'level'], [/mecha|taladro/, 'drill'], [/tarugo|tornillo|destornillador/, 'screw'], [/martillo|clavo/, 'hammer'], [/guante/, 'glove'], [/escalera/, 'ladder']];
+const pzIco = t => { const k = (((t && t.id) || '') + ' ' + ((t && t.n) || '')).toLowerCase(); const m = PZ_ICO.find(([re]) => re.test(k)); return ico(m ? m[1] : 'tool'); };
+const termSrc = t => t.p ? (t.s ? `/api/img?p=${encodeURIComponent(t.p)}&s=${encodeURIComponent(t.s)}&v=3` : '') : `/api/img?t=${encodeURIComponent(t.id)}&v=3`;
 function linkTerms(tx, tut) {
   const seen = tut._seen || (tut._seen = new Set());
   let out = '', last = 0; GLOS_RE.re.lastIndex = 0; let m;
@@ -1643,16 +1678,16 @@ function piezasHTML(tut) {
   const ids = termIdsFor(tut); tut._seen = new Set();
   if (!ids.length) return '';
   return `<div class="pzs"><span class="eyebrow">Antes de empezar · conocé las piezas</span><p>Tocá cada una para ver qué es y dónde la encontrás.</p>
-    <div class="pzrow">${ids.map(id => { const t = termInfo(id); return `<button type="button" class="pz" data-a="term" data-v="${esc(id)}"><span class="ph" data-src="${esc(termSrc(t))}">${ico('tool')}</span><b>${esc(t.n)}</b><span>${esc(t.q)}</span></button>`; }).join('')}</div></div>`;
+    <div class="pzrow">${ids.map(id => { const t = termInfo(id); return `<button type="button" class="pz" data-a="term" data-v="${esc(id)}"><span class="ph" data-src="${esc(termSrc(t))}">${pzIco(t)}</span><b>${esc(t.n)}</b><span>${esc(t.q)}</span></button>`; }).join('')}</div></div>`;
 }
 function loadTermImgs(root) {
-  root.querySelectorAll('.ph[data-src], .termimg[data-src]').forEach((el, i) => { const src = el.dataset.src; el.removeAttribute('data-src');
+  root.querySelectorAll('.ph[data-src], .termimg[data-src]').forEach((el, i) => { const src = el.dataset.src; el.removeAttribute('data-src'); if (!src) return;
     setTimeout(() => { const img = new Image(); img.alt = ''; img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } };
       img.onerror = () => { if (!img.dataset.r) { img.dataset.r = 1; setTimeout(() => { img.src = src + '&r=1'; }, 2500); } }; img.src = src; }, i * 300); });
 }
 ACT.term = id => {
   const t = termInfo(id); if (!t) return;
-  sheet(`<span class="eyebrow">¿Qué es?</span><h2>${esc(t.n)}</h2><div class="termimg" data-src="${esc(termSrc(t))}">${ico('tool')}</div>
+  sheet(`<span class="eyebrow">¿Qué es?</span><h2>${esc(t.n)}</h2><div class="termimg" data-src="${esc(termSrc(t))}">${pzIco(t)}</div>
     <div class="tdef"><div class="card"><span class="eyebrow">Qué es</span><div>${esc(t.q)}</div></div><div class="card"><span class="eyebrow">Dónde la encontrás</span><div>${esc(t.d)}</div></div></div>
     <button class="btn g w" style="margin-top:16px" data-a="close">Entendido</button>`);
   loadTermImgs($('#scrim'));
@@ -1678,7 +1713,7 @@ function ticketHTML(s, extra = '') {
    <dt>Relato</dt><dd>${esc(s.desc)}</dd>
    <dt>Intentos</dt><dd>${esc(s.intentos)}</dd>
    ${s.zona ? `<dt>Zona</dt><dd>${esc(s.zona)}</dd>` : ''}
-   ${s.img ? `<dt>Foto</dt><dd><img class="photo" src="${s.img}" alt="Foto del problema"></dd>` : ''}${extra}</dl></div>`;
+   ${s.img ? `<dt>Foto</dt><dd><img class="photo" src="${safeImg(s.img)}" alt="Foto del problema"></dd>` : ''}${extra}</dl></div>`;
 }
 function derivar() {
   if (!CH.rubro) CH.rubro = 'Plomería';
@@ -1770,7 +1805,7 @@ async function loadStores(c) {
   let st;
   try {
     const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
-    const r = await fetch(`/api/places?lat=${c.lat.toFixed(3)}&lon=${c.lon.toFixed(3)}`, {signal:ctl.signal});
+    const r = await apiFetch(`/api/places?lat=${c.lat.toFixed(3)}&lon=${c.lon.toFixed(3)}`, {signal:ctl.signal});
     clearTimeout(to);
     const d = await r.json(); if (!r.ok || !d.ok) throw new Error('places');
     st = d.items.map(x => ({...x, d:dist(c, x)})).sort((a, b) => a.d - b.d);
@@ -1870,7 +1905,7 @@ function vJob() {
       <div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
       ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
       <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Toda la comunicación queda dentro de HandyGo.</p></div>`;
-    if (j.estado === 'aceptado') h += `<div class="sec"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint" style="text-align:center;margin-top:8px">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
+    if (j.estado === 'aceptado') h += `<div class="stickbar"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
     if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec card"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
       <div class="ratebtns" style="margin:12px 0">${[1, 2, 3, 4, 5].map(n => `<button data-a="rate" data-v="${n}" aria-label="${n} estrellas">${n}★</button>`).join('')}</div>
       <label class="f" for="rc">Comentario (opcional)<textarea id="rc" rows="2" placeholder="Ej: llegó a horario y explicó todo"></textarea></label>
@@ -1888,7 +1923,7 @@ ACT.sendRev = () => {
   if (!RATE) { toast('Elegí de 1 a 5 estrellas'); return; }
   const j = DB.jobs.find(x => x.id === V.job); j.review = {s:RATE, c:($('#rc').value || '').trim()};
   const p = DB.provs.find(x => x.id === j.prov); if (p) { p.rev = p.rev || []; p.rev.push({s:RATE, from:first(me().nombre), c:j.review.c}); }
-  if (CLOUD && isUuid(j.prov)) SB.rpc('add_review', {p_prov:j.prov, p_rev:{s:RATE, from:first(me().nombre), c:j.review.c}}).then(r => { if (r.error) console.warn(r.error); });
+  if (CLOUD && isUuid(j.prov)) SB.rpc('add_review', {p_prov:j.prov, p_rev:{s:RATE, from:first(me().nombre), c:j.review.c}, p_job:j.id}).then(r => { if (r.error) console.warn(r.error); });
   RATE = 0; save(); toast('Reseña publicada'); render();
 };
 ACT.prof = id => {
@@ -1899,7 +1934,7 @@ ACT.prof = id => {
    <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
    <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}${p.hor ? ' · ' + esc(p.hor) : ''}</p>
    ${(p.esp || []).length ? `<h3 class="sh">Especialidades</h3><div class="meta" style="margin:8px 0 16px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
-   ${(p.port || []).length ? `<h3 class="sh">Trabajos realizados</h3><div class="port" style="margin:8px 0 16px">${p.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
+   ${(p.port || []).length ? `<h3 class="sh">Trabajos realizados</h3><div class="port" style="margin:8px 0 16px">${p.port.map(x => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
    <h3 class="sh">Reseñas</h3><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
    <button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
 };
@@ -1984,7 +2019,7 @@ function offerForm(j) {
      return sl.length ? `<div class="slots">${sl.map((k, n) => `<label class="slot"><input type="checkbox" name="oslot" value="${k}" ${n < 3 ? 'checked' : ''}> ${esc(slotLabel(k))}</label>`).join('')}</div><span class="hint">Salen de tu agenda. Podés cambiarla en la pestaña Agenda.</span>`
        : '<div class="card small mut">No tenés turnos libres. Cargá tu disponibilidad en la pestaña <b>Agenda</b>.</div>'; })()}</div>
    ${field('pm', 'Mensaje para el cliente', 'text', 'Ej: con el resumen ya sé qué llevar')}
-   <button class="btn p w" data-a="offer">Enviar presupuesto</button><button class="btn g w" data-a="desc">Descartar pedido</button></div></div>`;
+   </div></div><div class="stickbar"><div class="row"><button class="btn g" data-a="desc">Descartar</button><button class="btn p" data-a="offer">Enviar presupuesto</button></div></div>`;
 }
 ACT.offer = () => {
   const j = DB.jobs.find(x => x.id === V.job), pr = +$('#pr').value;
@@ -2023,10 +2058,10 @@ function vCasa() {
   const gastado = jobs.reduce((a, j) => a + (j.precio || 0), 0), ahorro = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0);
   const pend = S.tasks.filter(t => !done[key + '-' + t.id]).length;
   view(`<p class="mut small" style="margin:0">${esc(u.zona)}</p>
-   <div class="stat" style="margin-top:12px"><div class="card"><b class="num">${items.filter(x => x.t !== 'mant').length}</b><span>arreglos registrados</span></div><div class="card"><b class="num" style="font-size:24px">${money(ahorro)}</b><span>ahorrados resolviendo por tu cuenta</span></div></div>
+   <div class="stat" style="margin-top:12px"><div class="card"><b class="num">${items.filter(x => x.t !== 'mant').length}</b><span>Arreglos</span></div><div class="card"><b class="num">${money(ahorro)}</b><span>Ahorrado</span></div></div>
    <div class="sec"><button class="card matcard" data-a="tab" data-v="mat"><span class="ic" style="width:42px;height:42px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('box')}</span>
      <span style="min-width:0;flex:1"><b style="display:block;font:600 16px/1.3 var(--f-display)">Herramientas y ferreterías cerca</b><span class="small mut">El kit básico de la casa y el mapa de comercios</span></span>${ico('back').replace('<svg', '<svg style="width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:currentColor;stroke-width:1.75;color:var(--mut)"')}</button></div>
-   <div class="sec"><div class="season"><span class="eyebrow">Mantenimiento de ${S.n.toLowerCase()}</span><h3>${pend ? `Tenés ${pend} ${pend === 1 ? 'tarea' : 'tareas'} para esta temporada` : 'Tu casa está al día'}</h3><p>Lo que conviene revisar de ${S.meses}.</p></div>
+   <div class="sec"><div class="season"><span class="sic">${ico(S.ico)}</span><div style="min-width:0"><span class="eyebrow">Mantenimiento de ${S.n.toLowerCase()}</span><h3>${pend ? `${pend} ${pend === 1 ? 'tarea pendiente' : 'tareas pendientes'}` : 'Tu casa está al día'}</h3><p>Lo que conviene revisar de ${S.meses}.</p></div></div>
     <div class="list" style="margin-top:12px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<div class="card task ${ok ? 'done' : ''}">
       <div class="r1"><span class="ic">${ico(t.quien === 'pro' ? 'tool' : S.ico)}</span><div style="min-width:0;flex:1"><h3>${esc(t.n)}</h3><div class="small mut">${esc(t.why)}</div>
       <div class="sub" style="margin-top:8px">${ok ? `<span class="ok">${ico('check')} Hecho · ${ago(ok)}</span>` : t.quien === 'pro' ? `<span class="warn">Con ${t.rubro === 'Gas' ? 'gasista matriculado' : t.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}</span>` : '<span>Lo podés hacer vos</span>'}</div></div></div>
@@ -2081,7 +2116,7 @@ function vPer() {
      <div class="card switch"><div><b>Disponible para pedidos</b><div class="small mut">Los clientes te ven en las búsquedas</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
      <div class="stat" style="margin-top:12px"><div class="card"><b>${avg(u) === 'Nuevo' ? '—' : String(avg(u)).replace('.', ',')}</b><span>${u.rev.length} reseñas</span></div><div class="card"><b class="num" style="font-size:24px">${money(fin.reduce((a, j) => a + j.precio, 0))}</b><span>cobrado en ${fin.length} trabajo${fin.length === 1 ? '' : 's'}</span></div></div>
      ${(u.esp || []).length ? `<div class="sec"><h3 class="sh">Especialidades</h3><div class="meta">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div></div>` : ''}
-     ${(u.port || []).length ? `<div class="sec"><h3 class="sh">Trabajos realizados</h3><div class="port">${u.port.map(x => `<div class="ph"><img src="${x}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
+     ${(u.port || []).length ? `<div class="sec"><h3 class="sh">Trabajos realizados</h3><div class="port">${u.port.map(x => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
      ${u.rev.length ? `<div class="sec"><h3 class="sh">Tus reseñas</h3><div class="card stack">${u.rev.slice().reverse().map(r => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>`).join('')}</div></div>` : ''}
      ${tail()}`);
   }
@@ -2111,7 +2146,7 @@ function vEdit() {
     ${inp('e_esp', 'Especialidades', cur.esp, 'text', 'Ej: pérdidas, destapaciones, griferías', 'Separalas con comas')}
     <label class="f" for="e_hor">Horario de atención<select id="e_hor">${['Lunes a viernes, 8 a 18 h', 'Lunes a sábado, 8 a 19 h', 'Todos los días, 8 a 20 h', 'Urgencias 24 h'].map(o => `<option ${o === cur.hor ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
     <div><h3 class="sh">Fotos de trabajos realizados</h3>
-     <div class="port">${(EDIT.port || []).map((x, i) => `<div class="ph"><img src="${x}" alt="Trabajo ${i + 1}"><button data-a="quitarPort" data-v="${i}" aria-label="Quitar foto">${ico('x')}</button></div>`).join('')}
+     <div class="port">${(EDIT.port || []).map((x, i) => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo ${i + 1}"><button data-a="quitarPort" data-v="${i}" aria-label="Quitar foto">${ico('x')}</button></div>`).join('')}
       ${(EDIT.port || []).length < 6 ? `<label class="add" for="e_port">${ico('plus')}<span>Agregar foto</span></label><input type="file" id="e_port" accept="image/*" data-ph="port" hidden>` : ''}</div>
      <span class="hint">Hasta 6 fotos. Los clientes las ven en tu perfil.</span></div>`
     : `${inp('e_dir', 'Dirección', cur.dir, 'text', 'Ej: Av. Medrano 1200, 3.º B', 'Solo la ve el prestador que contrates')}`}
