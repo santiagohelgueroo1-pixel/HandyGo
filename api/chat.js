@@ -19,7 +19,12 @@ TU TRABAJO
        "pasos": 3 a 8 pasos concretos, en orden, uno por acción, con medidas de cuidado básicas (desenchufar, cortar el agua, guantes);
        "materiales": [["nombre","cómo pedirlo en una ferretería o comercio argentino"]] (puede ser lista vacía);
        "nivel": "Fácil" o "Media"; "minutos": número estimado; "alerta": una frase de precaución si corresponde, o "".
-       "glosario": las piezas, partes o herramientas que nombran los pasos y que alguien sin experiencia puede no conocer (2 a 6),
+       "piezas": los ids del CATÁLOGO DE PIEZAS (está al final) de las piezas, partes, herramientas y materiales que nombran los pasos
+         o los materiales (2 a 8), copiados EXACTOS como están en la lista. Cada id tiene su foto fija: vos solo elegís cuál corresponde.
+         Si una palabra puede ser varias piezas (filtro, rejilla, burlete, manija, flotante, bisagra...), elegí la del artefacto de ESTE
+         problema (filtro_aire para el aire acondicionado, filtro_lav para el lavarropas, filtro_campana para la campana).
+         Usá en los pasos el mismo nombre de la pieza que figura en el catálogo cuando puedas.
+       "glosario": SOLO las piezas importantes que NO están en el catálogo de piezas (0 a 3; casi siempre lista vacía),
          cada una {"termino":"tal cual aparece en los pasos","que_es":"1 o 2 frases simples: qué es ESA pieza en ESE artefacto y para qué sirve en este arreglo","donde":"dónde está en ese artefacto y dónde se compra o cómo se pide","imagen":"descripción en inglés del objeto exacto, nombrando el artefacto (ej: the dust filter of a wall split air conditioner)"}.
          Una misma palabra puede ser piezas distintas según el artefacto (el filtro del aire no es el del lavarropas ni el de la campana):
          la explicación y la imagen tienen que ser de la pieza de ESTE problema, nunca genéricas.
@@ -66,9 +71,10 @@ PREGUNTAS SOBRE LA APP
 Si el mensaje no tiene que ver con el hogar ni con la app, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
+{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","piezas":["ids del catálogo de piezas"],"glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
 
 const { proteger, firmar } = require('./_seguridad');
+const PIEZAS = require('./_piezas');
 
 const ESTADOS = ['preguntar', 'guiar', 'derivar', 'app', 'fuera_de_tema'];
 const DESTINOS = ['chat', 'arreglos', 'casa', 'temporada', 'herramientas', 'ferreterias', 'perfil', 'editar', 'consultas', 'ajustes', 'tutorial'];
@@ -94,6 +100,7 @@ module.exports = async (req, res) => {
 
   const system = SYSTEM + '\n\nCATÁLOGO DE GUÍAS REVISADAS (id: título · rubro · cuándo usarla):\n' +
     catalog.map(c => `- ${String(c && c.id).slice(0, 40)}: ${String(c && c.titulo).slice(0, 100)} · ${String(c && c.rubro).slice(0, 20)} · ${String(c && c.cuando).slice(0, 300)}`).join('\n') +
+    '\n\nCATÁLOGO DE PIEZAS (categoría: ids):\n' + PIEZAS.LISTA +
     '\n\nTEMA ACTUAL: ' + (tema || '(ninguno, es el primer mensaje)');
   const ids = catalog.map(c => String(c && c.id).slice(0, 40));
 
@@ -248,11 +255,12 @@ function normalize(text, ids) {
     minutos: Math.max(5, Math.min(180, parseInt(o.minutos, 10) || 20)),
     alerta: typeof o.alerta === 'string' ? o.alerta.slice(0, 240) : '',
     glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 320), donde: String(g.donde || '').slice(0, 260), imagen: String(g.imagen || '').slice(0, 200) })).map(g => ({ ...g, firma: firmar(g.imagen || g.termino) })) : [],
+    piezas: Array.isArray(o.piezas) ? [...new Set(o.piezas.map(x => String(x).trim()).filter(x => PIEZAS.IDS.has(x)))].slice(0, 8) : [],
     transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : '',
     mientras_tanto: Array.isArray(o.mientras_tanto) ? o.mientras_tanto.filter(x => typeof x === 'string' && x.trim()).slice(0, 3).map(x => x.slice(0, 160)) : [],
     ir_a: DESTINOS.includes(o.ir_a) ? o.ir_a : null
   };
   if (out.estado !== 'derivar') out.mientras_tanto = [];
-  if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; out.glosario = []; }
+  if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; out.glosario = []; out.piezas = []; }
   return out;
 }
