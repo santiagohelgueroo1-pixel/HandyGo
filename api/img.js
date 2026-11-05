@@ -5,11 +5,10 @@
 // Modelo: Cloudflare Workers AI · FLUX.2 [klein] 4B (plan gratuito). Respaldo: FLUX.1 schnell.
 // Variables: CF_ACCOUNT_ID, CF_API_TOKEN (obligatorias) · GEMINI_API_KEY (para guías nuevas)
 
-const STYLE = 'Flat vector instructional illustration in the style of a modern home-repair manual. ' +
-  'One clear subject, centered, medium close-up, generous margins, plain warm off-white background (#F5F7F2). ' +
-  'Limited palette: deep forest green (#26573F), soft mint green (#B1D8B7), warm amber (#F2B33D) and dark charcoal (#1E2A24) outlines. ' +
-  'Clean bold shapes, simple soft shading, accurate everyday objects, realistic proportions. ' +
-  'Absolutely no text, no letters, no numbers, no labels, no logos, no watermark, no faces.';
+// Las piezas se muestran como una foto de catálogo: es lo que más ayuda a reconocerlas en la casa o en la ferretería
+const STYLE = 'Realistic studio product photograph, as in a hardware store catalog. One single object, centered and fully visible, ' +
+  'sharp focus, natural true-to-life colors and materials, soft even lighting, plain light grey seamless background. ' +
+  'No text, no letters, no numbers, no labels, no logos, no watermark, no people, no hands.';
 
 // Descripciones fijas por guía (mismo orden que los pasos de la app)
 const P = {
@@ -364,7 +363,7 @@ module.exports = async (req, res) => {
   const no = msg => { res.setHeader('Cache-Control', 'no-store'); return res.status(400).json({ ok: false, error: msg }); };
   // Solo se aceptan las direcciones que arma la app: así nadie puede saltear la caché con parámetros inventados
   if (Object.keys(q).some(k => !PERMITIDOS.has(k) || Array.isArray(q[k]))) return no('Parámetro inválido');
-  if (q.v !== undefined && q.v !== '3') return no('Versión inválida');
+  if (q.v !== undefined && q.v !== '3' && q.v !== '4') return no('Versión inválida');
   if (q.r !== undefined && q.r !== '1') return no('Parámetro inválido');
   if (q.g !== undefined && !/^\d{1,2}$/.test(String(q.i || ''))) return no('Paso inválido');
   if (q.p !== undefined && (String(q.p).length > 400 || !firmaValida(String(q.p), q.s))) return no('Imagen no autorizada');
@@ -379,7 +378,7 @@ module.exports = async (req, res) => {
   const prompt = `${subject}. ${q.k ? KSTYLE : STYLE}`;
   try {
     // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
-    const first = q.k ? dev(acct, token, prompt).catch(e => { console.error('dev:', e.message); return klein(acct, token, prompt, 640, 640, 11000); }) : klein(acct, token, prompt);
+    const first = q.k ? dev(acct, token, prompt).catch(e => { console.error('dev:', e.message); return klein(acct, token, prompt, 640, 640, 11000); }) : klein(acct, token, prompt, 512, 512);
     const img = await first.catch(e => { console.error('klein:', e.message); return schnell(acct, token, prompt); });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
