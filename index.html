@@ -260,7 +260,8 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .meanwhile b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75}
 .meanwhile ul{margin:8px 0 0;padding-left:20px;font-size:14px}
 .handysays{display:flex;gap:12px;align-items:flex-start}
-.handysays>.mark{width:40px;height:40px;border-radius:12px;flex:none}
+.handysays>.mark{width:36px;height:36px;border-radius:10px;flex:none}
+.handysays p{font-size:15px}
 .handysays .bub{flex:1;min-width:0;background:var(--priSoft);border-radius:4px 16px 16px 16px;padding:12px 14px}
 .handysays .nm{display:block;font:600 12px/1 var(--f-body);color:var(--pri);margin-bottom:4px}
 .handysays p{margin:0;font-size:16px;line-height:1.45}
@@ -353,9 +354,10 @@ label.incl input:focus-visible+span{outline:3px solid var(--acc);outline-offset:
 label.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px}
 label.chk input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:0}
 .casaitem .ci .mark{width:44px;height:44px;border-radius:12px}
-.cimg{position:relative;flex:none;display:grid;place-items:center;overflow:hidden;background:var(--priSoft);color:var(--pri);border-radius:12px;width:44px;height:44px}
+.cimg{position:relative;flex:none;display:grid;place-items:center;overflow:hidden;background:var(--sunk);color:var(--mut);border-radius:12px;width:44px;height:44px}
 .cimg>svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
-.cimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cimg img{position:absolute;inset:14%;width:72%;height:72%;object-fit:contain;background:var(--sunk)}
+.cimg.xl img{inset:20%;width:60%;height:60%}
 .cimg.sm{width:42px;height:42px;border-radius:10px}
 .cimg.md{width:64px;height:64px;border-radius:14px}
 .cimg.lg{width:100%;height:auto;aspect-ratio:1;border-radius:12px}
@@ -930,14 +932,14 @@ const findTut = t => TUT_ORDER.map(k => TUT[k]).find(x => x && x.re.test(t));
 const KIT = [
   {k:'k_destornilladores', ic:'screw', n:'Destornilladores', para:'Para ajustar o sacar tornillos de manijas, bisagras, tapas y muebles. Con uno plano y uno Phillips (punta en cruz) cubrís casi todo.', pedir:'“Un destornillador plano y uno Phillips medianos”'},
   {k:'k_llave', ic:'wrench', n:'Llave francesa', para:'Para aflojar y apretar tuercas de canillas, flexibles y sifones. Se abre y se cierra para adaptarse a cada medida.', pedir:'“Una llave francesa de 8 pulgadas”'},
-  {k:'k_pinza', ic:'wrench', n:'Pinza', para:'Para agarrar, doblar o sostener piezas chicas mientras trabajás.', pedir:'“Una pinza universal”'},
+  {k:'k_martillo', ic:'hammer', n:'Martillo', para:'Para clavar clavos y golpear suave cuando una pieza tiene que encastrar. El de carpintero tiene uña para sacar clavos.', pedir:'“Un martillo de carpintero mediano”'},
   {k:'k_teflon', ic:'tape', n:'Cinta de teflón', para:'Se enrolla en las roscas de agua antes de enroscar, para que no pierdan.', pedir:'“Cinta de teflón de 1/2 pulgada”'},
   {k:'k_buscapolo', ic:'probe', n:'Buscapolo', para:'Un destornillador con una lucecita: si se prende al tocar un enchufe o un cable, hay corriente. Sirve para chequear antes de tocar.', pedir:'“Un buscapolo”'},
   {k:'k_metro', ic:'level', n:'Cinta métrica', para:'Para medir antes de comprar un repuesto o de hacer un agujero.', pedir:'“Una cinta métrica de 5 metros”'},
   {k:'k_linterna', ic:'bulb', n:'Linterna', para:'Para ver bien debajo de la bacha, adentro de un mueble o si se corta la luz.', pedir:'“Una linterna LED chica”'},
   {k:'k_balde', ic:'bucket', n:'Balde y trapos', para:'Para juntar el agua que cae en cualquier arreglo de plomería y no mojar todo.', pedir:'Cualquier balde que tengas en casa'}];
 // Imágenes fijas del catálogo de la app (se generan una sola vez y siempre son las mismas)
-const catImg = (k, fb = 'tool', cls = '') => `<span class="cimg ${cls}">${ico(fb)}<img src="/api/img?k=${k}&v=3" alt="" loading="lazy" decoding="async" onerror="this.remove()"></span>`;
+const catImg = (k, fb = 'tool', cls = '') => `<span class="cimg ${cls}">${ico(fb)}<img src="hg-${k}.webp" alt="" decoding="async" onerror="this.remove()"></span>`;
 const RUBRO_IMG = {Plomería:'r_plomeria', Gas:'r_gas', Electricidad:'r_electricidad', Carpintería:'r_carpinteria', Albañilería:'r_albanileria'};
 
 const FER = [
@@ -1764,6 +1766,11 @@ function handleAI(r, t) {
   if (r.caso) CH.caso = r.caso;
   if (RUBROS.includes(r.rubro)) CH.rubro = r.rubro;
   const tut = TUT[r.tutorial];
+  // Si ya le pasé la guía de este problema, no la repito: lo mando a la de más arriba
+  if (CH.tutObj && !r.tema_nuevo && r.estado === 'guiar') {
+    say(r.mensaje ? msg : 'Buenísimo, sigamos con la guía que te pasé más arriba.');
+    return chips([['Ir a la guía', () => ACT.toTut(), 'p'], ['Lo resolví', () => resolved()], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
+  }
   if (r.estado === 'derivar' && r.riesgo) {
     const h = HARD.find(x => x.rubro === r.rubro);
     return hardStop({k:r.caso || (h ? h.k : 'Trabajo riesgoso'), rubro:RUBROS.includes(r.rubro) ? r.rubro : 'Albañilería', why:r.mensaje || (h ? h.why : ''),
@@ -1851,6 +1858,7 @@ function pickIcon(t) {
 }
 function showTut(tut) {
   logTrans('k', 'Guía paso a paso: ' + tut.n);
+  const lastA = [...CH.h].reverse().find(m => m.role === 'assistant'); if (lastA) lastA.text += ` (guía enviada: ${tut.n})`;
   CH.topic = tut.gen ? 'gen:' + tut.n : tut.id;
   CH.tutObj = tut;
   CH.tut = tut.id; CH.caso = tut.n; CH.rubro = tut.rubro; CH.hard = false; CH.pend = null;
@@ -1877,6 +1885,7 @@ function showTut(tut) {
   chips([['Lo resolví', () => resolved(), 'p'], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
 }
 // "¿Te trabaste?": deja el paso cargado en el chat para preguntarle a Handy
+ACT.toTut = () => { const el = LOG().querySelector('.tut:last-of-type') || [...LOG().querySelectorAll('.tut')].pop(); if (el) el.scrollIntoView({behavior:'smooth', block:'start'}); };
 ACT.stuck = i => {
   const t = CH.tutObj && CH.tutObj.steps[+i]; if (!t) return;
   const inp = chatEl && chatEl.querySelector('#inp'); if (!inp) return;
@@ -1927,7 +1936,7 @@ const PZ_ICO = [[/aire|split|unidad|aletas|serpentina|heladera|control remoto/, 
   [/t[eé]rmica|tablero/, 'power'], [/buscapolo/, 'probe'], [/enchufe/, 'plug'], [/l[aá]mpara|portal/, 'bulb'], [/rueda|eje|regat[oó]n/, 'wheel'], [/trincheta|cuchill/, 'knife'],
   [/gu[ií]as|riel|caj[oó]n/, 'box'], [/nivel/, 'level'], [/mecha|taladro/, 'drill'], [/tarugo|tornillo|destornillador/, 'screw'], [/martillo|clavo/, 'hammer'], [/guante/, 'glove'], [/escalera/, 'ladder']];
 const pzIco = t => { const k = (((t && t.id) || '') + ' ' + ((t && t.n) || '')).toLowerCase(); const m = PZ_ICO.find(([re]) => re.test(k)); return ico(m ? m[1] : 'tool'); };
-const termSrc = t => t.p ? (t.s ? `/api/img?p=${encodeURIComponent(t.p)}&s=${encodeURIComponent(t.s)}&v=3` : '') : `/api/img?t=${encodeURIComponent(t.id)}&v=3`;
+const termSrc = t => t.p ? (t.s ? `/api/img?p=${encodeURIComponent(t.p)}&s=${encodeURIComponent(t.s)}&v=4` : '') : `/api/img?t=${encodeURIComponent(t.id)}&v=4`;
 function linkTerms(tx, tut) {
   const seen = tut._seen || (tut._seen = new Set());
   let out = '', last = 0; GLOS_RE.re.lastIndex = 0; let m; const ctx = tutCtx(tut);
@@ -1997,7 +2006,8 @@ function fichaForm() {
   return `<div class="card ficha" id="ficha">${fichaQs().map(q => `<div class="fq"><b>${q.q}</b><div class="fopts">${q.o.map(o => `<button class="${f[q.k] === o ? 'on' : ''}" data-a="fq" data-v="${q.k}|${esc(o)}" aria-pressed="${f[q.k] === o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
     <label class="f" for="fToco">¿Tocaste o cambiaste algo?<textarea id="fToco" rows="2" placeholder="Ej: cambié el cuerito, ajusté la tuerca">${esc(f.toco || (toco ? CH.intentos : ''))}</textarea><span class="hint">A los profesionales les sirve muchísimo saberlo antes de llegar.</span></label>
     <label class="f" for="fCerca">Cerca de (opcional)<input id="fCerca" value="${esc(f.cerca || '')}" placeholder="Calle o esquina, sin la altura exacta"></label>
-    <button class="btn p w" data-a="fichaOk">Listo, ver el resumen</button></div>`;
+    <button class="btn p w" data-a="fichaOk">Listo, ver el resumen</button>
+    <button class="btn g w" data-a="fichaAuto">Prefiero que lo armes vos</button></div>`;
 }
 ACT.fq = v => { const [k, val] = v.split('|'); CH.ficha = CH.ficha || {}; CH.ficha[k] = CH.ficha[k] === val ? '' : val;
   const box = $('#ficha'); if (box) box.querySelectorAll(`[data-a="fq"][data-v^="${k}|"]`).forEach(b => { const on = b.dataset.v === k + '|' + CH.ficha[k]; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); };
@@ -2013,6 +2023,25 @@ ACT.fichaOk = () => {
   block(`<div style="width:100%">${ticketHTML(s)}</div>`);
   chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p']]);
 };
+// Si la persona no quiere completar la ficha, Handy la arma con lo que entendió de la charla
+function guessFicha() {
+  const t = (CH.resp || []).join(' ').toLowerCase(), f = {};
+  if (/departamento|depto|dpto/.test(t)) f.viv = 'Departamento'; else if (/\bph\b/.test(t)) f.viv = 'PH'; else if (/\bcasa\b/.test(t)) f.viv = 'Casa'; else if (/local|negocio/.test(t)) f.viv = 'Local';
+  if (/urgente|inund|no para|chorro|ya mismo|emergencia/.test(t)) f.urg = 'Es urgente'; else if (/cuando puedas|no es urgente|puede esperar/.test(t)) f.urg = 'Puede esperar';
+  if (CH.rubro === 'Gas') { const a = t.match(/calef[oó]n|termotanque|anafe|cocina|estufa/); if (a) f.art = {calefon:'Calefón', 'calefón':'Calefón', termotanque:'Termotanque', anafe:'Cocina o anafe', cocina:'Cocina o anafe', estufa:'Estufa'}[a[0]] || 'Otro';
+    if (GAS_SMELL.test(t)) f.olor = 'Sí'; }
+  if (CH.rubro === 'Electricidad') { if (/salt[oó]|se cort[oó] la luz|baj[oó] la t[eé]rmica/.test(t)) f.salto = 'Sí'; if (/quemad|chispa/.test(t)) f.quem = 'Sí'; }
+  return f;
+}
+ACT.fichaAuto = () => {
+  const box = $('#ficha'); if (box) box.querySelectorAll('button, textarea, input').forEach(x => x.disabled = true);
+  CH.ficha = {...guessFicha(), auto:true};
+  logTrans('k', 'Pidió que Handy arme la ficha');
+  say('Listo, lo armé con lo que me contaste. Te recomiendo completarlo vos: con esos datos el profesional llega mejor preparado y te cotiza más preciso.');
+  const s = summary(); s.zona = me().zona;
+  block(`<div style="width:100%">${ticketHTML(s)}</div>`);
+  chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p'], ['Mejor lo completo yo', () => { say('Mejor lo completo yo', 'u'); CH.ficha = {}; block(`<div style="width:100%">${fichaForm()}</div>`); }]]);
+};
 function ticketHTML(s, extra = '') {
   const toco = s.intentos && !/^Ninguno|^Siguió la guía de HandyGo$/.test(s.intentos);
   return `<div class="ticket"><div class="tk"><span>Orden de caso</span><span>${esc(s.code)}</span></div>
@@ -2023,6 +2052,7 @@ function ticketHTML(s, extra = '') {
    ${toco ? '' : `<dt>Intentos</dt><dd>${esc(s.intentos)}</dd>`}
    ${fichaRows(s.f)}
    ${s.zona ? `<dt>Zona</dt><dd>${esc(s.zona)}</dd>` : ''}
+   ${s.f && s.f.auto ? `<dt>Nota</dt><dd class="mut">Resumen armado por Handy a partir de la charla.</dd>` : ''}
    ${s.img ? `<dt>Foto</dt><dd><img class="photo" src="${safeImg(s.img)}" alt="Foto del problema"></dd>` : ''}${extra}</dl></div>`;
 }
 function derivar() {
@@ -2497,7 +2527,8 @@ const casaBackBtn = () => `<button class="back" data-a="casaBack">${ico('back')}
 function vTemporada() {
   const u = me(), sk = seasonNow(), S = SEASONS[sk], key = seasonKey(), done = u.mant || {};
   view(`${casaBackBtn()}
-   <h2 style="margin:12px 0 2px">${S.n}</h2><p class="mut small" style="margin:0">Tocá cada uno para ver por qué conviene hacerlo.</p>
+   <h2 style="margin:12px 0 12px">${S.n}</h2>
+   ${handySays(`Estos son los arreglos que te recomiendo para ${S.n.toLowerCase()}. Tocá cada uno y te cuento por qué.`)}
    <div class="list" style="margin-top:16px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<button class="card casaitem ${ok ? 'done' : ''}" data-a="taskInfo" data-v="${t.id}">${catImg('s_' + t.id, S.ico, 'md')}
      <span class="ct"><b>${esc(t.n)}</b><span class="small ${ok ? 'okt' : 'mut'}">${ok ? '✓ Hecho' : t.quien === 'pro' ? 'Con un profesional' : 'Lo podés hacer vos'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; }).join('')}</div>`);
 }
@@ -2513,7 +2544,8 @@ ACT.taskInfo = id => {
 };
 function vHerr() {
   view(`${casaBackBtn()}
-   <h2 style="margin:12px 0 2px">Herramientas básicas</h2><p class="mut small" style="margin:0">Tocá cada una para ver para qué sirve y cómo pedirla.</p>
+   <h2 style="margin:12px 0 12px">Herramientas básicas</h2>
+   ${handySays('Con estas resolvés casi todos los arreglos chicos. Tocá cada una y te cuento para qué sirve y cómo pedirla.')}
    <div class="kitgrid" style="margin-top:16px">${KIT.map((x, i) => `<button class="card kititem" data-a="kitInfo" data-v="${i}">${catImg(x.k, x.ic, 'lg')}<b>${esc(x.n)}</b></button>`).join('')}</div>
    <button class="btn w" style="margin-top:16px" data-a="ferre" data-v="casa">${ico('pin')} Ver ferreterías cerca</button>`);
 }
@@ -2527,7 +2559,8 @@ ACT.kitInfo = i => {
 };
 function vFerre() {
   view(`${casaBackBtn()}
-   <h2 style="margin:12px 0 2px">Ferreterías cerca</h2><p class="mut small" style="margin:0">Las que tienen el sello de HandyGo son comercios adheridos.</p>
+   <h2 style="margin:12px 0 12px">Ferreterías cerca</h2>
+   ${handySays('Estas son las que tenés cerca. Las que tienen el sello de HandyGo son comercios adheridos.')}
    <div class="sec" style="margin-top:16px">
     <div id="mapBox" class="mapbox"></div>
     <div class="row" style="margin-top:12px;flex-wrap:nowrap"><button class="btn sm" data-a="locate" id="locBtn" style="flex:none">${ico('pin')} ${LOC ? 'Actualizar ubicación' : 'Usar mi ubicación'}</button><span class="hint" id="locMsg" style="margin:0">${LOC ? 'Mostrando lo que hay cerca tuyo' : 'Mostrando el centro de CABA'}</span></div>
@@ -2665,7 +2698,7 @@ ACT.legal = () => sheet(`<span class="eyebrow">Versión ${LEGAL_V}</span><h2>Té
   <li>Tu dirección y tu celular solo los ve el prestador que contratás.</li>
   <li>No vendemos tus datos.</li></ul>
   <h3>Servicios que usamos</h3>
-  <p>Para guardar los datos y responder al asistente usamos proveedores externos de nube e inteligencia artificial (Supabase, Vercel, Google Gemini, Groq y Cloudflare). Lo que escribís, fotografiás o grabás en el asistente se envía a esos servicios para procesarlo. No incluyas datos sensibles en tus consultas.</p>
+  <p>Para guardar los datos y responder al asistente usamos proveedores externos de nube e inteligencia artificial (Supabase, Vercel, Google Gemini, Groq y Cloudflare). Las ilustraciones de la app son Fluent Emoji de Microsoft (licencia MIT) y el mapa usa datos de OpenStreetMap. Lo que escribís, fotografiás o grabás en el asistente se envía a esos servicios para procesarlo. No incluyas datos sensibles en tus consultas.</p>
   <h3>Tus derechos (Ley 25.326)</h3>
   <p>Podés acceder a tus datos, corregirlos desde Perfil → Editar perfil y eliminar tu cuenta con todos tus datos desde Perfil → Eliminar cuenta. La Agencia de Acceso a la Información Pública es el órgano de control de la Ley 25.326 y recibe denuncias por incumplimientos.</p>
   <h3>Cambios</h3>
