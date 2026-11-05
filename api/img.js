@@ -299,7 +299,46 @@ const T = {
 };
 
 const { proteger, firmaValida } = require('./_seguridad');
-const PERMITIDOS = new Set(['t', 'g', 'i', 'p', 's', 'v', 'r']);
+const PERMITIDOS = new Set(['t', 'g', 'i', 'p', 's', 'v', 'r', 'k']);
+
+// ---------- Catálogo fijo de la app (rubros, Mi casa, herramientas, arreglos de temporada) ----------
+// Cada imagen tiene una descripción y una semilla fijas: siempre sale la misma y queda guardada en la CDN.
+const KSTYLE = 'Premium mobile app illustration: a single subject as a soft 3D render with matte clay-like material, gently rounded forms, ' +
+  'soft studio lighting with a subtle contact shadow, centered with generous margins on a plain warm off-white background (#F5F7F2). ' +
+  'Color palette drawn from deep forest green (#26573F), soft mint green (#B1D8B7), warm amber (#F2B33D), white and light warm greys. ' +
+  'Realistic, recognizable object shapes, clean and minimal, cohesive icon-set look. ' +
+  'Absolutely no text, no letters, no numbers, no logos, no watermark, no people, no hands, no faces.';
+const K = {
+  r_plomeria: 'a chrome kitchen faucet with a single water drop falling, and a curved white sink drain pipe beside it',
+  r_gas: 'a white wall-mounted gas water heater with a small window showing a blue flame at the bottom',
+  r_electricidad: 'a white wall power socket plate and a light switch plate side by side, with a short coiled cable',
+  r_carpinteria: 'a small wooden chair next to a wooden plank, with a claw hammer resting on the plank',
+  r_albanileria: 'a small neat stack of terracotta bricks with a mason trowel resting on top',
+  r_mant: 'a small cozy house model with a forest green roof and a little amber toolbox beside it',
+  c_temporada: 'a small cozy house model with a forest green roof under a soft round sun, a few mint leaves floating around it',
+  c_herramientas: 'an open forest green toolbox with a screwdriver, an adjustable wrench and pliers inside',
+  c_ferreterias: 'a small hardware shop storefront with an amber striped awning and a forest green map pin floating above it',
+  k_destornilladores: 'two screwdrivers crossed, one flat head and one Phillips, with forest green and amber handles',
+  k_llave: 'an adjustable wrench lying diagonally',
+  k_pinza: 'a pair of combination pliers with mint green handles',
+  k_teflon: 'a small roll of white PTFE plumber tape',
+  k_buscapolo: 'a slim voltage tester screwdriver with a transparent handle and a tiny glowing amber light',
+  k_metro: 'an amber retractable tape measure with the metal tape partly pulled out',
+  k_linterna: 'a small forest green flashlight with a soft beam of light',
+  k_balde: 'a mint green plastic bucket with a folded cloth hanging over its edge',
+  s_aa: 'a white wall split air conditioner with its two thin mesh dust filters taken out and placed in front of it',
+  s_sil: 'the corner of a white bathtub against tiles, with a fresh clean line of white silicone sealant',
+  s_desag: 'a small square balcony floor drain grate with a few dry leaves around it',
+  s_rej: 'a round chrome floor drain grate set in light bathroom tiles',
+  s_mosq: 'a window with a fine mosquito net screen in an aluminium frame',
+  s_tanque: 'a black plastic rooftop water storage tank with its round lid open',
+  s_gas: 'a white wall gas water heater next to a small gas room heater with a blue flame',
+  s_burl: 'a window frame with a soft grey foam weatherstrip being placed along its edge',
+  s_hojas: 'a roof rain gutter filled with orange and brown autumn leaves',
+  s_vent: 'a slightly open window with soft curtains moving in the breeze',
+  s_hong: 'a white ceiling corner with dark grey mold spots and a spray bottle below it',
+  s_term: 'a small home electrical panel with a row of circuit breakers and one residual current switch with a test button'
+};
 
 module.exports = async (req, res) => {
   const acct = process.env.CF_ACCOUNT_ID, token = process.env.CF_API_TOKEN;
@@ -331,14 +370,17 @@ module.exports = async (req, res) => {
   if (q.p !== undefined && (String(q.p).length > 400 || !firmaValida(String(q.p), q.s))) return no('Imagen no autorizada');
   if (!(require('./_seguridad').origenValido(req))) return no('Origen no permitido');
   let subject = '';
-  if (q.t) subject = T[String(q.t)] ? 'Identification picture of ' + T[String(q.t)] + ', shown clearly so a beginner can recognize it' : '';
+  if (q.k) subject = K[String(q.k)] || '';
+  else if (q.t) subject = T[String(q.t)] ? 'Identification picture of ' + T[String(q.t)] + ', shown clearly so a beginner can recognize it' : '';
   else if (q.g) { const list = P[String(q.g)]; const i = parseInt(q.i, 10); subject = list && list[i]; }
   else if (q.p) subject = 'Identification picture of ' + String(q.p).slice(0, 400) + ', shown clearly so a beginner can recognize it';
   if (!subject) { res.setHeader('Cache-Control', 'no-store'); return res.status(404).json({ ok: false, error: 'Paso desconocido' }); }
 
-  const prompt = `${subject}. ${STYLE}`;
+  const prompt = `${subject}. ${q.k ? KSTYLE : STYLE}`;
   try {
-    const img = await klein(acct, token, prompt).catch(e => { console.error('klein:', e.message); return schnell(acct, token, prompt); });
+    // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
+    const first = q.k ? dev(acct, token, prompt).catch(e => { console.error('dev:', e.message); return klein(acct, token, prompt, 640, 640, 11000); }) : klein(acct, token, prompt);
+    const img = await first.catch(e => { console.error('klein:', e.message); return schnell(acct, token, prompt); });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
     // Se guarda en la CDN de Vercel: cada imagen se genera una sola vez
@@ -353,13 +395,29 @@ module.exports = async (req, res) => {
 
 function seedOf(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return Math.abs(h) % 2147483647; }
 
-async function klein(acct, token, prompt) {
+async function dev(acct, token, prompt) {
   const form = new FormData();
   form.append('prompt', prompt);
-  form.append('width', '768');
-  form.append('height', '480');
+  form.append('width', '640');
+  form.append('height', '640');
+  form.append('steps', '25');
   form.append('seed', String(seedOf(prompt)));
-  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 25000);
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 17000);
+  try {
+    const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/ai/run/@cf/black-forest-labs/flux-2-dev`, {
+      method: 'POST', signal: ctl.signal, headers: { authorization: `Bearer ${token}` }, body: form
+    });
+    return await readImage(r);
+  } finally { clearTimeout(t); }
+}
+
+async function klein(acct, token, prompt, w = 768, h = 480, ms = 25000) {
+  const form = new FormData();
+  form.append('prompt', prompt);
+  form.append('width', String(w));
+  form.append('height', String(h));
+  form.append('seed', String(seedOf(prompt)));
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms);
   try {
     const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/ai/run/@cf/black-forest-labs/flux-2-klein-4b`, {
       method: 'POST', signal: ctl.signal, headers: { authorization: `Bearer ${token}` }, body: form
