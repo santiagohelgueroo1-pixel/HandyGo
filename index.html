@@ -2,7 +2,7 @@
 <html lang="es-AR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>HandyGo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="theme-color" content="#26573F">
@@ -53,6 +53,9 @@
 html,body{height:100%}
 body{margin:0;background:var(--desk);color:var(--ink);font:400 16px/1.45 var(--f-body);-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
+/* Sin zoom automático: el teléfono no acerca la pantalla al escribir (pasa con textos de menos de 16 px) ni con doble toque */
+input,select,textarea{font-size:16px!important}
+html,body{touch-action:manipulation}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 
@@ -1086,6 +1089,47 @@ const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="
 function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
 function closeSheet() { const s = $('#scrim'); if (!s) return; s.id = ''; if (matchMedia('(prefers-reduced-motion: reduce)').matches) return s.remove(); s.classList.add('out'); setTimeout(() => s.remove(), 210); }
 ACT.close = closeSheet;
+
+/* ---------- Gestos: deslizar entre pestañas y para volver ---------- */
+// Al cerrar el teclado, la pantalla vuelve a su lugar (algunos teléfonos la dejan corrida)
+document.addEventListener('focusout', e => { if (e.target.matches && e.target.matches('input,textarea,select')) setTimeout(() => { if (!document.activeElement || !document.activeElement.matches('input,textarea,select')) window.scrollTo(0, 0); }, 120); });
+(() => {
+  let x0 = 0, y0 = 0, t0 = 0, ok = false;
+  const NOSWIPE = 'input,textarea,select,.cmpwrap,.mapbox,.maplibregl-map,.slots,.port,[data-noswipe]';
+  document.addEventListener('touchstart', e => {
+    ok = false; if (e.touches.length !== 1 || !DB || !DB.cur) return;
+    const t = e.target;
+    if (!t.closest || !t.closest('#view') || t.closest(NOSWIPE) || $('#tour') || $('#scrim')) return;
+    const p = e.touches[0]; x0 = p.clientX; y0 = p.clientY; t0 = Date.now(); ok = true;
+  }, {passive:true});
+  document.addEventListener('touchend', e => {
+    if (!ok) return; ok = false;
+    const p = e.changedTouches[0], dx = p.clientX - x0, dy = p.clientY - y0;
+    if (Date.now() - t0 > 700 || Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+    if (window.getSelection && String(window.getSelection())) return;
+    swipeNav(dx < 0 ? 'next' : 'prev');
+  }, {passive:true});
+})();
+function swipeNav(dir) {
+  // En una pantalla interna, deslizar hacia la derecha vuelve atrás (como en el resto de las apps)
+  const inner = V.job || V.edit || V.casa || V.tab === 'mat';
+  if (inner) {
+    if (dir !== 'prev') return;
+    if (V.job) return ACT.backJob();
+    if (V.edit) return ACT.cancelEdit();
+    if (V.casa) return ACT.casaBack();
+    return ACT.tab('chat');
+  }
+  // En Arreglos, primero se recorren sus solapas
+  if (DB.cur.t === 'u' && V.tab === 'ped') {
+    const sub = ['curso', 'res', 'pro'], k = sub.indexOf(V.arr || 'curso'), n = dir === 'next' ? k + 1 : k - 1;
+    if (n >= 0 && n < sub.length) { V.arr = sub[n]; NEXT_ANIM = dir === 'next' ? 'right' : 'left'; return render(); }
+  }
+  const tabs = TABS[DB.cur.t].map(x => x[0]), i = tabs.indexOf(V.tab), j = dir === 'next' ? i + 1 : i - 1;
+  if (i < 0 || j < 0 || j >= tabs.length) return;
+  if (DB.cur.t === 'u' && tabs[j] === 'ped') V.arr = dir === 'next' ? 'curso' : 'pro';
+  NEXT_ANIM = dir === 'next' ? 'right' : 'left'; V.tab = tabs[j]; render();
+}
 const avatar = (name, foto, cls = '', style = '') => foto ? `<img class="av ${cls}" src="${safeImg(foto)}" alt="" style="${style}">` : `<span class="av ${cls}" style="${style}">${esc(ini(name))}</span>`;
 function readPhoto(file, max) {
   return new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const img = new Image(); img.onerror = rej; img.onload = () => {
