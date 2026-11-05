@@ -370,6 +370,28 @@ label.chk input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:
 .casaitem.big{padding:12px}
 .casaitem.done .cimg{opacity:.55}
 .okt{color:var(--ok);font-weight:600}
+.galgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-bottom:24px}
+.galitem{display:flex;flex-direction:column;gap:4px;font-size:12px}
+.galitem .ph{aspect-ratio:1;border-radius:10px;background:var(--sunk);display:grid;place-items:center;overflow:hidden;color:var(--mut)}
+.galitem .ph img{width:100%;height:100%;object-fit:cover}
+.galitem .ph svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.75}
+.galitem b{font-size:12px;line-height:1.2}
+.galitem code{font-size:10px;color:var(--mut)}
+.tmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tmeta .small{display:inline-flex;align-items:center;gap:4px}
+.tmeta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.75}
+.tfacts{display:flex;gap:20px;flex-wrap:wrap;padding:12px 14px;background:var(--sunk);border-radius:12px}
+.tfacts>div{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.tfacts>div>span:first-child{font-size:12px;color:var(--mut)}
+.tfacts b{font:600 16px/1.2 var(--f-display)}
+.guiacard{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;cursor:pointer;color:var(--ink);padding:12px}
+.guiacard .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.guiacard .ct b{font:600 16px/1.3 var(--f-display)}
+.guiacard .go{width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:var(--mut);stroke-width:1.75;flex:none}
+.gprog{display:block;height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.gprog i{display:block;height:100%;background:var(--ok);border-radius:99px}
+#log .guiacard{align-self:stretch}
+.tut.guia{margin-bottom:8px}
 .kitgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .kititem{display:flex;flex-direction:column;gap:8px;padding:10px;border:0;text-align:left;cursor:pointer;color:var(--ink)}
 .kititem b{font:600 14px/1.25 var(--f-display)}
@@ -1057,6 +1079,20 @@ const SEASONS = {
     {id:'term', n:'Probar el disyuntor', why:'Apretá el botón de prueba una vez por mes: si no corta, llamá a un electricista.', quien:'pro', rubro:'Electricidad', chat:'Quiero revisar si el disyuntor del tablero funciona bien'}]}
 };
 const SORDER = ['verano', 'otono', 'invierno', 'primavera'];
+const TASK_INFO = {
+  aa:{min:'30 min', lvl:'Fácil', herr:['Destornillador (en algunos equipos)', 'Cepillo suave'], mat:['Agua tibia con un poco de detergente'], cada:'Cada 2 o 3 meses mientras lo usás', sino:'El equipo enfría menos, gasta más luz y puede largar olor a humedad.'},
+  sil:{min:'1 h + 24 h de secado', lvl:'Media', herr:['Trincheta o cúter', 'Pistola para silicona'], mat:['Silicona para baño con antihongos', 'Alcohol para limpiar la junta'], cada:'Cuando la ves negra o despegada', sino:'El agua se filtra por la junta y aparecen hongos y humedad en la pared.'},
+  desag:{min:'20 min', lvl:'Fácil', herr:['Guantes', 'Balde'], mat:['Una bolsa para las hojas'], cada:'Antes de la época de lluvias', sino:'Con una lluvia fuerte el agua se junta y puede entrar a la casa.'},
+  rej:{min:'10 min', lvl:'Fácil', herr:['Una jarra o un balde'], mat:['Agua', 'Un chorrito de lavandina'], cada:'Una vez por semana en las rejillas que casi no usás', sino:'El sifón se seca, deja pasar el olor de la cloaca y pueden entrar bichos.'},
+  mosq:{min:'30 min', lvl:'Fácil', herr:['Tijera'], mat:['Parche o tela de mosquitero', 'Cinta o pegamento'], cada:'Al empezar el calor', sino:'Entran mosquitos e insectos aunque tengas las ventanas cerradas a medias.'},
+  tanque:{min:'3 a 4 h', lvl:'Profesional', herr:[], mat:[], cada:'Cada 6 meses', sino:'Se acumulan sarro y sedimento, y el agua que usás no está limpia.'},
+  gas:{min:'1 a 2 h', lvl:'Profesional', herr:[], mat:[], cada:'Una vez por año, antes del frío', sino:'Un artefacto que funciona mal puede largar monóxido de carbono, que no tiene olor y es muy peligroso.'},
+  burl:{min:'30 min por ventana', lvl:'Fácil', herr:['Tijera', 'Cinta métrica'], mat:['Burlete autoadhesivo (medí el largo del marco)'], cada:'Antes del frío, o cuando se despega', sino:'Se escapa la calefacción y gastás más gas o luz.'},
+  hojas:{min:'45 min', lvl:'Media', herr:['Escalera firme', 'Guantes', 'Balde'], mat:['Bolsas para las hojas'], cada:'En otoño, cuando caen las hojas', sino:'El agua de lluvia desborda la canaleta y moja paredes y techo. Si está alto, mejor que lo haga un profesional.'},
+  vent:{min:'1 h', lvl:'Profesional', herr:[], mat:[], cada:'Antes de prender las estufas', sino:'Sin ventilación, una estufa puede acumular monóxido de carbono en el ambiente.'},
+  hong:{min:'40 min', lvl:'Fácil', herr:['Guantes', 'Esponja o cepillo', 'Rociador'], mat:['Lavandina', 'Agua'], cada:'Apenas aparecen las manchas', sino:'Los hongos se extienden, manchan la pintura y empeoran la humedad.'},
+  term:{min:'30 min', lvl:'Profesional', herr:[], mat:[], cada:'Si al probarlo no corta la luz', sino:'El disyuntor es el que te protege de una descarga: si no funciona, no te protege.'}};
+const lvlTag = l => `<span class="tag ${l === 'Fácil' ? 'v' : l === 'Media' ? 'y' : 'r'}">${l === 'Profesional' ? 'Con profesional' : l}</span>`;
 function seasonNow(d = new Date()) { const m = d.getMonth(); return m === 11 || m < 2 ? 'verano' : m < 5 ? 'otono' : m < 8 ? 'invierno' : 'primavera'; }
 function seasonKey() { const d = new Date(); const y = d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear(); return seasonNow() + '-' + y; }
 function pendingTasks(u) { const k = seasonKey(); return SEASONS[seasonNow()].tasks.filter(t => !(u.mant || {})[k + '-' + t.id]); }
@@ -1112,13 +1148,14 @@ document.addEventListener('focusout', e => { if (e.target.matches && e.target.ma
 })();
 function swipeNav(dir) {
   // En una pantalla interna, deslizar hacia la derecha vuelve atrás (como en el resto de las apps)
-  const inner = V.job || V.edit || V.casa || V.tab === 'mat';
+  const inner = V.job || V.edit || V.casa || V.guia || V.tab === 'mat';
   if (inner) {
     if (dir !== 'prev') return;
     if (V.job) return ACT.backJob();
+    if (V.guia) return ACT.backGuia();
     if (V.edit) return ACT.cancelEdit();
     if (V.casa) return ACT.casaBack();
-    return ACT.tab('chat');
+    return ACT.matBack();
   }
   // En Arreglos, primero se recorren sus solapas
   if (DB.cur.t === 'u' && V.tab === 'ped') {
@@ -1418,7 +1455,7 @@ ACT.tourEnd = () => {
 };
 ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'ped'; V.job = null; render(); setTimeout(startTour, 200); };
 window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
-ACT.tab = t => { if (V.tab !== t || V.job || V.edit || V.casa) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; render(); };
+ACT.tab = t => { if (V.tab !== t || V.job || V.edit || V.casa || V.guia) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; V.guia = null; render(); };
 function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
@@ -1432,7 +1469,7 @@ function render() {
   document.body.className = c.t === 'p' ? 'prov' : '';
   $('#top').hidden = false;
   const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Arreglos' : 'Pedidos nuevos', casa:'Mi casa', per:'Perfil', trab:'Mis trabajos', agenda:'Agenda'};
-  $('#ht').textContent = V.job ? (c.t === 'u' ? 'Mi arreglo' : 'Pedido') : V.edit ? 'Editar perfil' : (TT[V.tab] || 'HandyGo');
+  $('#ht').textContent = V.guia && V.tab === 'ped' ? 'Tu guía' : V.job ? (c.t === 'u' ? 'Mi arreglo' : 'Pedido') : V.edit ? 'Editar perfil' : (TT[V.tab] || 'HandyGo');
   const inChat = V.tab === 'chat' && !V.job && c.t === 'u';
   const hs = $('#hs'); hs.className = ''; hs.textContent = '';
   const ha = $('#hacts'); ha.hidden = !inChat;
@@ -1443,13 +1480,14 @@ function render() {
   else { hp.className = 'pill' + (u.on ? '' : ' off'); hp.dataset.a = 'tog'; hp.textContent = u.on ? '● Disponible' : '○ No disponible'; }
   renderNav();
   if (V.job) return vJob();
+  if (V.guia && V.tab === 'ped') return vGuia();
   if (V.edit && V.tab === 'per') return vEdit();
   ({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer, casa:vCasa, agenda:vAgenda})[V.tab]();
 }
 function renderNav() {
   const c = DB.cur; if (!c) return;
   const n = $('#nav'); n.hidden = false;
-  const cur = V.tab === 'mat' ? (CH && CH.tutObj ? 'chat' : 'casa') : V.tab;
+  const cur = V.tab === 'mat' ? (V.matFrom === 'guia' ? 'ped' : CH && CH.tutObj ? 'chat' : 'casa') : V.tab;
   n.innerHTML = TABS[c.t].map(([k, l, i]) => { const b = badge(k); return `<button data-a="tab" data-v="${k}" class="${cur === k ? 'on' : ''}" aria-current="${cur === k ? 'page' : 'false'}">${ico(i)}<span>${l}</span>${b === 'dot' ? '<span class="dot sm"></span>' : b ? `<span class="dot num">${b}</span>` : ''}</button>`; }).join('');
 }
 function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML = `<span class="num">${me().cr}</span> consultas`; }
@@ -1812,8 +1850,8 @@ function handleAI(r, t) {
   const tut = TUT[r.tutorial];
   // Si ya le pasé la guía de este problema, no la repito: lo mando a la de más arriba
   if (CH.tutObj && !r.tema_nuevo && r.estado === 'guiar') {
-    say(r.mensaje ? msg : 'Buenísimo, sigamos con la guía que te pasé más arriba.');
-    return chips([['Ir a la guía', () => ACT.toTut(), 'p'], ['Lo resolví', () => resolved()], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
+    say(r.mensaje ? msg : 'Buenísimo, seguí con la guía que te dejé en Arreglos → En curso.');
+    return chips([['Abrir la guía', () => ACT.toTut(), 'p'], ['Lo resolví', () => resolved()], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
   }
   if (r.estado === 'derivar' && r.riesgo) {
     const h = HARD.find(x => x.rubro === r.rubro);
@@ -1900,37 +1938,75 @@ function pickIcon(t) {
     [/escalera/, 'ladder'], [/lámpara|lampara|foco/, 'bulb'], [/prob|verific|comprob|listo/, 'check'], [/mir|revis|fij/, 'eye']];
   const f = m.find(([re]) => re.test(t)); return f ? f[1] : 'tool';
 }
+// La guía se guarda en Arreglos → En curso; en el chat queda una tarjeta corta para abrirla
 function showTut(tut) {
   logTrans('k', 'Guía paso a paso: ' + tut.n);
   const lastA = [...CH.h].reverse().find(m => m.role === 'assistant'); if (lastA) lastA.text += ` (guía enviada: ${tut.n})`;
   CH.topic = tut.gen ? 'gen:' + tut.n : tut.id;
   CH.tutObj = tut;
   CH.tut = tut.id; CH.caso = tut.n; CH.rubro = tut.rubro; CH.hard = false; CH.pend = null;
-  const id = 't' + uid();
-  const b = block(`<div class="tut" id="${id}"><div class="hd"><span class="eyebrow">${tut.gen ? 'Guía paso a paso · armada por el asistente' : 'Guía paso a paso · revisada por HandyGo'}</span><h4>${esc(tut.n)}</h4>
-     <div class="row" style="margin-bottom:12px"><span class="tag v">${tut.lvl}</span><span class="tag">≈ ${tut.min} min</span><span class="tag">${tut.steps.length} pasos</span></div>
-     <div class="prog"><i></i></div></div>
+  const u = me(); u.guias = u.guias || [];
+  const keep = {id:tut.id, gen:!!tut.gen, n:tut.n, rubro:tut.rubro, lvl:tut.lvl, min:tut.min, steps:tut.steps, mat:tut.mat || [], alert:tut.alert || '', glos:tut.glos || [], ctx:tut.ctx || '', syn:tut.syn || ''};
+  let g = u.guias.find(x => x.cid === CH.code);
+  if (g) Object.assign(g, {tut:keep, done:[]}); else { g = {id:'g' + uid(), cid:CH.code, tut:keep, done:[], ts:Date.now()}; u.guias.unshift(g); }
+  u.guias = u.guias.slice(0, 12); save(); renderNav();
+  CH.guia = g.id;
+  block(`<button class="card guiacard" data-a="openGuia" data-v="${g.id}">${catImg(RUBRO_IMG[tut.rubro] || 'r_mant', 'tool', 'md')}
+    <span class="ct"><span class="eyebrow">Tu guía paso a paso</span><b>${esc(tut.n)}</b><span class="small mut">${tut.steps.length} pasos · ≈ ${tut.min} min · ${esc(tut.lvl)}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`);
+  say(`Te armé la guía y la dejé en <b>Arreglos → En curso</b>, así la tenés a mano mientras trabajás. Ahí están las piezas que vas a usar, los pasos${tut.mat && tut.mat.length ? ', la lista de materiales para pedir en la ferretería' : ''} y las ferreterías cerca.`);
+  chips([['Abrir la guía', () => ACT.openGuia(g.id), 'p'], ['Lo resolví', () => resolved()], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
+}
+const guiaOf = id => (me().guias || []).find(x => x.id === id);
+ACT.openGuia = id => { if (!guiaOf(id)) return toast('Esa guía ya no está en curso'); NEXT_ANIM = 'right'; V.tab = 'ped'; V.arr = 'curso'; V.job = null; V.guia = id; render(); };
+ACT.matBack = () => { NEXT_ANIM = 'left'; if (V.matFrom === 'guia' && CH.guia && guiaOf(CH.guia)) { V.tab = 'ped'; V.guia = CH.guia; } else V.tab = 'chat'; V.matFrom = null; render(); };
+ACT.backGuia = () => { NEXT_ANIM = 'left'; V.guia = null; render(); };
+function vGuia() {
+  const g = guiaOf(V.guia); if (!g) { V.guia = null; return render(); }
+  const tut = g.tut, done = g.done || [], n = done.filter(Boolean).length;
+  view(`<button class="back" data-a="backGuia">${ico('back')} Arreglos</button>
+   <div class="tut guia" style="margin-top:12px"><div class="hd"><span class="eyebrow">${tut.gen ? 'Guía paso a paso · armada por Handy' : 'Guía paso a paso · revisada por HandyGo'}</span><h4>${esc(tut.n)}</h4>
+     <div class="row" style="margin-bottom:12px"><span class="tag v">${esc(tut.lvl)}</span><span class="tag">≈ ${tut.min} min</span><span class="tag">${tut.steps.length} pasos</span></div>
+     <div class="prog"><i style="width:${n / tut.steps.length * 100}%"></i></div></div>
    ${piezasHTML(tut)}
-   <ol class="steps">${tut.steps.map(([ic, tx], i) => `<li><span class="ic">${ico(ic)}</span><label><span class="n num">${String(i + 1).padStart(2, '0')}</span><span class="t">${linkTerms(tx, tut)}</span><input type="checkbox" aria-label="Paso ${i + 1} hecho"></label><button class="stuck" data-a="stuck" data-v="${i}" aria-label="Me trabé en el paso ${i + 1}">¿Te trabaste?</button></li>`).join('')}</ol>
+   <ol class="steps">${tut.steps.map(([ic, tx], i) => `<li class="${done[i] ? 'done' : ''}"><span class="ic">${ico(ic)}</span><label><span class="n num">${String(i + 1).padStart(2, '0')}</span><span class="t">${linkTerms(tx, tut)}</span><input type="checkbox" data-i="${i}" ${done[i] ? 'checked' : ''} aria-label="Paso ${i + 1} hecho"></label><button class="stuck" data-a="stuck" data-v="${i}" aria-label="Me trabé en el paso ${i + 1}">¿Te trabaste? Preguntale a Handy</button></li>`).join('')}</ol>
    ${tut.alert ? `<div class="warn">⚠ ${esc(tut.alert)}</div>` : ''}
    <div class="ft">${tut.mat && tut.mat.length ? '' : '<span class="hint" style="margin:0">No hace falta comprar nada especial.</span>'}
-    <div class="row" style="flex-wrap:nowrap">${tut.mat && tut.mat.length ? `<button class="btn sm" style="flex:1" data-a="tab" data-v="mat">${ico('box')} Ver materiales</button>` : ''}<button class="btn sm" style="flex:1" data-a="ferre" data-v="chat">${ico('pin')} Ferreterías cerca</button></div>
-    <span class="hint" style="margin:0">Es una guía orientativa: si algo no coincide con lo que ves, frená y preguntame.</span></div></div>`);
-  const box = b.querySelector('.tut');
-  loadTermImgs(box);
+    <div class="row" style="flex-wrap:nowrap">${tut.mat && tut.mat.length ? `<button class="btn sm" style="flex:1" data-a="guiaMat">${ico('box')} Ver materiales</button>` : ''}<button class="btn sm" style="flex:1" data-a="ferre" data-v="guia">${ico('pin')} Ferreterías cerca</button></div>
+    <span class="hint" style="margin:0">Es una guía orientativa: si algo no coincide con lo que ves, frená y preguntale a Handy.</span></div></div>
+   <div class="stickbar"><div class="row"><button class="btn g" data-a="guiaPro">No pude</button><button class="btn p" data-a="guiaOk">Lo resolví</button></div></div>`);
+  const box = $('#view .tut'); loadTermImgs(box);
   box.addEventListener('click', e => { if (e.target.closest('button.term')) e.preventDefault(); }, true);
-  box.addEventListener('change', () => {
-    const all = box.querySelectorAll('input'), done = [...all].filter(x => x.checked);
-    box.querySelectorAll('li').forEach((li, i) => li.classList.toggle('done', all[i].checked));
-    box.querySelector('.prog i').style.width = (done.length / all.length * 100) + '%';
+  box.addEventListener('change', e => {
+    const i = +e.target.dataset.i; if (isNaN(i)) return;
+    g.done = g.done || []; g.done[i] = e.target.checked; save();
+    e.target.closest('li').classList.toggle('done', e.target.checked);
+    box.querySelector('.prog i').style.width = (g.done.filter(Boolean).length / tut.steps.length * 100) + '%';
   });
-  if (tut.mat && tut.mat.length) say(`Abajo de la guía te dejé <b>la lista de materiales</b>, con el nombre exacto para pedirlos en la ferretería. Si no los tenés, tocá <b>Ferreterías cerca</b> y te muestro en un mapa las que tenés a mano.`);
-  else say(`Para esto no hace falta comprar nada. Si te falta alguna herramienta, en <b>Ferreterías cerca</b> te muestro en un mapa las que tenés a mano.`);
-  chips([['Lo resolví', () => resolved(), 'p'], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
 }
+// Para seguir la charla con Handy sobre esta guía, el chat vuelve a ese tema
+function guiaToChat(g) {
+  if (!CH || CH.code !== g.cid) { resetTopic(); CH.started = true; CH.code = g.cid; CH.caso = g.tut.n; CH.rubro = g.tut.rubro; CH.tut = g.tut.id; CH.tutObj = g.tut; CH.topic = g.tut.gen ? 'gen:' + g.tut.n : g.tut.id; CH.guia = g.id;
+    CH.h = [{role:'user', text:'Estoy siguiendo la guía: ' + g.tut.n}, {role:'assistant', text:`Te pasé la guía "${g.tut.n}" (guía enviada: ${g.tut.n})`}]; CH.resp = ['Guía: ' + g.tut.n]; }
+  V.guia = null; V.tab = 'chat'; NEXT_ANIM = 'left'; render();
+}
+ACT.guiaMat = () => { const g = guiaOf(V.guia); if (!g) return; CH.tutObj = CH.tutObj && CH.code === g.cid ? CH.tutObj : g.tut; V.matFrom = 'guia'; NEXT_ANIM = 'right'; V.tab = 'mat'; render(); };
+ACT.guiaOk = () => {
+  const g = guiaOf(V.guia); if (!g) return;
+  const u = me(); u.guias = u.guias.filter(x => x.id !== g.id);
+  (u.hist = u.hist || []).push({t:'vos', caso:g.tut.n, rubro:g.tut.rubro || '', ts:Date.now(), ahorro:BASE[g.tut.rubro] || 18000}); save();
+  if (CH && CH.code === g.cid) { say('Lo resolví', 'u'); say(`¡Bien ahí! Lo resolviste vos y te ahorraste una visita de ${g.tut.rubro ? g.tut.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[g.tut.rubro] || 18000)}).`); chips([['Nueva consulta', () => ACT.newCase()]]); }
+  toast(`¡Bien ahí! Te ahorraste ≈ ${money(BASE[g.tut.rubro] || 18000)}`);
+  V.guia = null; V.arr = 'res'; NEXT_ANIM = 'fade'; render();
+};
+ACT.guiaPro = () => {
+  const g = guiaOf(V.guia); if (!g) return;
+  guiaToChat(g); CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo';
+  setTimeout(() => { say('No pude, quiero un profesional', 'u'); derivar(); }, 250);
+};
 // "¿Te trabaste?": deja el paso cargado en el chat para preguntarle a Handy
-ACT.toTut = () => { const el = LOG().querySelector('.tut:last-of-type') || [...LOG().querySelectorAll('.tut')].pop(); if (el) el.scrollIntoView({behavior:'smooth', block:'start'}); };
+ACT.toTut = () => { if (CH.guia && guiaOf(CH.guia)) return ACT.openGuia(CH.guia); const el = [...LOG().querySelectorAll('.guiacard')].pop(); if (el) el.scrollIntoView({behavior:'smooth', block:'center'}); };
 ACT.stuck = i => {
+  if (V.guia) { const g = guiaOf(V.guia); if (!g) return; guiaToChat(g); return setTimeout(() => ACT.stuck(i), 300); }
   const t = CH.tutObj && CH.tutObj.steps[+i]; if (!t) return;
   const inp = chatEl && chatEl.querySelector('#inp'); if (!inp) return;
   inp.value = `Me trabé en el paso ${+i + 1} (“${t[1]}”): `; inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
@@ -1980,7 +2056,7 @@ const PZ_ICO = [[/aire|split|unidad|aletas|serpentina|heladera|control remoto/, 
   [/t[eé]rmica|tablero/, 'power'], [/buscapolo/, 'probe'], [/enchufe/, 'plug'], [/l[aá]mpara|portal/, 'bulb'], [/rueda|eje|regat[oó]n/, 'wheel'], [/trincheta|cuchill/, 'knife'],
   [/gu[ií]as|riel|caj[oó]n/, 'box'], [/nivel/, 'level'], [/mecha|taladro/, 'drill'], [/tarugo|tornillo|destornillador/, 'screw'], [/martillo|clavo/, 'hammer'], [/guante/, 'glove'], [/escalera/, 'ladder']];
 const pzIco = t => { const k = (((t && t.id) || '') + ' ' + ((t && t.n) || '')).toLowerCase(); const m = PZ_ICO.find(([re]) => re.test(k)); return ico(m ? m[1] : 'tool'); };
-const termSrc = t => t.p ? (t.s ? `/api/img?p=${encodeURIComponent(t.p)}&s=${encodeURIComponent(t.s)}&v=4` : '') : `/api/img?t=${encodeURIComponent(t.id)}&v=4`;
+const termSrc = t => t.p ? (t.s ? `/api/img?p=${encodeURIComponent(t.p)}&s=${encodeURIComponent(t.s)}&v=5` : '') : `/api/img?t=${encodeURIComponent(t.id)}&v=5`;
 function linkTerms(tx, tut) {
   const seen = tut._seen || (tut._seen = new Set());
   let out = '', last = 0; GLOS_RE.re.lastIndex = 0; let m; const ctx = tutCtx(tut);
@@ -1997,10 +2073,31 @@ function piezasHTML(tut) {
   return `<div class="pzs"><span class="eyebrow">Antes de empezar · conocé las piezas</span><p>Tocá cada una para ver qué es y dónde la encontrás.</p>
     <div class="pzrow">${ids.map(id => { const t = termInfo(id); return `<button type="button" class="pz" data-a="term" data-v="${esc(id)}"><span class="ph" data-src="${esc(termSrc(t))}">${pzIco(t)}</span><b>${esc(t.n)}</b><span>${esc(t.q)}</span></button>`; }).join('')}</div></div>`;
 }
+// Carga las fotos de las piezas de a 4 a la vez (las ya guardadas aparecen al instante)
+const IMG_Q = []; let IMG_ON = 0;
+function pumpImgs() {
+  while (IMG_ON < 4 && IMG_Q.length) {
+    const [el, src] = IMG_Q.shift(); if (!el.isConnected) continue;
+    IMG_ON++; const img = new Image(); img.alt = ''; img.decoding = 'async';
+    const done = () => { IMG_ON--; pumpImgs(); };
+    img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } done(); };
+    img.onerror = () => { done(); if (!img.dataset.r && el.isConnected) { img.dataset.r = 1; setTimeout(() => { IMG_Q.push([el, src + '&r=1']); pumpImgs(); }, 2000); } };
+    img.src = src;
+  }
+}
 function loadTermImgs(root) {
-  root.querySelectorAll('.ph[data-src], .termimg[data-src]').forEach((el, i) => { const src = el.dataset.src; el.removeAttribute('data-src'); if (!src) return;
-    setTimeout(() => { const img = new Image(); img.alt = ''; img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } };
-      img.onerror = () => { if (!img.dataset.r) { img.dataset.r = 1; setTimeout(() => { img.src = src + '&r=1'; }, 2500); } }; img.src = src; }, i * 300); });
+  root.querySelectorAll('.ph[data-src], .termimg[data-src]').forEach(el => { const src = el.dataset.src; el.removeAttribute('data-src'); if (src) IMG_Q.push([el, src]); });
+  pumpImgs();
+}
+// Galería para preparar y revisar todas las fotos de piezas de una vez: abrí la app con #imagenes al final de la dirección
+function vGaleria() {
+  $('#top').hidden = true; $('#nav').hidden = true;
+  const ids = GLOS.map(g => g.id);
+  view(`<h2 style="margin:8px 0 4px">Fotos de las piezas</h2>
+    <p class="mut small" style="margin:0">Se preparan una sola vez y quedan guardadas. Dejá esta pantalla abierta hasta que termine. <b id="galN">0</b> de ${ids.length} listas.</p>
+    <div class="galgrid" style="margin-top:16px">${ids.map(id => `<div class="galitem"><span class="ph" data-src="${esc(termSrc(GLOS_ID[id]))}">${pzIco(GLOS_ID[id])}</span><b>${esc(GLOS_ID[id].n)}</b><code>${esc(id)}</code></div>`).join('')}</div>`);
+  const box = $('#view'); loadTermImgs(box);
+  const tick = setInterval(() => { const n = box.querySelectorAll('.ph img').length; const el = $('#galN'); if (!el) return clearInterval(tick); el.textContent = n; if (n >= ids.length) clearInterval(tick); }, 1000);
 }
 ACT.term = id => {
   const t = termInfo(id); if (!t) return;
@@ -2012,6 +2109,7 @@ ACT.term = id => {
 function resolved() {
   say('Lo resolví', 'u');
   const u = me(); u.resueltos = (u.resueltos || 0) + 1;
+  if (CH.guia) u.guias = (u.guias || []).filter(x => x.id !== CH.guia);
   (u.hist = u.hist || []).push({t:'vos', caso:CH.caso || 'Arreglo en casa', rubro:CH.rubro || '', ts:Date.now(), ahorro:BASE[CH.rubro] || 18000}); save();
   const tot = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0), cnt = (u.hist || []).filter(h => h.t === 'vos').length;
   say(`¡Bien ahí! Lo resolviste vos y te ahorraste una visita de ${CH.rubro ? CH.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[CH.rubro] || 18000)}).${cnt > 1 ? ` Ya van <b>${cnt} arreglos</b> por tu cuenta y ≈ <b class="num">${money(tot)}</b> ahorrados.` : ''} Lo guardé en <b>Arreglos</b>, en Resueltos.`);
@@ -2131,7 +2229,7 @@ function pedir() {
 function vMat() {
   const tut = CH && CH.tutObj && CH.tutObj.mat && CH.tutObj.mat.length ? CH.tutObj : null;
   if (!tut) { V.tab = 'casa'; V.casa = 'herramientas'; return render(); }
-  view(`<button class="back" data-a="tab" data-v="chat">${ico('back')} Volver a la guía</button>
+  view(`<button class="back" data-a="matBack">${ico('back')} Volver a la guía</button>
    <div class="eyebrow" style="margin-top:12px">Para tu arreglo</div>
    <h2>${esc(tut.n)}</h2>
    <p class="mut small" style="margin:4px 0 0">Mostrale esta pantalla al ferretero o pedilo con el nombre que figura abajo de cada cosa.</p>
@@ -2253,15 +2351,17 @@ function emptyState(kind, t, s, btn) {
 // Arreglos: lo que está en curso, lo que ya se resolvió (por tu cuenta o con un profesional) y tus profesionales
 function vPedU() {
   const u = me(), all = DB.jobs.filter(j => j.uid === u.id), tab = V.arr || 'curso';
-  const curso = all.filter(j => ['nuevo', 'aceptado'].includes(j.estado));
+  const curso = all.filter(j => ['nuevo', 'aceptado'].includes(j.estado)), guias = u.guias || [];
   const jobCard = j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
       <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small num" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
       <div class="row" style="justify-content:space-between"><span class="stagetxt ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : j.estado === 'cancelado' ? 'r' : j.offers.length ? 'n' : ''}">${j.estado === 'nuevo' && j.offers.length ? `${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''} para ver` : stageName(j)}</span>${isUnseen(j) ? '<span class="newdot">Nuevo</span>' : ''}</div>
       <div class="sub"><span>${esc(j.rubro)}</span>${j.turno && j.estado === 'aceptado' ? `<span class="sep">${esc(slotLabel(j.turno))}</span>` : ''}</div></button>`;
-  const seg = `<div class="seg segw" role="tablist">${[['curso', 'En curso', curso.length], ['res', 'Resueltos', 0], ['pro', 'Profesionales', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="arr" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
+  const seg = `<div class="seg segw" role="tablist">${[['curso', 'En curso', curso.length + guias.length], ['res', 'Resueltos', 0], ['pro', 'Profesionales', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="arr" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
   let body = '';
   if (tab === 'curso') {
-    body = curso.length ? `<div class="list">${curso.map(jobCard).join('')}</div>`
+    const gCard = g => { const n = (g.done || []).filter(Boolean).length, tot = g.tut.steps.length; return `<button class="card guiacard" data-a="openGuia" data-v="${g.id}">${catImg(RUBRO_IMG[g.tut.rubro] || 'r_mant', 'tool', 'md')}
+      <span class="ct"><span class="eyebrow">Guía · lo hacés vos</span><b>${esc(g.tut.n)}</b><span class="gprog"><i style="width:${n / tot * 100}%"></i></span><span class="small mut">${n ? `${n} de ${tot} pasos` : `${tot} pasos · ≈ ${g.tut.min} min`}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; };
+    body = curso.length || guias.length ? `<div class="list">${guias.map(gCard).join('')}${curso.map(jobCard).join('')}</div>`
       : emptyState('clip', 'No tenés arreglos en curso', 'Cuando haga falta un profesional, te armo el pedido y aparece acá con sus presupuestos. — Handy', ['Contale a Handy', 'chat']);
   } else if (tab === 'res') {
     const fin = all.filter(j => ['finalizado', 'cancelado'].includes(j.estado));
@@ -2565,24 +2665,30 @@ function vCasa() {
    </div>`);
 }
 ACT.casa = v => { NEXT_ANIM = 'right'; V.tab = 'casa'; V.casa = v; V.casaBack = null; render(); };
-ACT.casaBack = () => { NEXT_ANIM = 'left'; const b = V.casaBack; V.casa = null; V.casaBack = null; if (b) { V.tab = b; } render(); };
-ACT.ferre = from => { NEXT_ANIM = 'right'; V.tab = 'casa'; V.casa = 'ferreterias'; V.casaBack = from && from !== 'casa' ? from : null; V.job = null; render(); };
-const casaBackBtn = () => `<button class="back" data-a="casaBack">${ico('back')} ${V.casaBack === 'chat' ? 'Volver a la guía' : V.casaBack === 'mat' ? 'Materiales' : 'Mi casa'}</button>`;
+ACT.casaBack = () => { NEXT_ANIM = 'left'; const b = V.casaBack; V.casa = null; V.casaBack = null;
+  if (b === 'guia') { V.tab = 'ped'; V.guia = V.guiaBack; V.guiaBack = null; } else if (b) V.tab = b; render(); };
+ACT.ferre = from => { NEXT_ANIM = 'right'; if (from === 'guia') V.guiaBack = V.guia; V.tab = 'casa'; V.casa = 'ferreterias'; V.casaBack = from && from !== 'casa' ? from : null; V.job = null; V.guia = null; render(); };
+const casaBackBtn = () => `<button class="back" data-a="casaBack">${ico('back')} ${V.casaBack === 'chat' || V.casaBack === 'guia' ? 'Volver a la guía' : V.casaBack === 'mat' ? 'Materiales' : 'Mi casa'}</button>`;
 function vTemporada() {
   const u = me(), sk = seasonNow(), S = SEASONS[sk], key = seasonKey(), done = u.mant || {};
   view(`${casaBackBtn()}
    <h2 style="margin:12px 0 12px">${S.n}</h2>
    ${handySays(`Estos son los arreglos que te recomiendo para ${S.n.toLowerCase()}. Tocá cada uno y te cuento por qué.`)}
    <div class="list" style="margin-top:16px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<button class="card casaitem ${ok ? 'done' : ''}" data-a="taskInfo" data-v="${t.id}">${catImg('s_' + t.id, S.ico, 'md')}
-     <span class="ct"><b>${esc(t.n)}</b><span class="small ${ok ? 'okt' : 'mut'}">${ok ? '✓ Hecho' : t.quien === 'pro' ? 'Con un profesional' : 'Lo podés hacer vos'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; }).join('')}</div>`);
+     <span class="ct"><b>${esc(t.n)}</b>${ok ? '<span class="small okt">✓ Hecho</span>' : `<span class="tmeta">${lvlTag((TASK_INFO[t.id] || {}).lvl || (t.quien === 'pro' ? 'Profesional' : 'Fácil'))}<span class="small mut">${ico('clock')} ${esc((TASK_INFO[t.id] || {}).min || '')}</span></span>`}</span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; }).join('')}</div>`);
 }
 ACT.taskInfo = id => {
   const u = me(), S = SEASONS[seasonNow()], t = S.tasks.find(x => x.id === id); if (!t) return;
   const ok = (u.mant || {})[seasonKey() + '-' + id];
   sheet(`${catImg('s_' + t.id, S.ico, 'xl')}
     <h2 style="margin:16px 0 8px">${esc(t.n)}</h2>
-    <p style="margin:0">${esc(t.why)}</p>
-    <p class="small mut" style="margin:8px 0 0">${t.quien === 'pro' ? `Lo hace un ${t.rubro === 'Gas' ? 'gasista matriculado' : t.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}.` : 'Lo podés hacer vos: te guío paso a paso.'}</p>
+    ${(() => { const I = TASK_INFO[t.id] || {}; const pro = t.quien === 'pro'; return `
+    <div class="tfacts"><div><span>Dificultad</span>${lvlTag(I.lvl || (pro ? 'Profesional' : 'Fácil'))}</div><div><span>Tiempo</span><b>${esc(I.min || '—')}</b></div>${pro ? `<div><span>Suele salir</span><b class="num">≈ ${money(BASE[t.rubro] || 20000)}</b></div>` : ''}</div>
+    <h3 class="sh" style="margin-top:16px">Por qué conviene</h3><p style="margin:6px 0 0">${esc(t.why)}</p>
+    ${I.cada ? `<p class="small mut" style="margin:6px 0 0">${ico('cal').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} ${esc(I.cada)}</p>` : ''}
+    ${pro ? `<h3 class="sh" style="margin-top:16px">Quién lo hace</h3><p style="margin:6px 0 0">Un ${t.rubro === 'Gas' ? 'gasista matriculado' : t.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}. No es algo para hacer por tu cuenta: te armo el pedido con todo lo que hace falta.</p>`
+      : `${(I.herr || []).length || (I.mat || []).length ? `<h3 class="sh" style="margin-top:16px">Vas a necesitar</h3><div class="meta" style="margin-top:8px">${[...(I.herr || []), ...(I.mat || [])].map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>` : ''}`}
+    ${I.sino ? `<h3 class="sh" style="margin-top:16px">Si no lo hacés</h3><p style="margin:6px 0 0">${esc(I.sino)}</p>` : ''}`; })()}
     ${ok ? `<p class="okt" style="margin-top:16px">✓ Hecho ${ago(ok)}</p><button class="btn g w" style="margin-top:12px" data-a="close">Cerrar</button>`
       : `<div class="stack" style="margin-top:16px"><button class="btn p w" data-a="mantGo" data-v="${t.id}">${t.quien === 'pro' ? 'Pedir profesional' : 'Cómo se hace'}</button><button class="btn g w" data-a="mantDone" data-v="${t.id}">Ya lo hice</button></div>`}`);
 };
@@ -2995,6 +3101,7 @@ function hideLaunch() {
 }
 // Arranque: todo en paralelo. Si no hay sesión guardada, la bienvenida aparece sin esperar a la red.
 async function boot() {
+  if (location.hash === '#imagenes') return vGaleria();
   const recovery = /type=recovery/.test(location.hash);
   let cfg = null; try { cfg = JSON.parse(localStorage.getItem('hg-cfg') || 'null'); } catch (e) {}
   const fresh = fetch('/api/config', {cache:'no-store'}).then(r => r.ok ? r.json() : null).catch(() => null)
