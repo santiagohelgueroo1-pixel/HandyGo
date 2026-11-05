@@ -389,7 +389,8 @@ module.exports = async (req, res) => {
   }
   try {
     // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
-    const first = q.k ? dev(acct, token, prompt).catch(e => { console.error('dev:', e.message); return klein(acct, token, prompt, 640, 640, 11000); }) : klein(acct, token, prompt, 512, 512);
+    // Siempre el modelo económico: el de más calidad gasta el cupo gratis del día en unas pocas fotos
+    const first = klein(acct, token, prompt, 512, 512);
     const img = await first.catch(e => { console.error('klein:', e.message); return schnell(acct, token, prompt); });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
@@ -405,7 +406,8 @@ module.exports = async (req, res) => {
   } catch (e) {
     console.error('Imagen:', e.message);
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(502).json({ ok: false, error: 'No se pudo generar la imagen' });
+    const cupo = /neuron|allocation|quota|429|4006/i.test(String(e.message));
+    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Se terminó el cupo gratis de imágenes de hoy (se renueva a las 21 h de Argentina)' : 'No se pudo generar la imagen' });
   }
 };
 
