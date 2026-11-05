@@ -133,19 +133,7 @@ h3{font:600 16px/1.3 var(--f-display);margin:0}
 label.f{display:block;font:600 14px/1.3 var(--f-body)}
 label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:8px;border:2px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);font-weight:400}
 label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--pri);outline:none}
-.telrow{display:flex;gap:8px;align-items:stretch;margin-top:8px}
-.telrow input{margin-top:0!important;flex:1;min-width:0}
-.telrow .btn{flex:none;padding:8px 14px;font-size:14px}
-.hint.ok{color:var(--ok);font-weight:600}
-#code{letter-spacing:.4em;font-variant-numeric:tabular-nums}
-#sms{position:absolute;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:70;background:var(--surface);color:var(--ink);border-radius:18px;padding:12px 14px;
   box-shadow:0 16px 40px -12px rgba(0,0,0,.45);display:flex;gap:12px;align-items:flex-start;transform:translateY(-140%);transition:transform .35s cubic-bezier(.2,.8,.2,1);cursor:pointer}
-#sms.in{transform:none}
-#sms .si{flex:none;width:36px;height:36px;border-radius:10px;background:#34C759;color:#fff;display:grid;place-items:center}
-#sms .si svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75}
-#sms small{display:block;color:var(--mut);font-size:12px}
-#sms b{font-size:14px}
-#sms p{margin:2px 0 0;font-size:14px;line-height:1.35}
 .hint{font-size:14px;color:var(--mut);font-weight:400;margin-top:4px;display:block}
 .err{color:var(--bad);font-weight:600;font-size:14px;min-height:20px}
 
@@ -255,7 +243,46 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .stop h4 svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .stop p{margin:8px 0;font-size:16px}
 .stop .now{background:var(--warnSoft);color:var(--warnInk);border-radius:10px;padding:12px 12px;font-size:14px;font-weight:600;margin:12px 0}
-.stop .rule{font-size:12px;color:var(--mut);margin-top:8px}
+.stop .rule{font-size:12px;color:var(--mut);margin-top:12px}
+.stop h5{margin:16px 0 4px;font:600 14px/1.3 var(--f-body)}
+.stop ul{margin:0;padding-left:20px;font-size:14px;line-height:1.45}
+.stop ul li{margin:2px 0}
+.sos{width:100%;align-self:stretch;background:var(--bad);color:#fff;border-radius:16px;padding:16px}
+.sos h4{margin:0 0 8px;font:700 18px/1.2 var(--f-display);display:flex;gap:8px;align-items:center}
+.sos h4 svg,.sos .btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.sos ol{margin:0 0 12px;padding-left:22px;font-size:16px;line-height:1.45;font-weight:600}
+.sos .row{display:flex;gap:8px;flex-wrap:wrap}
+.sos .row .btn{flex:1;display:inline-flex;gap:6px;align-items:center;justify-content:center;text-decoration:none}
+.sos .row .btn:not(.p){background:#fff;color:var(--bad);border-color:#fff}
+.sos p{margin:12px 0 0;font-size:14px;opacity:.95}
+.meanwhile{width:100%;align-self:stretch;background:var(--warnSoft);color:var(--ink);box-shadow:none}
+.meanwhile b{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--warnInk)}
+.meanwhile b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75}
+.meanwhile ul{margin:8px 0 0;padding-left:20px;font-size:14px}
+.handysays{display:flex;gap:12px;align-items:flex-start}
+.handysays>.mark{width:40px;height:40px;border-radius:12px;flex:none}
+.handysays .bub{flex:1;min-width:0;background:var(--priSoft);border-radius:4px 16px 16px 16px;padding:12px 14px}
+.handysays .nm{display:block;font:600 12px/1 var(--f-body);color:var(--pri);margin-bottom:4px}
+.handysays p{margin:0;font-size:16px;line-height:1.45}
+.casaitem{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;cursor:pointer;color:var(--ink)}
+.casaitem .ci{width:44px;height:44px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none}
+.casaitem .ci svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.casaitem .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.casaitem .ct b{font:600 16px/1.3 var(--f-display)}
+.casaitem .go{width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:var(--mut);stroke-width:1.75;flex:none}
+.casaitem .cnt{min-width:24px;height:24px;border-radius:99px;background:var(--acc);color:var(--accInk);font:700 12px/24px var(--f-body);text-align:center;padding:0 6px}
+.casastat{margin-top:16px;width:100%;border:0;display:flex;align-items:center;gap:20px;text-align:left;cursor:pointer;color:var(--ink)}
+.casastat>span:not(.small){display:flex;flex-direction:column}
+.casastat b{font:700 18px/1.2 var(--f-display)}
+.casastat>span:last-child{margin-left:auto}
+.task .why{font-size:14px;color:var(--mut);margin-top:4px}
+.task .why b{color:var(--ink);font-weight:600}
+.seg.segw{display:flex;width:100%}
+.seg.segw button{flex:1}
+.adh{display:inline-flex;align-items:center;gap:6px;font:600 12px/1 var(--f-body);color:var(--pri);margin-bottom:6px}
+.adh .mark{width:16px;height:16px}
+.fercard.ad{box-shadow:0 0 0 2px var(--pri)}
+.ferl .adh{display:block;margin-bottom:4px}
 
 /* ---------- tutorial ---------- */
 .tut{background:var(--surface);border:0;box-shadow:0 1px 2px rgba(30,42,36,.06),0 0 0 1px rgba(30,42,36,.05);border-radius:16px;overflow:hidden;align-self:stretch;margin-top:4px}
@@ -275,6 +302,8 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .steps .n{font:700 12px/1 var(--f-mono);color:var(--mut);margin-top:4px}
 .steps input{width:22px;height:22px;flex:none;accent-color:var(--ok);margin:0 0 0 auto}
 .steps li.done span.t{text-decoration:line-through;color:var(--mut)}
+.steps .stuck{grid-column:2;justify-self:start;border:0;background:none;padding:0;font:500 12px/1.2 var(--f-body);color:var(--pri);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.steps li.done .stuck{display:none}
 .warn{margin:0 16px 12px;padding:12px 12px;border-radius:10px;background:var(--warnSoft);color:var(--warnInk);font-size:14px;font-weight:600}
 .tut .ft{padding:12px 16px 16px;display:grid;gap:8px;border-top:1px solid var(--line);background:var(--sunk)}
 
@@ -289,6 +318,41 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .ticket dt{font:700 12px/1.5 var(--f-mono);color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
 .ticket dd{margin:0;min-width:0;overflow-wrap:anywhere}
 .ticket .photo{width:64px;height:64px;object-fit:cover;border-radius:8px}
+.ticket .touched{display:flex;gap:8px;align-items:flex-start;background:var(--warnSoft);color:var(--warnInk);border-radius:10px;padding:10px 12px;margin:0 0 12px;font-size:14px}
+.ticket .touched svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;margin-top:1px}
+.ficha{width:100%;display:grid;gap:16px}
+.ficha .fq b{display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px}
+.fopts{display:flex;flex-wrap:wrap;gap:8px}
+.fopts button{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:6px 12px;font:500 14px/1.2 var(--f-body);cursor:pointer}
+.fopts button.on{border-color:var(--pri);background:var(--priSoft);color:var(--pri);font-weight:600}
+.fopts button:disabled{opacity:.6;cursor:default}
+.tag.mat{background:var(--priSoft);color:var(--pri)}
+.tag.mat svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
+.tag.plus{background:var(--ink);color:var(--bg);gap:4px}
+.tag.plus .mark{width:14px;height:14px;border-radius:4px}
+.review .reply{margin:8px 0 0 12px;padding:8px 12px;border-left:3px solid var(--mint);background:var(--sunk);border-radius:0 8px 8px 0;font-size:14px}
+.review .reply b{display:block;font:600 12px/1.3 var(--f-body);color:var(--pri);margin-bottom:2px}
+.conds{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 16px}
+.conds>div{display:flex;flex-direction:column;gap:2px;min-width:90px}
+.conds span{font-size:12px;color:var(--mut)}
+.conds b{font:600 16px/1.2 var(--f-display)}
+.conds small{font-size:12px;color:var(--mut)}
+.offer .inc{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.whyb{display:inline-flex;align-items:center;gap:6px;justify-self:start;align-self:flex-start}
+.whyb svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.75}
+.whylist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:12px}
+.whylist li{display:flex;gap:12px;align-items:flex-start}
+.whylist li>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.whylist .wi{width:36px;height:36px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none}
+.whylist .wi svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+label.incl{display:inline-flex}
+label.incl input{position:absolute;opacity:0;pointer-events:none}
+label.incl span{border:2px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font:500 14px/1.2 var(--f-body);cursor:pointer}
+label.incl input:checked+span{border-color:var(--pri);background:var(--priSoft);color:var(--pri);font-weight:600}
+label.incl input:focus-visible+span{outline:3px solid var(--acc);outline-offset:2px}
+label.chk{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+label.chk input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:0}
+.casaitem .ci .mark{width:44px;height:44px;border-radius:12px}
 
 /* ---------- prestadores y pedidos ---------- */
 .offer{display:grid;gap:12px}
@@ -458,6 +522,9 @@ h3.sh{font:600 18px/1.25 var(--f-display);margin:0 0 12px;color:var(--ink)}
 #tour .tcard .ti .ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 #tour .tcard .ti img{width:40px;height:40px;border-radius:12px}
 #tour .tcard h3{font:700 18px/1.2 var(--f-display);margin:0}
+#tour .who2{display:flex;align-items:center;gap:4px;font:600 12px/1 var(--f-body);color:var(--pri);margin-bottom:4px}
+#tour .who2 .lbl{display:inline-flex;align-items:center;gap:4px;color:var(--mut)}
+#tour .who2 svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
 #tour .tcard p{margin:0 0 16px;font-size:16px;line-height:1.5;color:var(--mut)}
 #tour .tfoot{display:flex;align-items:center;gap:12px}
 #tour .dots{display:flex;gap:8px;flex:1}
@@ -544,6 +611,7 @@ h3.sh{font:600 18px/1.25 var(--f-display);margin:0 0 12px;color:var(--ink)}
 .stagetxt.y::before{background:var(--acc)}.stagetxt.v::before{background:var(--ok)}.stagetxt.r::before{background:var(--bad)}.stagetxt.n::before{background:var(--pri)}
 .newdot{width:8px;height:8px;border-radius:50%;background:var(--bad);display:inline-block}
 .textlink{color:var(--pri);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+button.textlink{border:0;background:none;padding:0;cursor:pointer;font:600 14px/1.3 var(--f-body)}
 .review{border-top:1px solid var(--line);padding-top:12px}
 .review:first-child{border-top:0;padding-top:0}
 </style>
@@ -657,19 +725,31 @@ const HARD = [
    k:'Instalación de gas', rubro:'Gas',
    why:'Las instalaciones y artefactos de gas solo los puede intervenir un gasista matriculado (ENARGAS). Un error puede provocar una fuga o una intoxicación por monóxido de carbono.',
    now:'Si hay olor a gas: no prendas luces ni fuego, abrí las ventanas, cerrá la llave de paso y salí del lugar.',
-   rule:'Norma NAG-200 · ENARGAS'},
+   rule:'Según el ENARGAS (norma NAG-200), las instalaciones y los artefactos de gas solo los puede intervenir un gasista matriculado.',
+   signs:['La llama es amarilla o anaranjada (tiene que ser azul)', 'Hay manchas negras u hollín en el artefacto o en la pared', 'Cuesta prenderlo, se apaga solo o hace un ruido fuerte al encender', 'Hay olor a gas, o alguien siente dolor de cabeza, mareos o náuseas cerca del artefacto'],
+   safe:['Fijate si la llave del artefacto está abierta', 'Si el encendido es a pilas, probá con pilas nuevas', 'Revisá que las rejillas de ventilación no estén tapadas', 'Nunca saques la tapa ni desarmes nada: desde que hay que abrir algo, ya no'],
+   meanwhile:['Cerrá la llave de ese artefacto y no lo uses', 'Mantené el ambiente ventilado', 'Anotá qué pasa y desde cuándo: le sirve al gasista']},
   {re:/tablero|t[eé]rmica salta|salta la t[eé]rmica|disyuntor|cortocircuito|cables? pelados?|cableado|instalaci[oó]n el[eé]ctrica|chispa|chispazo|olor a quemado|me dio (la )?corriente|me patea|electrocut/,
    k:'Electricidad compleja', rubro:'Electricidad',
    why:'Los trabajos en el tablero, el cableado o cualquier cosa que chispea o huele a quemado necesitan un electricista matriculado. El riesgo de descarga o incendio es real.',
    now:'Si hay chispas u olor a quemado: bajá la térmica general y no toques nada.',
-   rule:'Certificación eléctrica · ENRE / COPIME'},
+   rule:'En la Ciudad, las instalaciones eléctricas las revisa y certifica un electricista registrado (ENRE · COPIME).',
+   signs:['Olor a quemado, chispas o humo', 'Un enchufe, una tecla o un cable está caliente, manchado o derretido', 'La térmica o el disyuntor saltan seguido', 'Sentís cosquilleo o una patada al tocar un artefacto'],
+   safe:['Si saltó la térmica y no hay olor a quemado, podés levantarla una sola vez', 'Si vuelve a saltar, dejala baja y no insistas', 'Desenchufá lo que estaba prendido cuando saltó'],
+   meanwhile:['Dejá baja la térmica de ese circuito', 'No uses ese enchufe ni ese artefacto', 'Anotá qué estaba prendido cuando saltó: le sirve al electricista']},
   {re:/grieta|rajadura en la pared|fisura|columna|viga|losa|se hunde|se cae (el|la)|desprendimiento|estructur|cielorraso se/,
    k:'Problema estructural', rubro:'Albañilería',
    why:'Las grietas, columnas, vigas o losas necesitan una evaluación presencial. Un arreglo superficial puede esconder un problema más grande.',
    now:'Si la grieta crece o se desprende material: alejate de la zona y avisá a la administración del edificio.',
-   rule:'Evaluación profesional en el lugar'}
+   rule:'Las fallas estructurales necesitan una evaluación profesional en el lugar.',
+   signs:['La grieta crece o se ensancha', 'Se desprende revoque o material', 'Puertas o ventanas que de golpe empiezan a trabarse', 'Aparece humedad junto a la grieta'],
+   safe:['Sacale fotos con una regla o una moneda al lado', 'Marcá con lápiz los extremos y la fecha, para ver si crece'],
+   meanwhile:['Alejate de la zona si se desprende material', 'No cuelgues peso en esa pared', 'Avisá a la administración o al dueño']}
 ];
 
+const GAS_SMELL = /olor a gas|huele a gas|olor raro a gas|p[eé]rdida de gas|escape de gas|fuga de gas|se siente (el )?gas/;
+// Insistencia después de un freno de seguridad: Handy no cede
+const INSIST = /\bigual\b|de todas formas|aunque sea|decime c[oó]mo|explicame c[oó]mo|c[oó]mo lo (hago|arreglo)|lo hago yo|me animo|bajo mi responsabilidad|no me importa|s[eé] lo que hago|paso a paso|dame los pasos|solo para (ver|revisar)|no tengo plata/;
 const TUT = {
   canilla:{n:'Canilla que gotea', rubro:'Plomería', lvl:'Fácil', min:20,
     re:/canilla|grifo|gotea|goteo|cuerito/,
@@ -837,11 +917,11 @@ const FER = [
 ];
 
 const PROVS = [
-  {id:'p1', n:'Marcelo Ríos', r:'Plomería', m:'', s:4.8, v:127, y:12, z:'Almagro', resp:'Responde en ~1 h', rev:[['Lucía','Llegó a horario y ya sabía qué traer. Impecable.',5],['Diego','Muy prolijo, explicó todo.',5]]},
-  {id:'p2', n:'Sergio Paz', r:'Plomería', m:'', s:4.6, v:58, y:7, z:'Caballito', resp:'Responde en ~3 h', rev:[['Ana','Buen precio, tardó un poco en confirmar.',4]]},
-  {id:'p3', n:'Hernán Giordano', r:'Gas', m:'Matrícula ENARGAS 8812', s:4.9, v:203, y:18, z:'Palermo', resp:'Responde en ~2 h', rev:[['Martín','Revisó el calefón y dejó todo firmado.',5],['Sofía','Súper confiable, matriculado de verdad.',5]]},
+  {id:'p1', n:'Marcelo Ríos', r:'Plomería', m:'', s:4.8, v:127, y:12, z:'Almagro', resp:'Responde en ~1 h', vis:6000, visDesc:true, min:15000, radio:'Hasta 5 km', plus:true, rev:[['Lucía','Llegó a horario y ya sabía qué traer. Impecable.',5,'¡Gracias, Lucía! Con el resumen de la app fue todo más fácil.'],['Diego','Muy prolijo, explicó todo.',5]]},
+  {id:'p2', n:'Sergio Paz', r:'Plomería', m:'', s:4.6, v:58, y:7, z:'Caballito', resp:'Responde en ~3 h', vis:5000, min:12000, radio:'Hasta 10 km', rev:[['Ana','Buen precio, tardó un poco en confirmar.',4,'Tenés razón, Ana: esa semana tenía la agenda llena. Ya ajusté los tiempos de respuesta.']]},
+  {id:'p3', n:'Hernán Giordano', r:'Gas', m:'Matrícula ENARGAS 8812', s:4.9, v:203, y:18, z:'Palermo', resp:'Responde en ~2 h', vis:9000, visDesc:true, min:25000, radio:'Toda CABA', plus:true, rev:[['Martín','Revisó el calefón y dejó todo firmado.',5],['Sofía','Súper confiable, matriculado de verdad.',5]]},
   {id:'p4', n:'Claudia Ferreyra', r:'Gas', m:'Matrícula ENARGAS 6140', s:4.7, v:84, y:11, z:'Villa Crespo', resp:'Responde en ~4 h', rev:[['Pablo','Muy clara con el presupuesto.',5]]},
-  {id:'p5', n:'Paula Sosa', r:'Electricidad', m:'COPIME 3307', s:4.8, v:91, y:9, z:'Almagro', resp:'Responde en ~1 h', rev:[['Javier','Cambió el tablero en una mañana.',5]]},
+  {id:'p5', n:'Paula Sosa', r:'Electricidad', m:'COPIME 3307', s:4.8, v:91, y:9, z:'Almagro', resp:'Responde en ~1 h', vis:7000, visDesc:true, min:18000, radio:'Hasta 5 km', rev:[['Javier','Cambió el tablero en una mañana.',5]]},
   {id:'p6', n:'Gustavo Lema', r:'Electricidad', m:'COPIME 2981', s:4.5, v:47, y:15, z:'Boedo', resp:'Responde en ~5 h', rev:[['Rocío','Buen trabajo, algo caro.',4]]},
   {id:'p7', n:'Tomás Duarte', r:'Carpintería', m:'', s:4.6, v:44, y:7, z:'Colegiales', resp:'Responde en ~2 h', rev:[['Vale','Me dejó la puerta como nueva.',5]]},
   {id:'p8', n:'Nora Acuña', r:'Carpintería', m:'', s:4.4, v:29, y:5, z:'Flores', resp:'Responde en ~6 h', rev:[['Leo','Cumplió con lo acordado.',4]]},
@@ -883,7 +963,7 @@ const SEED_BIO = {
   p10:['Albañilería general y pintura.', ['Pintura', 'Revoques', 'Pisos']]
 };
 PROVS.forEach(p => { if (SEED_BIO[p.id]) { p.bio = SEED_BIO[p.id][0]; p.esp = SEED_BIO[p.id][1]; p.hor = 'Lunes a sábado, 8 a 19 h'; } });
-const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], rev:p.rev.map(r => [r.from, r.c || '', r.s])} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
+const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], rev:p.rev.map(r => [r.from, r.c || '', r.s, r.resp || '']), vis:p.vis, visDesc:p.visDesc, min:p.min, radio:p.radio, plus:p.plus} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
 /* ---------- agenda y turnos ---------- */
 const FR = {m:'9 a 12 h', t:'14 a 18 h'}, FRN = {m:'Mañana', t:'Tarde'};
 const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], DOWL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -965,44 +1045,11 @@ function normTel(s) {
   return /^\d{10}$/.test(d) ? d : '';
 }
 const USU_RE = /^[a-z0-9._]{3,20}$/;
-// Verificación del celular (el SMS está simulado: el código aparece como notificación en pantalla)
-let VER = {tel:'', code:'', ok:'', until:0};
-const telBlock = (id, val, okTel) => `<div class="stack" style="gap:8px"><label class="f" for="${id}">Celular<div class="telrow"><input id="${id}" type="tel" value="${esc(val || '')}" placeholder="11 2345 6789" autocomplete="off" data-tel="1"><button type="button" class="btn sm" data-a="sendCode" data-v="${id}">${okTel ? 'Cambiar' : 'Enviar código'}</button></div>
-  <span class="hint ${okTel ? 'ok' : ''}" id="${id}Hint">${okTel ? '✓ Celular verificado' : 'Te mandamos un código por SMS para confirmarlo. Solo se comparte cuando confirmás un trabajo.'}</span></label>
-  <div id="${id}Code" hidden><label class="f" for="code">Código de 6 números<div class="telrow"><input id="code" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="one-time-code"><button type="button" class="btn sm p" data-a="checkCode" data-v="${id}">Verificar</button></div></label>
-  <button type="button" class="linkbtn" style="margin-top:8px" data-a="sendCode" data-v="${id}">Reenviar código</button></div></div>`;
 async function libre(usuario, tel) {
   if (CLOUD) { await SB_P; const r = await SB.rpc('disponible', {p_usuario:usuario || null, p_tel:tel || null}); if (r.error) throw r.error; return r.data; }
   const otros = [...DB.users, ...DB.provs].filter(x => !DB.cur || x.id !== DB.cur.id);
   return {usuario:!usuario || !otros.some(x => (x.usuario || '') === usuario), tel:!tel || !otros.some(x => x.telN === tel)};
 }
-function showSms(code) {
-  let el = $('#sms'); if (!el) { el = document.createElement('div'); el.id = 'sms'; el.setAttribute('role', 'status'); $('#device').appendChild(el); el.onclick = () => el.classList.remove('in'); }
-  el.innerHTML = `<span class="si">${ico('chat')}</span><div><small>Mensajes · ahora</small><b>HandyGo</b><p>Tu código de verificación es <b class="num">${code}</b>. No lo compartas con nadie.</p></div>`;
-  requestAnimationFrame(() => el.classList.add('in')); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('in'), 9000);
-}
-ACT.sendCode = async (id, btn) => {
-  const inp = $('#' + id), hint = $('#' + id + 'Hint'), box = $('#' + id + 'Code'), tel = normTel(inp.value);
-  if (!tel) { hint.className = 'hint'; hint.textContent = 'Revisá el celular: código de área y número, sin 0 ni 15. Ej: 11 2345 6789.'; inp.focus(); return; }
-  if (VER.ok === tel) { hint.className = 'hint ok'; hint.textContent = '✓ Celular verificado'; box.hidden = true; return; }
-  if (VER.tel === tel && Date.now() < VER.until) { hint.className = 'hint'; hint.textContent = `Esperá ${Math.ceil((VER.until - Date.now()) / 1000)} segundos para pedir otro código.`; return; }
-  const old = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
-  try { const d = await libre(null, tel); if (!d.tel) { hint.className = 'hint'; hint.textContent = 'Ese celular ya está registrado en otra cuenta.'; return; } }
-  catch (e) { hint.className = 'hint'; hint.textContent = 'No pudimos conectarnos. Probá de nuevo.'; return; }
-  finally { btn.disabled = false; btn.textContent = old; }
-  VER = {tel, code:String(Math.floor(100000 + Math.random() * 900000)), ok:VER.ok, until:Date.now() + 30000};
-  box.hidden = false; hint.className = 'hint'; hint.textContent = 'Te mandamos un SMS con el código.';
-  const c = $('#code'); c.value = ''; setTimeout(() => showSms(VER.code), 700); c.focus();
-};
-ACT.checkCode = id => {
-  const hint = $('#' + id + 'Hint'), c = $('#code');
-  if (!VER.code || normTel($('#' + id).value) !== VER.tel) { hint.className = 'hint'; hint.textContent = 'Pedí un código para este número.'; return; }
-  if (c.value.trim() !== VER.code) { hint.className = 'hint'; hint.textContent = 'El código no coincide. Revisalo e intentá de nuevo.'; c.select(); return; }
-  VER.ok = VER.tel; VER.code = ''; $('#' + id + 'Code').hidden = true; hint.className = 'hint ok'; hint.textContent = '✓ Celular verificado';
-  const sm = $('#sms'); if (sm) sm.classList.remove('in');
-};
-document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.tel) { const id = e.target.id, h = $('#' + id + 'Hint');
-  if (h && normTel(e.target.value) !== VER.ok && h.classList.contains('ok')) { h.className = 'hint'; h.textContent = 'Número nuevo: tocá “Enviar código” para confirmarlo.'; } } });
 const field = (id, l, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
 function sheet(html) { closeSheet(); const s = document.createElement('div'); s.className = 'scrim'; s.id = 'scrim'; s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`; s.addEventListener('click', e => { if (e.target === s) closeSheet(); }); $('#device').appendChild(s); }
 function closeSheet() { const s = $('#scrim'); if (!s) return; s.id = ''; if (matchMedia('(prefers-reduced-motion: reduce)').matches) return s.remove(); s.classList.add('out'); setTimeout(() => s.remove(), 210); }
@@ -1052,7 +1099,7 @@ ACT.role = () => { NEXT_ANIM = 'right'; view(`${ahead('welcome', '¿Cómo vas a 
   </div>`); };
 let REG = {t:'u', dni:false};
 ACT.reg = t => {
-  REG = {t, dni:false, foto:null}; VER = {tel:'', code:'', ok:'', until:0};
+  REG = {t, dni:false, foto:null};
   const p = t === 'p';
   NEXT_ANIM = 'right';
   view(`<div id="regHead">${ahead('role', p ? 'Creá tu perfil de prestador' : 'Creá tu cuenta', p ? 'Paso 1 de 2 · Tus datos' : 'Te lleva un minuto.', p ? 1 : 0)}</div>
@@ -1062,7 +1109,6 @@ ACT.reg = t => {
    ${field('usuario', 'Nombre de usuario', 'text', 'Ej: sofi.martinez', 'Para ingresar sin el mail. De 3 a 20 letras o números, sin espacios (podés usar . y _)')}
    ${field('mail', 'Mail', 'email', 'vos@mail.com')}
    ${field('pass', 'Contraseña', 'password', '', 'Mínimo 6 caracteres')}
-   ${telBlock('tel', '', false)}
    ${field('zona', p ? 'Zona donde trabajás' : 'Barrio', 'text', 'Ej: Almagro, CABA', 'Por ahora HandyGo funciona solo en CABA')}
    ${p ? '<div class="err" id="err1" role="alert"></div><button class="btn p w" data-a="regNext">Siguiente</button>' : ''}
    </div>
@@ -1077,15 +1123,14 @@ ACT.reg = t => {
    <button class="btn p w" data-a="doReg">Crear cuenta</button>
    ${p ? '<button class="btn g w" data-a="regPrev">Volver a tus datos</button>' : ''}</div>`);
 };
-// Validación de los datos de la cuenta (usuario, mail, contraseña y celular verificado)
+// Validación de los datos de la cuenta (usuario, mail y contraseña)
 async function checkCuenta(val) {
-  const usu = val('usuario').toLowerCase(), tel = normTel(val('tel'));
+  const usu = val('usuario').toLowerCase();
   if (!val('nombre') || !val('zona')) return 'Completá tu nombre y tu zona.';
   if (!USU_RE.test(usu)) return 'Revisá el nombre de usuario: de 3 a 20 letras o números, sin espacios ni acentos (podés usar . y _).';
   if (!/^\S+@\S+\.\S+$/.test(val('mail'))) return 'Revisá el mail: tiene que tener el formato nombre@dominio.com.';
   if (val('pass').length < 6) return 'La contraseña necesita al menos 6 caracteres.';
-  if (!tel || VER.ok !== tel) return 'Verificá tu celular con el código que te mandamos.';
-  try { const d = await libre(usu, tel); if (!d.usuario) return 'Ese nombre de usuario ya existe. Probá con otro.'; if (!d.tel) return 'Ese celular ya está registrado en otra cuenta.'; }
+  try { const d = await libre(usu, null); if (!d.usuario) return 'Ese nombre de usuario ya existe. Probá con otro.'; }
   catch (e) { return 'No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.'; }
   return '';
 }
@@ -1105,7 +1150,7 @@ ACT.regPrev = () => {
 ACT.dni = (v, b) => { b.disabled = true; b.textContent = 'Validando con RENAPER…'; setTimeout(() => { REG.dni = true; b.disabled = false; b.className = 'btn w'; b.style.cssText = 'border-color:var(--ok);color:var(--ok)'; b.innerHTML = ico('check') + ' Identidad verificada'; }, 1200); };
 ACT.doReg = async (v, btn) => {
   const val = id => ($('#' + id)?.value || '').trim();
-  const d = {id:uid(), nombre:val('nombre'), usuario:val('usuario').toLowerCase(), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona'), tel:val('tel'), telN:normTel(val('tel')), foto:REG.foto || null};
+  const d = {id:uid(), nombre:val('nombre'), usuario:val('usuario').toLowerCase(), mail:val('mail').toLowerCase(), pass:val('pass'), zona:val('zona'), foto:REG.foto || null};
   let e = '';
   if (REG.t === 'u') { const done = busy(btn, 'Revisando…'); e = await checkCuenta(val); done(); }
   if (e) {}
@@ -1128,10 +1173,17 @@ ACT.doReg = async (v, btn) => {
 function seedProvJobs(p) {
   (DEMO_JOBS[p.rubro] || []).forEach(([caso, desc, intentos], i) => DB.jobs.push({
     id:'d' + uid(), uid:'demo', un:CLIENTS[i % CLIENTS.length], zona:['Almagro','Caballito','Palermo'][i % 3], caso, rubro:p.rubro,
-    hard:/seguridad/.test(intentos), code:code(), resp:[], desc, intentos, img:null, estado:'nuevo', offers:[], msgs:[], ts:Date.now() - (i + 1) * 3600e3}));
+    hard:/seguridad/.test(intentos), code:code(), resp:[], desc, intentos, img:null, f:demoFicha(p.rubro, i), estado:'nuevo', offers:[], msgs:[], ts:Date.now() - (i + 1) * 3600e3}));
+}
+function demoFicha(r, i) {
+  const f = {viv:['Departamento', 'Casa', 'PH'][i % 3], ant:['10 a 30 años', 'Más de 30 años', 'Menos de 10 años'][i % 3], urg:['Esta semana', 'Puede esperar', 'Es urgente'][i % 3]};
+  if (r === 'Gas') Object.assign(f, {art:['Calefón', 'Termotanque', 'Estufa'][i % 3], olor:'No', llave:'Sí'});
+  if (r === 'Electricidad') Object.assign(f, {salto:['Sí', 'No', 'Sí'][i % 3], quem:'No'});
+  if (r === 'Plomería') f.paso = ['Sí', 'No sé', 'Sí'][i % 3];
+  return f;
 }
 ACT.login = () => { NEXT_ANIM = 'right'; view(`${ahead('welcome', 'Ingresá', 'Qué bueno verte de nuevo.')}
-  <div class="stack">${field('mail', 'Mail, usuario o celular', 'text', 'Ej: sofi.martinez o 11 2345 6789')}${field('pass', 'Contraseña', 'password')}
+  <div class="stack">${field('mail', 'Mail o usuario', 'text', 'Ej: sofi.martinez')}${field('pass', 'Contraseña', 'password')}
   <div class="err" id="err" role="alert"></div><button class="btn p w" data-a="doLogin">Ingresar</button>
   <button class="linkbtn" style="justify-self:center" data-a="forgot">Olvidé mi contraseña</button></div>`); };
 ACT.forgot = () => { NEXT_ANIM = 'right'; view(`${ahead('login', 'Recuperar contraseña', 'Te mandamos un link para crear una nueva.')}
@@ -1167,7 +1219,7 @@ ACT.savePass = async (v, btn) => {
 };
 ACT.doLogin = (v, btn) => {
   const m = $('#mail').value.trim().toLowerCase(), p = $('#pass').value;
-  if (!m || !p) { $('#err').textContent = 'Completá tu mail, usuario o celular y tu contraseña.'; return; }
+  if (!m || !p) { $('#err').textContent = 'Completá tu mail o usuario y tu contraseña.'; return; }
   if (CLOUD) return cloudLogin(m, p, btn);
   const t = normTel(m), es = x => x.pass === p && (x.mail === m || (x.usuario && x.usuario === m) || (t && x.telN === t));
   const u = DB.users.find(es), pr = DB.provs.find(es);
@@ -1216,7 +1268,7 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLO
 /* ============================================================
    ESTRUCTURA DE LA APP
    ============================================================ */
-const TABS = {u:[['chat', 'Asistente', 'chat'], ['ped', 'Pedidos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
+const TABS = {u:[['chat', 'Handy', 'chat'], ['ped', 'Arreglos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
               p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['agenda', 'Agenda', 'cal'], ['per', 'Perfil', 'user']]};
 function enter() {
   V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null;
@@ -1226,24 +1278,25 @@ function enter() {
 }
 /* ---------- tutorial de bienvenida ---------- */
 let TOUR_ON = false, TOUR_I = 0, TOUR_STEPS = [];
+// El recorrido de bienvenida lo hace Handy, en primera persona, pasando por cada sección
 const TOURS = {
   u:[
-    {t:'¡Bienvenido a HandyGo!', d:'Te muestro en un minuto cómo funciona la app para que le saques el jugo.', logo:true},
-    {sel:'#nav [data-v="chat"]', ic:'chat', t:'Handy, tu asistente', d:'Contale qué se rompió, con texto, foto o audio. Te ayuda a entender el problema y, si es seguro, te guía paso a paso para arreglarlo vos.'},
-    {sel:'#nav [data-v="ped"]', ic:'clip', t:'Pedidos', d:'Si hace falta un profesional, acá recibís los presupuestos, elegís el turno y hablás con el prestador por chat.'},
-    {sel:'#nav [data-v="casa"]', ic:'home', t:'Mi casa', d:'El historial de todo lo que arreglaste, el mantenimiento recomendado para cada temporada y las ferreterías cerca tuyo.'},
-    {sel:'#hpill', ic:'chat', t:'Tus consultas', d:'Cada problema nuevo que le contás a Handy usa una consulta. Hablar del mismo problema no gasta más. Tocá acá para sumar.'},
-    {sel:'#nav [data-v="per"]', ic:'user', t:'Tu perfil', d:'Tus datos, tu foto y los ajustes de la cuenta. Desde ahí también podés volver a ver este tutorial.'},
-    {t:'¡Listo!', d:'Handy te está esperando. Contale qué pasa en tu casa.', logo:true, last:'Empezar'}
+    {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Te acompaño a entender qué le pasa a tu casa y a resolverlo. Dame un minuto y te muestro todo.', tab:'chat'},
+    {sel:'#nav [data-v="chat"]', tab:'chat', ic:'chat', lbl:'Handy', t:'Acá charlamos', d:'Contame qué se rompió con texto, una foto o un audio. Si es seguro, te guío paso a paso. Si no, te freno y te conecto con un profesional.'},
+    {sel:'#nav [data-v="ped"]', tab:'ped', ic:'clip', lbl:'Arreglos', t:'Tus arreglos', d:'Acá quedan los que están en curso con sus presupuestos, los que ya resolviste y los profesionales que contrataste.'},
+    {sel:'#nav [data-v="casa"]', tab:'casa', ic:'home', lbl:'Mi casa', t:'Tu casa, al día', d:'Cada temporada te dejo acá los arreglos que conviene hacer y por qué. También tenés las herramientas básicas y las ferreterías cerca.'},
+    {sel:'#hpill', ic:'chat', lbl:'Consultas', t:'Tus consultas', d:'Cada problema nuevo que me contás usa una consulta. Seguir hablando del mismo problema, o preguntarme cómo usar la app, no gasta.'},
+    {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Tus datos, tu foto y los ajustes. Y si te perdés en la app, preguntame a mí, por ejemplo “¿dónde cambio mi foto?”, y te llevo.'},
+    {t:'Listo, te espero acá', d:'Cuando quieras, contame qué pasa en tu casa.', tab:'chat', last:'Empezar'}
   ],
   p:[
-    {t:'¡Bienvenido a HandyGo!', d:'Te muestro en un minuto cómo recibir trabajos con el problema ya explicado.', logo:true},
-    {sel:'#nav [data-v="ped"]', ic:'inbox', t:'Pedidos nuevos', d:'Te llegan los pedidos de tu rubro y tu zona, con el resumen del caso armado por Handy. Desde ahí mandás tu presupuesto.'},
-    {sel:'#nav [data-v="trab"]', ic:'clip', t:'Trabajos', d:'Seguí tus presupuestos y trabajos, y hablá con cada cliente por chat. Cuando terminás, marcalo como terminado.'},
-    {sel:'#nav [data-v="agenda"]', ic:'cal', t:'Agenda', d:'Marcá qué días y horarios trabajás. Los clientes eligen el turno según tu disponibilidad.'},
-    {sel:'#hpill', ic:'check', t:'Disponible', d:'Tocá acá para pausar los pedidos nuevos cuando no podés tomar trabajos.'},
-    {sel:'#nav [data-v="per"]', ic:'user', t:'Tu perfil', d:'Tu foto, tu matrícula, tus especialidades y fotos de trabajos. Un perfil completo genera más confianza.'},
-    {t:'¡Listo!', d:'Ya podés empezar a recibir pedidos.', logo:true, last:'Empezar'}
+    {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Charlo con los clientes para entender el problema y te lo paso ordenado, así no arrancás de cero. Te muestro cómo funciona.', tab:'ped'},
+    {sel:'#nav [data-v="ped"]', tab:'ped', ic:'inbox', lbl:'Pedidos nuevos', t:'Pedidos de tu zona', d:'Te llegan los pedidos de tu rubro con el resumen que armo yo: qué pasa, fotos, qué tipo de vivienda es y qué tocó el cliente. Desde ahí mandás tu presupuesto.'},
+    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'clip', lbl:'Trabajos', t:'Tus trabajos', d:'Seguís tus presupuestos y trabajos, y hablás con cada cliente. Cuando terminás, lo marcás como terminado.'},
+    {sel:'#nav [data-v="agenda"]', tab:'agenda', ic:'cal', lbl:'Agenda', t:'Tu agenda', d:'Marcá qué días y horarios trabajás. Los clientes eligen el turno según tu disponibilidad.'},
+    {sel:'#hpill', ic:'check', lbl:'Disponible', t:'Pausar pedidos', d:'Tocá acá cuando no puedas tomar trabajos nuevos.'},
+    {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Tu matrícula, tu zona, el trabajo mínimo, el precio de la visita y fotos de trabajos. Un perfil completo genera más confianza.'},
+    {t:'Listo', d:'Te aviso cuando entre un pedido para vos.', tab:'ped', last:'Empezar'}
   ]
 };
 function startTour() {
@@ -1258,9 +1311,12 @@ function startTour() {
 }
 function tourStep() {
   const el = $('#tour'); if (!el) return;
-  const st = TOUR_STEPS[TOUR_I], dev = $('#device').getBoundingClientRect(), hole = el.querySelector('.hole'), card = el.querySelector('.tcard');
+  const st = TOUR_STEPS[TOUR_I];
+  // Handy te lleva a cada sección mientras te la explica
+  if (st.tab && (V.tab !== st.tab || V.job || V.casa || V.edit)) { V.tab = st.tab; V.job = null; V.casa = null; V.edit = false; NEXT_ANIM = 'fade'; render(); }
+  const dev = $('#device').getBoundingClientRect(), hole = el.querySelector('.hole'), card = el.querySelector('.tcard');
   const tg = st.sel && document.querySelector(st.sel);
-  card.innerHTML = `<div class="ti">${st.logo ? MARK.replace('class="mark"', '') : `<span class="ic">${ico(st.ic)}</span>`}<h3>${st.t}</h3></div><p>${st.d}</p>
+  card.innerHTML = `<div class="ti">${MARK.replace('class="mark"', '')}<div style="min-width:0"><span class="who2">Handy${st.lbl ? ` · <span class="lbl">${ico(st.ic)} ${st.lbl}</span>` : ''}</span><h3>${st.t}</h3></div></div><p>${st.d}</p>
     <div class="tfoot"><div class="dots">${TOUR_STEPS.map((x, i) => `<i class="${i === TOUR_I ? 'on' : ''}"></i>`).join('')}</div>
     ${st.last ? '' : '<button class="skip" data-a="tourEnd">Saltar</button>'}<button class="btn p sm" data-a="tourNext">${st.last || (TOUR_I ? 'Siguiente' : 'Arrancar')}</button></div>`;
   card.style.top = card.style.bottom = '';
@@ -1286,7 +1342,7 @@ ACT.tourEnd = () => {
 };
 ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'ped'; V.job = null; render(); setTimeout(startTour, 200); };
 window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
-ACT.tab = t => { if (V.tab !== t || V.job || V.edit) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; render(); };
+ACT.tab = t => { if (V.tab !== t || V.job || V.edit || V.casa) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; render(); };
 function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
@@ -1299,8 +1355,8 @@ function render() {
   const u = me(); if (!u) { DB.cur = null; return welcome(); }
   document.body.className = c.t === 'p' ? 'prov' : '';
   $('#top').hidden = false;
-  const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Mis pedidos' : 'Pedidos nuevos', casa:'Mi casa', per:'Perfil', trab:'Mis trabajos', agenda:'Agenda'};
-  $('#ht').textContent = V.job ? (c.t === 'u' ? 'Mi pedido' : 'Pedido') : V.edit ? 'Editar perfil' : (TT[V.tab] || 'HandyGo');
+  const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Arreglos' : 'Pedidos nuevos', casa:'Mi casa', per:'Perfil', trab:'Mis trabajos', agenda:'Agenda'};
+  $('#ht').textContent = V.job ? (c.t === 'u' ? 'Mi arreglo' : 'Pedido') : V.edit ? 'Editar perfil' : (TT[V.tab] || 'HandyGo');
   const inChat = V.tab === 'chat' && !V.job && c.t === 'u';
   const hs = $('#hs'); hs.className = ''; hs.textContent = '';
   const ha = $('#hacts'); ha.hidden = !inChat;
@@ -1327,7 +1383,7 @@ function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML
    ============================================================ */
 function newCase() { CH = {trans:[], ts:Date.now(), h:[], started:false, caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}; }
 // Las consultas se cobran por tema: hablar del mismo problema es gratis; un problema distinto usa 1 consulta.
-function resetTopic() { const lu = (CH.trans || []).filter(x => x.r === 'u').slice(-1); Object.assign(CH, {trans:lu, cid:null, ts:Date.now(), caso:null, rubro:null, hard:false, tut:null, tutObj:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}); }
+function resetTopic() { const lu = (CH.trans || []).filter(x => x.r === 'u').slice(-1); Object.assign(CH, {trans:lu, cid:null, ts:Date.now(), caso:null, rubro:null, hard:false, tut:null, tutObj:null, resp:[], intentos:'', img:null, pend:null, topic:null, hardH:null, insist:0, meanwhile:[], ficha:null, code:code()}); }
 function useCredit(nuevo) {
   const u = me();
   if (u.cr <= 0) {
@@ -1441,14 +1497,14 @@ async function greet() {
   const token = ++GREET_TOKEN, u = me(), nom = esc(first(u.nombre));
   const firstTime = !u.conoceHandy;
   const msgs = firstTime ? [
-    `¡Hola, ${nom}! Soy <b>Handy</b>, el asistente de HandyGo.`,
-    'Estoy para ayudarte con los problemas de todos los días en tu casa: una canilla que gotea, una puerta que roza, una luz que no prende.',
-    'Contame qué pasa con tus palabras, o mandame una foto o un audio. Si lo podés arreglar vos, te explico cómo paso a paso. Si es peligroso o hace falta un profesional, te conecto con uno de confianza.'
+    `Bueno, ${nom}, ya nos conocimos. Acá me vas a encontrar siempre.`,
+    'Contame qué pasa en tu casa con tus palabras, o mandame una foto o un audio: una canilla que gotea, una puerta que roza, una luz que no prende.',
+    'Y si en algún momento no encontrás algo en la app, preguntame a mí.'
   ] : [`Hola de nuevo, ${nom}. Soy Handy. ¿Qué pasa hoy en casa? Contámelo, o mandame una foto o un audio.`];
   const ok = await sayTyped(msgs, token);
   if (!ok) return;
   if (firstTime) { u.conoceHandy = true; save(); }
-  chips([['No sé cómo explicarlo', () => { say('No sé cómo explicarlo', 'u'); themeChips(); }]]);
+  chips([['No sé cómo explicarlo', () => { say('No sé cómo explicarlo', 'u'); themeChips(); }], ['Tengo una duda de la app', () => { say('Tengo una duda de la app', 'u'); say('Dale, preguntame lo que quieras: dónde está algo, cómo funcionan las consultas, cómo pedir un profesional… Esas preguntas no gastan consultas.'); }]]);
 }
 ACT.newCase = () => { GREET_TOKEN++; LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
 ACT.credits = () => {
@@ -1558,18 +1614,66 @@ function sendAudio(blob, audio, dur) {
 ACT.clearPic = clearPic;
 ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImg) return; i.value = ''; i.style.height = 'auto'; go(t, false); syncSend(); };
 
+// La consulta se cobra recién cuando es un problema de la casa (las preguntas sobre la app no gastan)
+function startConsulta() {
+  if (!useCredit(false)) return false;
+  CH.started = true; CH.trans = CH.trans.filter(x => x.r !== 'b' || x.t.indexOf('Hola, ') !== 0); return true;
+}
 function go(txt, isReply) {
   const img = isReply ? null : pendingImg; clearPic();
   LOG().querySelectorAll('.chips').forEach(c => c.remove());
   say((img ? `<img src="${safeImg(img)}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
   const t = (txt || '').toLowerCase();
+  if (!img && !isReply) { const a = appHelp(t); if (a) return answerApp(a.r, a.to); }
   const h = HARD.find(x => x.re.test(t));
-  if (!CH.started) { if (!useCredit(false)) return; CH.started = true; CH.trans = CH.trans.filter(x => x.r !== 'b' || x.t.indexOf('Hola, ') !== 0); }
-  else if (h && !isReply && CH.topic !== 'hard:' + h.rubro) { if (!useCredit(true)) return; resetTopic(); CH.h = []; }
+  // Después de un freno de seguridad, insistir no destraba nada (y no gasta consultas)
+  if (CH.hard && !isReply && INSIST.test(t) && (!h || h.rubro === CH.rubro)) { CH.resp.push(txt); return insist(CH.hardH); }
+  if (!CH.started && me().cr <= 0) { useCredit(false); return; }
+  if (CH.started && h && !isReply && CH.topic !== 'hard:' + h.rubro) { if (!useCredit(true)) return; resetTopic(); CH.h = []; }
   if (img) CH.img = img;
   CH.resp.push(txt || '(foto)');
   if (h) return hardStop(h);
   ai(txt, img, t);
+}
+
+/* ---------- Handy responde sobre la app (sin gastar consultas) ---------- */
+const APP_Q = /d[oó]nde|c[oó]mo (hago|puedo|se|cambio|veo|encuentro|borro|elimino|cierro|sumo|consigo|edito|uso)|qu[eé] (es|son|significa)|para qu[eé]|no (encuentro|entiendo|s[eé]|veo)|se puede|hay forma/;
+const APP_HELP = [
+  {re:/consulta|cr[eé]dito|anuncio|paquete/, r:'Cada problema nuevo que me contás usa 1 consulta; seguir hablando del mismo problema o preguntarme sobre la app no gasta. Las ves arriba a la derecha y en tu Perfil, donde también podés sumar más mirando un anuncio o con un paquete.', to:'consultas'},
+  {re:/foto( de perfil)?|mi nombre|mis datos|editar (el )?perfil|cambiar (mi )?(barrio|zona|usuario)|nombre de usuario/, r:'Tus datos y tu foto los cambiás en Perfil → Editar perfil.', to:'editar'},
+  {re:/contrase[ñn]a|clave/, r:'Si no te acordás la contraseña, en la pantalla de ingreso tocá “Me olvidé la contraseña” y te mandamos un mail para crear una nueva.', to:null},
+  {re:/presupuesto|pedido|profesional|prestador|turno|arreglos?\b/, r:'Todo lo que pediste a un profesional está en Arreglos: ahí ves los presupuestos que te llegan, elegís uno y coordinás el turno. Los que resolviste vos también quedan ahí, en Resueltos.', to:'arreglos'},
+  {re:/ferreter[ií]a|mapa|comprar|d[oó]nde (consigo|compro)/, r:'Las ferreterías cerca tuyo están en Mi casa → Ferreterías cerca, en un mapa. Cuando te paso una guía también te dejo un botón para abrirlo.', to:'ferreterias'},
+  {re:/herramienta/, r:'En Mi casa → Herramientas básicas tenés las herramientas que conviene tener y para qué sirve cada una.', to:'herramientas'},
+  {re:/temporada|mantenimiento|recomend|mi casa/, r:'En Mi casa te dejo los arreglos que conviene hacer en cada temporada y por qué, para que nada te agarre desprevenido.', to:'temporada'},
+  {re:/rese[ñn]a|calific|estrellas/, r:'Cuando un trabajo termina, lo marcás como terminado desde Arreglos y ahí podés dejar tu reseña al profesional.', to:'arreglos'},
+  {re:/tutorial|c[oó]mo funciona|c[oó]mo se usa|para qu[eé] sirve (la app|handygo)/, r:'Te muestro de nuevo cómo funciona la app, en un minuto.', to:'tutorial'},
+  {re:/cerrar sesi[oó]n|salir de la cuenta|eliminar (mi )?cuenta|borrar (mi )?cuenta|t[eé]rminos|privacidad/, r:'Eso está en Perfil, abajo de todo, en Ajustes.', to:'ajustes'},
+  {re:/modo oscuro|tema oscuro|colores/, r:'La app usa el modo claro u oscuro según cómo tengas configurado tu teléfono.', to:null},
+  {re:/qui[eé]n sos|qu[eé] sos|handy/, r:'Soy Handy, el asistente de HandyGo. Te ayudo a entender qué le pasa a tu casa, te guío para arreglarlo cuando es seguro y, si hace falta, te conecto con un profesional.', to:null}
+];
+function appHelp(t) {
+  if (!t || !APP_Q.test(t) && !/\b(la app|handygo|aplicaci[oó]n)\b/.test(t)) return null;
+  if (HARD.some(x => x.re.test(t))) return null;
+  return APP_HELP.find(x => x.re.test(t)) || null;
+}
+const DEST_LBL = {chat:'Ir al chat', arreglos:'Ir a Arreglos', casa:'Ir a Mi casa', temporada:'Ver arreglos de temporada', herramientas:'Ver herramientas', ferreterias:'Ver ferreterías cerca',
+  perfil:'Ir a Perfil', editar:'Editar perfil', consultas:'Ver mis consultas', ajustes:'Ir a Ajustes', tutorial:'Ver el tutorial'};
+function goTo(d) {
+  V.job = null; V.edit = false;
+  if (d === 'arreglos') { V.tab = 'ped'; NEXT_ANIM = 'fade'; return render(); }
+  if (['casa', 'temporada', 'herramientas', 'ferreterias'].includes(d)) { V.tab = 'casa'; V.casa = d === 'casa' ? null : d; NEXT_ANIM = 'fade'; return render(); }
+  if (d === 'perfil' || d === 'ajustes') { V.tab = 'per'; NEXT_ANIM = 'fade'; render(); if (d === 'ajustes') setTimeout(() => { const el = $('.settings'); if (el) el.scrollIntoView({behavior:'smooth', block:'center'}); }, 250); return; }
+  if (d === 'editar') { V.tab = 'per'; return ACT.edit(); }
+  if (d === 'consultas') return ACT.credits();
+  if (d === 'tutorial') return ACT.tourAgain();
+  V.tab = 'chat'; render();
+}
+ACT.goTo = goTo;
+function answerApp(r, to) {
+  logTrans('k', 'Pregunta sobre la app');
+  say(esc(r));
+  if (to && DEST_LBL[to]) chips([[DEST_LBL[to], () => goTo(to), 'p']]);
 }
 
 /* ---------- IA ---------- */
@@ -1601,6 +1705,7 @@ async function ai(txt, img, t, audio, bub) {
     AI_OK = false; setMode(); CH.h.pop();
     clearTimeout(AI_RETRY); AI_RETRY = setTimeout(() => { AI_OK = null; setMode(); }, 60000);
     if (audio) { say('Ahora no me puedo conectar para escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
+    if (!CH.started && !startConsulta()) return;
     say('Ahora no me puedo conectar con la IA, así que te ayudo con mis guías revisadas.', 'sys', false);
     rules(t, img);
   }
@@ -1615,6 +1720,11 @@ function handleAI(r, t) {
     const h = tx && HARD.find(x => x.re.test(tx.toLowerCase()));
     if (h && !r.riesgo) { CH.h.push({role:'assistant', text:'(freno de seguridad)'}); return hardStop(h); }
   }
+  if (r.estado === 'app') { CH.h.pop(); CH.resp.pop(); return answerApp(r.mensaje || 'Eso lo encontrás en tu Perfil.', r.ir_a); }
+  if (r.estado === 'fuera_de_tema' && !CH.started) { CH.h.pop(); CH.resp.pop(); return say(esc(r.mensaje || 'Puedo ayudarte con problemas de tu casa o con dudas sobre la app.')); }
+  if (!CH.started && !startConsulta()) { CH.h.pop(); CH.resp.pop(); return; }
+  // Si ya hubo un freno de seguridad en este tema, nunca se pasa a dar pasos
+  if (CH.hard && !r.tema_nuevo && r.estado === 'guiar') { CH.h.push({role:'assistant', text:'(mantengo el freno de seguridad)'}); return insist(CH.hardH); }
   if (r.tema_nuevo && CH.caso) {
     const last = CH.h[CH.h.length - 1];
     if (!useCredit(true)) { CH.h.pop(); CH.resp.pop(); return; }
@@ -1640,7 +1750,7 @@ function handleAI(r, t) {
       glos:(r.glosario || []).filter(g => g && g.termino && !termsIn(g.termino, tutCtx({n:r.caso, ctx:(CH.resp || []).join(' '), rubro:CH.rubro, steps:r.pasos.map(x => ['', x]), mat:(r.materiales || []).map(([n, a]) => ['', n, a])})).length).map(g => ({n:g.termino, q:g.que_es || '', d:g.donde || '', p:g.imagen || g.termino, s:g.firma || ''}))});
   }
   if (r.estado === 'guiar' && !tut) { say('Para esto no quiero improvisar pasos. Lo mejor es que lo vea un profesional.'); return derivar(); }
-  if (r.estado === 'derivar') { say(msg); return derivar(); }
+  if (r.estado === 'derivar') { say(msg); CH.meanwhile = r.mientras_tanto || []; return derivar(); }
   say(msg);
 }
 
@@ -1665,22 +1775,38 @@ function rules(t, img) {
 }
 
 /* ---------- freno de seguridad ---------- */
+const liList = a => (a || []).map(x => `<li>${esc(x)}</li>`).join('');
 function hardStop(h) {
+  if (!CH.started && !startConsulta()) return;
   logTrans('k', 'Freno de seguridad: ' + h.k);
-  CH.topic = 'hard:' + h.rubro;
+  CH.topic = 'hard:' + h.rubro; CH.hardH = h; CH.insist = 0;
   CH.hard = true; CH.caso = CH.caso || h.k; CH.rubro = h.rubro; CH.intentos = 'Ninguno · derivado por seguridad, sin pasos';
+  const t = (CH.resp || []).join(' ').toLowerCase(), smell = h.rubro === 'Gas' && GAS_SMELL.test(t);
+  if (smell) block(`<div class="sos" role="alert"><h4>${ico('alert')} Si huele a gas, hacé esto ya</h4>
+    <ol><li>Cerrá la llave de paso del gas.</li><li>Abrí puertas y ventanas.</li><li>No prendas ni apagues luces ni aparatos, y no enciendas fuego.</li><li>Salí del lugar y llamá desde afuera.</li></ol>
+    <div class="row"><a class="btn p" href="tel:911">${ico('phone')} Emergencias 911</a><a class="btn" href="tel:100">${ico('phone')} Bomberos 100</a></div>
+    <p class="small">También podés llamar a la línea de emergencias de tu distribuidora de gas: está en tu factura. Si alguien tiene dolor de cabeza, mareos o náuseas, salgan al aire libre y llamen al SAME (107).</p></div>`);
   block(`<div class="stop" role="alert"><div class="stripe"></div><div class="in">
     <h4>${ico('alert')} Frená acá</h4>
     <p><b>${esc(h.k)}.</b> No te voy a dar pasos para hacerlo por tu cuenta.</p>
     <p>${esc(h.why)}</p>
-    <div class="now">${esc(h.now || 'Ante cualquier riesgo, alejate de la zona y cortá la llave general.')}</div>
-    <div class="rule">${esc(h.rule || '')}</div></div></div>`);
+    ${smell ? '' : `<div class="now">${esc(h.now || 'Ante cualquier riesgo, alejate de la zona y cortá la llave general.')}</div>`}
+    ${h.signs ? `<h5>Señales de que es urgente</h5><ul>${liList(h.signs)}</ul>` : ''}
+    ${h.safe ? `<h5>Lo que sí podés mirar sin riesgo</h5><ul>${liList(h.safe)}</ul>` : ''}
+    ${(h.meanwhile || []).length ? `<h5>Mientras tanto</h5><ul>${liList(h.meanwhile)}</ul>` : ''}
+    <div class="rule">${esc(h.rule || '')} Lo que te digo es una orientación: ante la duda, siempre conviene que lo vea un profesional.</div></div></div>`);
+  CH.meanwhile = h.meanwhile || [];
   const lbl = `Pedir un ${h.rubro === 'Gas' ? 'gasista matriculado' : h.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}`;
-  chips([[lbl, () => { say(lbl, 'u'); derivar(); }, 'p'], ['Igual quiero hacerlo yo', () => insist(h)]]);
+  chips([[lbl, () => { say(lbl, 'u'); derivar(); }, 'p'], ['Igual quiero hacerlo yo', () => insist(h, true)]]);
 }
-function insist(h) {
-  say('Igual quiero hacerlo yo', 'u');
-  say('Te entiendo, pero en este caso no te voy a dar instrucciones: el riesgo para vos y para tu casa es alto. Lo que sí puedo hacer es armarte el resumen para que el profesional llegue sabiendo qué pasa y te cobre solo lo necesario.');
+function insist(h, fromChip) {
+  h = h || CH.hardH || {};
+  if (fromChip) say('Igual quiero hacerlo yo', 'u');
+  CH.insist = (CH.insist || 0) + 1;
+  logTrans('k', 'Insistió en hacerlo por su cuenta · Handy mantuvo el freno');
+  say(CH.insist === 1
+    ? 'Te entiendo, pero en este caso no te voy a dar instrucciones: el riesgo para vos y para tu casa es alto. Lo que sí puedo hacer es armarte el resumen para que el profesional llegue sabiendo qué pasa y te cobre solo lo necesario.'
+    : `Sé que no es lo que querés escuchar, y no es por desconfiar de vos: ${h.rubro === 'Gas' ? 'con el gas, un error puede afectarte a vos y a tus vecinos' : h.rubro === 'Electricidad' ? 'con la electricidad, un error puede terminar en una descarga o un incendio' : 'un arreglo superficial puede esconder un problema más grande'}. Fijate en lo que sí podés mirar sin riesgo, y si querés te armo el pedido.`);
   chips([['Armar el resumen y pedir presupuesto', () => { say('Armar el resumen y pedir presupuesto', 'u'); derivar(); }, 'p']]);
 }
 
@@ -1704,9 +1830,11 @@ function showTut(tut) {
      <div class="row" style="margin-bottom:12px"><span class="tag v">${tut.lvl}</span><span class="tag">≈ ${tut.min} min</span><span class="tag">${tut.steps.length} pasos</span></div>
      <div class="prog"><i></i></div></div>
    ${piezasHTML(tut)}
-   <ol class="steps">${tut.steps.map(([ic, tx], i) => `<li><span class="ic">${ico(ic)}</span><label><span class="n num">${String(i + 1).padStart(2, '0')}</span><span class="t">${linkTerms(tx, tut)}</span><input type="checkbox" aria-label="Paso ${i + 1} hecho"></label></li>`).join('')}</ol>
+   <ol class="steps">${tut.steps.map(([ic, tx], i) => `<li><span class="ic">${ico(ic)}</span><label><span class="n num">${String(i + 1).padStart(2, '0')}</span><span class="t">${linkTerms(tx, tut)}</span><input type="checkbox" aria-label="Paso ${i + 1} hecho"></label><button class="stuck" data-a="stuck" data-v="${i}" aria-label="Me trabé en el paso ${i + 1}">¿Te trabaste?</button></li>`).join('')}</ol>
    ${tut.alert ? `<div class="warn">⚠ ${esc(tut.alert)}</div>` : ''}
-   <div class="ft">${tut.mat && tut.mat.length ? '' : '<span class="hint" style="margin:0">No hace falta comprar nada especial.</span>'}<button class="btn sm" data-a="tab" data-v="mat" ${tut.mat && tut.mat.length ? '' : 'hidden'}>${ico('box')} Ver materiales y ferreterías cerca</button></div></div>`);
+   <div class="ft">${tut.mat && tut.mat.length ? '' : '<span class="hint" style="margin:0">No hace falta comprar nada especial.</span>'}
+    <div class="row" style="flex-wrap:nowrap">${tut.mat && tut.mat.length ? `<button class="btn sm" style="flex:1" data-a="tab" data-v="mat">${ico('box')} Ver materiales</button>` : ''}<button class="btn sm" style="flex:1" data-a="ferre" data-v="chat">${ico('pin')} Ferreterías cerca</button></div>
+    <span class="hint" style="margin:0">Es una guía orientativa: si algo no coincide con lo que ves, frená y preguntame.</span></div></div>`);
   const box = b.querySelector('.tut');
   loadTermImgs(box);
   box.addEventListener('click', e => { if (e.target.closest('button.term')) e.preventDefault(); }, true);
@@ -1715,8 +1843,17 @@ function showTut(tut) {
     box.querySelectorAll('li').forEach((li, i) => li.classList.toggle('done', all[i].checked));
     box.querySelector('.prog i').style.width = (done.length / all.length * 100) + '%';
   });
+  if (tut.mat && tut.mat.length) say(`Abajo de la guía te dejé <b>la lista de materiales</b>, con el nombre exacto para pedirlos en la ferretería. Si no los tenés, tocá <b>Ferreterías cerca</b> y te muestro en un mapa las que tenés a mano.`);
+  else say(`Para esto no hace falta comprar nada. Si te falta alguna herramienta, en <b>Ferreterías cerca</b> te muestro en un mapa las que tenés a mano.`);
   chips([['Lo resolví', () => resolved(), 'p'], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
 }
+// "¿Te trabaste?": deja el paso cargado en el chat para preguntarle a Handy
+ACT.stuck = i => {
+  const t = CH.tutObj && CH.tutObj.steps[+i]; if (!t) return;
+  const inp = chatEl && chatEl.querySelector('#inp'); if (!inp) return;
+  inp.value = `Me trabé en el paso ${+i + 1} (“${t[1]}”): `; inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+  inp.dispatchEvent(new Event('input', {bubbles:true}));
+};
 const GLOS = [{"id": "lavandina", "n": "Lavandina diluida", "a": ["lavandina"], "q": "Es la lavandina común mezclada con agua: 1 parte de lavandina y 3 de agua. Mata los hongos sin dañar la pintura.", "d": "En el supermercado. Nunca la mezcles con vinagre ni con otros limpiadores."}, {"id": "rodillo", "n": "Rodillo de la persiana", "a": ["rodillo de arriba", "rodillo"], "q": "Es el tubo que está arriba de la ventana, adentro de la caja de la persiana, donde se enrolla.", "d": "Arriba de la ventana, detrás de una tapa (el cajón de la persiana).", "ctx": "persiana|cortina de enrollar|enrollador"}, {"id": "llave_paso", "n": "Llave de paso", "a": ["llaves? de paso"], "q": "Es la canilla que corta el agua que llega a un baño, a la cocina o a toda la casa. Mientras está cerrada, podés desarmar sin que salga agua.", "d": "Suele estar en la pared cerca del inodoro o de la bacha, abajo de la mesada, o junto al medidor de agua. Tiene una manija redonda o una palanca."}, {"id": "bacha", "n": "Bacha", "a": ["bachas?", "pileta del baño"], "q": "Es la pileta donde te lavás las manos o los platos.", "d": "En el baño o en la cocina, debajo de la canilla."}, {"id": "rejilla", "n": "Rejilla", "a": ["rejillas?"], "q": "Es la tapita con agujeros que cubre un desagüe para que no se vayan cosas por el caño.", "d": "En el fondo de la bacha, en el piso del baño o de la ducha.", "ctx": "bacha|pileta|ducha|desag|baño|cocina|olor|cloaca|tapad|piso"}, {"id": "manija", "n": "Manija de la canilla", "a": ["manijas?"], "q": "Es la parte que girás para abrir o cerrar el agua.", "d": "Arriba de la canilla. A veces tiene una tapita de color (roja o azul) que tapa un tornillo.", "ctx": "canilla|grifo|ducha|agua|gotea|cuerito"}, {"id": "cuerito", "n": "Cuerito", "a": ["cueritos?"], "q": "Es una arandela de goma que está adentro de la canilla. Cuando se gasta, la canilla gotea aunque esté cerrada.", "d": "Adentro de la canilla, en la punta de la pieza que sale al desarmarla. Es negro y del tamaño de una moneda chica."}, {"id": "llave_francesa", "n": "Llave francesa", "a": ["llaves? francesas?", "llaves? inglesas?"], "q": "Es una llave de metal que se abre y se cierra con una ruedita para agarrar tuercas de distintos tamaños.", "d": "En cualquier ferretería. Con una de 8 pulgadas alcanza para casi todo en la casa."}, {"id": "tuerca", "n": "Tuerca", "a": ["tuercas?"], "q": "Es la pieza de seis lados con un agujero con rosca, que se enrosca para ajustar dos partes.", "d": "En canillas, caños y muebles. Se aflojan girando hacia la izquierda."}, {"id": "cisterna", "n": "Cisterna o mochila", "a": ["cisternas?", "mochilas?"], "q": "Es el tanque del inodoro que guarda el agua para cuando tirás la cadena.", "d": "Es la caja de loza que está atrás del inodoro o colgada arriba. La tapa se levanta con cuidado."}, {"id": "flotante", "n": "Flotante", "a": ["flotantes?"], "q": "Es la pieza que flota en el agua de la mochila. Cuando sube, corta la entrada de agua. Si se rompe, el agua corre todo el tiempo.", "d": "Adentro de la mochila, del lado donde entra el caño. Es una boya de plástico, redonda o alargada.", "ctx": "inodoro|mochila|cisterna|ba[ñn]o"}, {"id": "teflon", "n": "Cinta de teflón", "a": ["cintas? de tefl[oó]n", "tefl[oó]n"], "q": "Es una cinta blanca, finita, que se enrolla en las roscas para que no pierdan agua.", "d": "Viene en rollitos chicos en cualquier ferretería. Se enrolla en el sentido de la rosca."}, {"id": "rebalse", "n": "Tubo de rebalse", "a": ["tubos? de rebalse"], "q": "Es un caño vertical adentro de la mochila. Si el agua sube de más, se va por ahí al inodoro.", "d": "Adentro de la mochila, en el medio. Es el tubo abierto arriba."}, {"id": "sifon", "n": "Sifón", "a": ["sif[oó]n(es)?", "caño en forma de u"], "q": "Es el caño con forma de U que está debajo de la pileta. Guarda un poco de agua para que no suba olor de la cloaca, y ahí se juntan las cosas que tapan.", "d": "Debajo de la bacha o de la pileta de la cocina, adentro del mueble."}, {"id": "junta", "n": "Junta", "a": ["juntas? de goma", "las juntas", "juntas?", "la junta"], "q": "Es un aro de goma que va entre dos piezas para que no pierdan agua.", "d": "Adentro de las tuercas del sifón, de la ducha o de las mangueras.", "ctx": "canilla|sif[oó]n|ducha|manguera|caño|p[eé]rdida|gotea|flexible|tuerca|rosca|agua"}, {"id": "flor_ducha", "n": "Flor de la ducha", "a": ["flor(es)? de la ducha", "regadera"], "q": "Es la parte de arriba de la ducha, con los agujeritos por donde sale el agua.", "d": "Arriba, en la punta del caño de la ducha. Se desenrosca girando hacia la izquierda."}, {"id": "sarro", "n": "Sarro", "a": ["sarro"], "q": "Son las manchas blancas y duras que deja el agua con el tiempo. Tapan los agujeritos y bajan la presión.", "d": "En la flor de la ducha, en la punta de las canillas y en las pavas."}, {"id": "bisagra", "n": "Bisagra", "a": ["bisagras?"], "q": "Es la pieza de metal que une la puerta con el marco y deja que gire.", "d": "En el costado de la puerta, del lado que no tiene picaporte. Suele haber dos o tres.", "ctx": "puerta(?! de (la )?(alacena|mueble|placard))|roza|marco|cerrar la puerta", "neg": "alacena|placard|mueble|bajo mesada|ropero|vajillero|puertita"}, {"id": "cola", "n": "Cola vinílica", "a": ["cola vin[ií]lica", "cola de carpinter[oó]", "con cola", "palillos? con cola"], "q": "Es un pegamento blanco para madera. Se seca transparente.", "d": "En ferreterías y librerías, en pomos o potes."}, {"id": "lija", "n": "Lija", "a": ["lijas?", "lij[aá]"], "q": "Es un papel áspero que se frota para gastar y alisar madera, pared o pintura. El número indica qué tan gruesa es: 80 gruesa, 220 fina.", "d": "En ferreterías, por hoja."}, {"id": "termica", "n": "Térmica (tablero)", "a": ["t[eé]rmicas?", "tablero"], "q": "Es la palanquita que corta la luz de una parte de la casa. Si la bajás, en ese sector no hay corriente.", "d": "En el tablero eléctrico: una cajita con tapa, cerca de la entrada o de la cocina. Cada palanquita suele tener escrito qué sector corta."}, {"id": "buscapolo", "n": "Buscapolo", "a": ["buscapolos?"], "q": "Es un destornillador con una lucecita. Si lo apoyás en un enchufe y se prende, hay corriente: no toques.", "d": "En cualquier ferretería. Es barato y conviene tenerlo siempre."}, {"id": "frente_enchufe", "n": "Frente del enchufe", "a": ["el frente", "frente del enchufe"], "q": "Es la tapa de plástico que se ve del enchufe. Atrás están los cables y los tornillos.", "d": "En la pared. Se saca aflojando uno o dos tornillos, con la térmica bajada.", "ctx": "enchufe|tomacorriente|toma"}, {"id": "portalamparas", "n": "Portalámparas", "a": ["portal[aá]mparas"], "q": "Es la pieza donde se enrosca la lámpara.", "d": "Colgando del techo o adentro de la lámpara de mesa."}, {"id": "rosca", "n": "Rosca de la lámpara", "a": ["rosca e27", "e27", "e14"], "q": "Es la parte de metal que se enrosca. Las comunes son E27 (gruesa) y E14 (fina): tenés que comprar la misma.", "d": "En la base de la lámpara. Llevá la vieja a la ferretería para comparar.", "ctx": "l[aá]mpara|lamparita|foco|portal"}, {"id": "rueditas", "n": "Ruedas de la silla", "a": ["ruedas?", "rueditas?"], "q": "Son las ruedas giratorias de la silla de oficina. Se sacan tirando fuerte: están encastradas a presión.", "d": "Abajo de la silla, en las puntas de la base con forma de estrella.", "ctx": "silla"}, {"id": "eje", "n": "Eje de la rueda", "a": ["ejes?"], "q": "Es la varita de metal en el medio de la rueda, sobre la que gira. Ahí se enredan pelos y pelusas.", "d": "En el centro de cada rueda.", "ctx": "rueda|silla"}, {"id": "lubricante", "n": "Lubricante en aerosol", "a": ["lubricantes?", "wd-?40"], "q": "Es un spray que hace que las piezas giren o se deslicen sin trabarse.", "d": "En ferreterías y estaciones de servicio, por ejemplo WD-40."}, {"id": "trincheta", "n": "Trincheta", "a": ["trinchetas?", "c[uú]ter"], "q": "Es un cúter con hoja que se desliza. Sirve para cortar cinta, silicona o pelusa.", "d": "En librerías y ferreterías."}, {"id": "guias", "n": "Guías o rieles del cajón", "a": ["gu[ií]as?", "riel(es)?"], "q": "Son las piezas de metal a los costados del cajón por donde corre.", "d": "Adentro del mueble, a los costados del cajón. Se ven al sacarlo.", "ctx": "caj[oó]n|cajones"}, {"id": "silicona_aer", "n": "Silicona en aerosol", "a": ["silicona en aerosol"], "q": "Es un spray que deja una capa resbaladiza. No mancha como el aceite.", "d": "En ferreterías y casas de repuestos."}, {"id": "allen", "n": "Llave Allen", "a": ["llaves? allen"], "q": "Es una llave de metal con forma de L y seis lados, para tornillos con agujero hexagonal (muy común en muebles para armar).", "d": "Suele venir con los muebles. Si no, se venden en juegos."}, {"id": "regaton", "n": "Regatón", "a": ["regat[oó]n(es)?", "fieltros?"], "q": "Es una tapita de goma o fieltro que va en la punta de las patas. Protege el piso y nivela.", "d": "En ferreterías, en bolsitas. Hay que medir el grosor de la pata."}, {"id": "escuadra", "n": "Escuadra metálica", "a": ["escuadras?"], "q": "Es una pieza de metal en forma de L con agujeros, que refuerza una unión de madera.", "d": "En ferreterías, con sus tornillos."}, {"id": "nivel", "n": "Nivel", "a": ["un nivel"], "q": "Es una regla con una burbuja adentro. Cuando la burbuja queda en el medio, está derecho.", "d": "En ferreterías. También hay apps de nivel en el celular."}, {"id": "mecha", "n": "Mecha de widia", "a": ["mechas?", "widia"], "q": "Es la punta del taladro que hace el agujero. La de widia tiene la punta más ancha y sirve para pared de ladrillo.", "d": "Se compra por número: la número 6 va con el tarugo número 6."}, {"id": "taladro", "n": "Taladro", "a": ["taladros?", "perfor[aá]"], "q": "Es la herramienta eléctrica que hace agujeros en la pared o la madera.", "d": "Si no tenés, se puede pedir prestado o alquilar en ferreterías."}, {"id": "tarugo", "n": "Tarugo", "a": ["tarugos?"], "q": "Es un taquito de plástico que va adentro del agujero de la pared. Al meter el tornillo, se abre y queda firme.", "d": "En ferreterías, con el número del agujero: tarugo del 6 para mecha del 6.", "ctx": "pared|taladr|colgar|agujero|cuadro|estante|repisa|espejo|barral|mecha"}, {"id": "sopapa", "n": "Sopapa", "a": ["sopapas?"], "q": "Es una ventosa de goma con un palo. Al empujar y tirar, destapa el inodoro o la pileta.", "d": "En ferreterías y supermercados. Para inodoro, mejor la de fuelle."}, {"id": "pistola", "n": "Pistola de silicona", "a": ["silicona ac[eé]tica", "silicona antihongos", "pistola"], "q": "Es un aplicador donde se pone el cartucho de silicona para sacar un cordón parejo.", "d": "En ferreterías, junto con los cartuchos de silicona."}, {"id": "cinta_papel", "n": "Cinta de papel", "a": ["cintas? de papel", "cinta de enmascarar"], "q": "Es una cinta que se despega fácil y no deja marca. Sirve para que la silicona o la pintura queden prolijas.", "d": "En ferreterías y librerías."}, {"id": "junta_bano", "n": "Junta de la bañera", "a": ["la junta"], "q": "Es la línea entre la bañera (o la bacha) y los azulejos, que se sella con silicona para que no pase agua.", "d": "En el borde donde la bañera toca la pared.", "ctx": "ba[ñn]era|silicona|ducha|bacha|azulejo"}, {"id": "burlete", "n": "Burlete", "a": ["burletes?"], "q": "Es una tira de goma o espuma autoadhesiva que tapa el espacio entre la ventana y el marco para que no entre aire.", "d": "Se pega en el marco de la ventana o de la puerta.", "ctx": "ventana|chiflete|aire que entra|corriente de aire|puerta de calle|puerta de entrada|marco", "neg": "heladera|freezer|lavarropas"}, {"id": "grafito", "n": "Grafito en polvo", "a": ["grafito"], "q": "Es un polvo negro que lubrica las cerraduras sin juntar tierra como el aceite.", "d": "En ferreterías y cerrajerías, en un tubito con pico."}, {"id": "pestillo", "n": "Pestillo", "a": ["pestillos?"], "q": "Es la lengüeta de metal que sale de la puerta y entra en el marco para que quede cerrada.", "d": "En el canto de la puerta, al lado del picaporte."}, {"id": "enduido", "n": "Enduido", "a": ["enduidos?"], "q": "Es una pasta blanca para tapar agujeros chicos y grietas finitas en la pared antes de pintar.", "d": "En ferreterías y pinturerías, en potes."}, {"id": "espatula", "n": "Espátula", "a": ["esp[aá]tulas?"], "q": "Es una paleta de metal finita para poner y alisar el enduido.", "d": "En ferreterías y pinturerías."}, {"id": "filtro_lav", "n": "Filtro del lavarropas", "a": ["filtros?"], "q": "Es una pieza que junta pelusas, monedas y cosas de los bolsillos para que no tapen la bomba.", "d": "Abajo, al frente del lavarropas, detrás de una tapita chica.", "ctx": "lavarropas|lavasecarropas|lavadora"}, {"id": "aireador", "n": "Aireador", "a": ["aireador(es)?", "mallita"], "q": "Es la puntita de la canilla con una mallita que mezcla aire con el agua para que no salpique.", "d": "En la punta de la canilla. Se desenrosca a mano.", "ctx": "canilla|grifo|chorro|salpica"}, {"id": "enrollador", "n": "Enrollador de persiana", "a": ["enrollador(es)?"], "q": "Es la cajita en la pared donde se enrolla la cinta de la persiana.", "d": "En la pared al lado de la ventana, a la altura de la mano."}, {"id": "cinta_persiana", "n": "Cinta de persiana", "a": ["cintas? de (la )?persiana", "la cinta (vieja|nueva)"], "q": "Es la tira de tela que tirás para subir y bajar la persiana.", "d": "Sale del enrollador de la pared y sube hasta el rodillo de arriba."}, {"id": "tablillas", "n": "Tablillas", "a": ["tablillas?"], "q": "Son las tiras horizontales que forman la persiana.", "d": "Es la persiana en sí: cada \"listón\" es una tablilla."}, {"id": "destornillador", "n": "Destornillador Phillips y plano", "a": ["destornillador(es)?( phillips| plano)?", "phillips"], "q": "El Phillips tiene la punta en forma de cruz y el plano, una paleta recta. Usá el que coincida con la ranura del tornillo.", "d": "En cualquier ferretería. Conviene tener uno de cada uno."}, {"id": "filtro_aire", "n": "Filtro del aire acondicionado", "a": ["filtros?"], "q": "Son dos mallas plásticas finitas que atrapan el polvo antes de que el aire entre al equipo. Si están sucios, el aire enfría menos, gasta más luz y puede largar olor.", "d": "Adentro del split de la pared: levantás la tapa del frente (se abre hacia arriba) y quedan a la vista. Salen deslizándolos hacia abajo.", "ctx": "aire acondicionado|split|acondicionado|\\baire\\b|fr[ií]o|calor"}, {"id": "unidad_interior", "n": "Unidad interior (split)", "a": ["unidad interior", "splits?", "equipo de adentro"], "q": "Es la parte del aire acondicionado que está adentro de la casa, colgada en la pared. Es la que tira el aire frío o caliente.", "d": "En la pared de la habitación, arriba. Es la caja blanca alargada con aletas abajo."}, {"id": "unidad_exterior", "n": "Unidad exterior", "a": ["unidad exterior", "condensadora", "equipo de afuera", "la parte de afuera"], "q": "Es la caja con ventilador que está afuera de la casa. Saca el calor que el equipo junta adentro.", "d": "En el balcón, la terraza o colgada en la pared exterior. No la abras: tiene electricidad y gas refrigerante.", "ctx": "aire|split|acondicionado"}, {"id": "aletas_aire", "n": "Aletas del aire", "a": ["aletas?", "deflector(es)?", "rejilla de salida"], "q": "Son las paletas que se mueven abajo del split y dirigen el aire hacia arriba, abajo o los costados.", "d": "En la salida de aire, en la parte de abajo del split. Se manejan con el control remoto (botón \"swing\").", "ctx": "aire|split|acondicionado"}, {"id": "desagote_aire", "n": "Manguera de desagote del aire", "a": ["mangueras? de desag[oü]e", "mangueras? de desagote", "el desagote", "drenaje"], "q": "Es una manguerita que saca el agua que el aire acondicionado junta al enfriar. Si se tapa o se dobla, el split gotea dentro de la casa.", "d": "Sale por abajo o por el costado del split y va hacia afuera, a un desagüe o a una maceta.", "ctx": "aire|split|acondicionado|gotea agua del aire"}, {"id": "serpentina_aire", "n": "Serpentina (evaporador)", "a": ["serpentinas?", "evaporador", "panal de aluminio"], "q": "Es el panal de chapitas de aluminio finitas que está detrás de los filtros. Por ahí pasa el aire para enfriarse. Se limpia con espuma especial, nunca con cepillo duro.", "d": "Adentro del split, detrás de los filtros. Las chapitas se doblan fácil: tratala con cuidado.", "ctx": "aire|split|acondicionado"}, {"id": "control_remoto", "n": "Control remoto", "a": ["control remoto", "el control"], "q": "Es el control a pilas que prende el equipo, cambia el modo (frío, calor, deshumidificar) y la temperatura.", "d": "Suele estar en un soporte en la pared. Si no responde, primero probá con pilas nuevas.", "ctx": "aire|split|acondicionado|televi|tele"}, {"id": "filtro_campana", "n": "Filtro de la campana", "a": ["filtros?"], "q": "Es una malla de metal o una lámina que junta la grasa del vapor de la cocina. Si se satura, la campana chupa menos y gotea grasa.", "d": "Abajo de la campana o del extractor, arriba del anafe. Se saca con una trabita o un clip.", "ctx": "campana|extractor|purificador de cocina|grasa|anafe"}, {"id": "filtro_agua", "n": "Filtro de agua (cartucho)", "a": ["filtros?", "cartuchos? del filtro", "cartuchos?"], "q": "Es un cartucho que limpia el agua de la canilla: retiene tierra, cloro y sarro. Pierde efecto con el uso y hay que cambiarlo cada algunos meses.", "d": "Debajo de la mesada, enroscado en la canilla o en una jarra filtrante. Llevá el viejo a la ferretería para comprar el mismo modelo.", "ctx": "purificador|filtro de agua|agua de la canilla|agua potable|agua filtrada|sabor del agua"}, {"id": "filtro_aspiradora", "n": "Filtro de la aspiradora", "a": ["filtros?"], "q": "Es la pieza (de esponja, tela o papel plisado) que atrapa el polvo fino para que no vuelva al aire. Si está tapado, la aspiradora chupa menos.", "d": "Adentro de la aspiradora, junto al depósito de mugre o detrás de una tapa en la parte de atrás.", "ctx": "aspiradora|robot aspirador"}, {"id": "filtro_lavavajillas", "n": "Filtro del lavavajillas", "a": ["filtros?"], "q": "Es un cilindro con malla en el fondo del lavavajillas que junta restos de comida. Si se tapa, los platos salen sucios y queda agua abajo.", "d": "Abajo de todo, adentro del lavavajillas, debajo de la bandeja inferior. Se desenrosca girándolo.", "ctx": "lavavajillas|lavaplatos"}, {"id": "rejilla_vent", "n": "Rejilla de ventilación", "a": ["rejillas? de ventilaci[oó]n", "ventilaciones?"], "q": "Es la rejilla en la pared que deja entrar aire de afuera. En ambientes con artefactos de gas es obligatoria: nunca la tapes.", "d": "En la parte de abajo o de arriba de la pared, en cocina, baño o donde hay estufa o calefón."}, {"id": "manija_puerta", "n": "Picaporte", "a": ["picaportes?", "manijas?"], "q": "Es la manija que bajás para abrir la puerta. Mueve el pestillo que la traba en el marco.", "d": "En la puerta, a la altura de la mano, de los dos lados. Se ajusta con los tornillos de la roseta o con un tornillito allen al costado.", "ctx": "puerta|cerradura|pestillo|marco", "neg": "ventana|caj[oó]n|mueble|alacena"}, {"id": "manija_ventana", "n": "Manija de la ventana", "a": ["manijas?", "cremonas?"], "q": "Es la manija que gira para trabar y destrabar la ventana. En las de abrir se llama cremona.", "d": "En el marco de la hoja de la ventana. Se sujeta con dos tornillos que quedan tapados por una tapita que gira.", "ctx": "ventana|corrediz|aluminio|abertura"}, {"id": "manija_mueble", "n": "Tirador del mueble", "a": ["manijas?", "tirador(es)?"], "q": "Es la manija o perilla de donde tirás para abrir el cajón o la puerta del mueble. Se sujeta con uno o dos tornillos desde adentro.", "d": "En el frente del cajón o de la puerta. El tornillo se ajusta desde la parte de adentro.", "ctx": "caj[oó]n|cajones|mueble|placard|alacena|c[oó]moda|ropero"}, {"id": "junta_ceramica", "n": "Juntas de los cerámicos (pastina)", "a": ["juntas?", "pastina", "las juntas", "la junta"], "q": "Son las líneas finitas entre cerámico y cerámico, rellenas con pastina. Si se ponen negras o se salen, entra agua y aparecen hongos.", "d": "Entre los cerámicos del piso o de la pared. La pastina se compra en pinturerías, del color de la que ya tenés.", "ctx": "cer[aá]mic|azulejo|porcelanato|baldosa|pastina|piso del ba[ñn]o|revestimiento"}, {"id": "burlete_heladera", "n": "Burlete de la heladera", "a": ["burletes?", "goma de la puerta"], "q": "Es la goma con imán alrededor de la puerta de la heladera. Hace que cierre bien y no se escape el frío. Si está roto o sucio, se forma hielo y gasta más.", "d": "En todo el borde interno de la puerta. Se limpia con agua tibia y detergente.", "ctx": "heladera|freezer|refrigerador"}, {"id": "fuelle_lav", "n": "Fuelle del lavarropas", "a": ["fuelles?", "burletes?", "goma de la puerta"], "q": "Es la goma gruesa alrededor de la boca del lavarropas de carga frontal. Ahí se junta agua, pelusa y hongos.", "d": "En la boca del tambor, al abrir la puerta. Doblá el pliegue hacia afuera para limpiarlo.", "ctx": "lavarropas|lavasecarropas|lavadora"}, {"id": "rodillo_pintura", "n": "Rodillo de pintar", "a": ["rodillos?"], "q": "Es la herramienta con un cilindro de lana o espuma que se carga de pintura y se pasa por la pared para pintar parejo y rápido.", "d": "En pinturerías y ferreterías. Para paredes, uno de lana de 22 cm; para esmalte, uno de espuma.", "ctx": "pint|pared|techo|l[aá]tex|enduido|esmalte"}, {"id": "flotante_tanque", "n": "Flotante del tanque de agua", "a": ["flotantes?", "boya"], "q": "Es una boya con una válvula que corta la entrada de agua cuando el tanque está lleno. Si falla, el tanque rebalsa o no se llena.", "d": "Adentro del tanque de agua de la casa, en la terraza o el techo. Si hay que subir alto, mejor que lo haga un plomero.", "ctx": "tanque de agua|tanque|cisterna de la terraza"}, {"id": "bisagra_mueble", "n": "Bisagra de mueble (cazoleta)", "a": ["bisagras?", "cazoletas?"], "q": "Es la bisagra escondida de las puertas de muebles de cocina y placares. Tiene tornillitos para subir, bajar o acercar la puerta.", "d": "Adentro del mueble, del lado de las bisagras. Se ajusta con un destornillador Phillips.", "ctx": "alacena|placard|mueble|puertita|bajo mesada|ropero|vajillero"}, {"id": "rueda_ventana", "n": "Rueditas de la ventana corrediza", "a": ["ruedas?", "rueditas?", "roldanas?"], "q": "Son las ruedas chiquitas en la parte de abajo de la hoja, que corren sobre el riel. Si se gastan o se ensucian, la ventana se traba o hace ruido.", "d": "Abajo de la hoja de la ventana o de la puerta corrediza. Para verlas hay que levantar la hoja y sacarla del riel.", "ctx": "ventana|corrediz|placard|puerta corrediza|mampara"}, {"id": "riel_corrediza", "n": "Riel de la corrediza", "a": ["gu[ií]as?", "riel(es)?"], "q": "Es la canaleta por donde corren las ruedas de la ventana o la puerta corrediza. Si junta tierra, la hoja se traba.", "d": "Abajo (y a veces arriba) del marco. Se limpia con aspiradora y un pincel.", "ctx": "ventana|corrediz|placard|mampara|puerta corrediza"}, {"id": "riel_cortina", "n": "Riel de la cortina", "a": ["gu[ií]as?", "riel(es)?"], "q": "Es el perfil donde se cuelgan y corren los ganchitos de la cortina.", "d": "Arriba de la ventana, atornillado al techo o a la pared.", "ctx": "cortina|barral|rollers?"}, {"id": "tarugo_madera", "n": "Tarugo de madera (espiga)", "a": ["tarugos? de madera", "espigas?", "tarugos?"], "q": "Es un palito de madera cilíndrico con estrías que une dos piezas de un mueble. Va pegado con cola adentro de agujeros.", "d": "En las uniones de sillas, mesas y muebles armados. Se venden en bolsitas por diámetro (6, 8 o 10 mm).", "ctx": "mueble|madera|silla|mesa|cama|encastr|cola vin"}, {"id": "zapatilla_canilla", "n": "Zapatilla de la canilla", "a": ["zapatillas?"], "q": "Es la pieza donde va el cuerito, adentro de la canilla. Al cerrar, aprieta contra el asiento y corta el agua.", "d": "Adentro del cuerpo de la canilla. Se ve al sacar el vástago con la llave francesa.", "ctx": "canilla|grifo|gotea|cuerito"}, {"id": "zapatilla_elec", "n": "Zapatilla eléctrica", "a": ["zapatillas?", "alargues?", "prolongador(es)?"], "q": "Es un alargue con varios enchufes. Si se calienta o tiene marcas negras, no la uses más.", "d": "Conectada a un tomacorriente de la pared. Comprá una con llave y protección, con sello de seguridad.", "ctx": "enchufe|el[eé]ctric|cable|toma|corriente|luz"}, {"id": "cartucho_mono", "n": "Cartucho de la canilla monocomando", "a": ["cartuchos?"], "q": "Es la pieza de adentro de las canillas de una sola palanca. Mezcla agua fría y caliente. Cuando se gasta, la canilla gotea o cuesta mover la palanca.", "d": "Adentro de la canilla, debajo de la palanca. Se compra según la medida (35 o 40 mm): llevá el viejo.", "ctx": "monocomando|canilla de palanca|grifo de palanca"}, {"id": "cartucho_silicona", "n": "Cartucho de silicona", "a": ["cartuchos?"], "q": "Es el tubo de silicona que se pone en la pistola. Se le corta la punta en diagonal para sacar un cordón finito.", "d": "En ferreterías. Para baño y cocina, pedí silicona con antihongos.", "ctx": "silicona|sellador|pistola"}, {"id": "pulsador", "n": "Pulsador del inodoro", "a": ["pulsador(es)?", "bot[oó]n de la mochila", "bot[oó]n de descarga"], "q": "Es el botón que apretás para tirar la cadena. Por abajo mueve la válvula que larga el agua.", "d": "Arriba o al frente de la mochila. En las de embutir, en la pared."}, {"id": "valvula_descarga", "n": "Válvula de descarga", "a": ["v[aá]lvulas? de descarga", "sapitos?", "campana de la mochila"], "q": "Es la pieza en el fondo de la mochila que se levanta para soltar el agua y vuelve a cerrar. Si cierra mal, el agua corre sola.", "d": "Adentro de la mochila, en el medio del fondo.", "ctx": "inodoro|mochila|cisterna"}, {"id": "flexible", "n": "Flexible", "a": ["flexibles?", "manguera flexible", "conexi[oó]n flexible"], "q": "Es el caño mallado que conecta la canilla o la mochila con la llave de paso de la pared. Con los años se oxida y pierde.", "d": "Debajo de la bacha, de la pileta o al costado del inodoro. Se compra por largo (30 o 40 cm)."}, {"id": "tapon", "n": "Tapón de la pileta", "a": ["tap[oó]n(es)?", "sopapa de la pileta"], "q": "Es la pieza que tapa el desagüe de la bacha para juntar agua. Ahí se enganchan pelos y restos que tapan.", "d": "En el fondo de la bacha o de la bañera. Algunos se sacan girándolos.", "ctx": "bacha|pileta|ba[ñn]era|lavatorio"}, {"id": "sonda", "n": "Sonda destapacañerías", "a": ["sondas?", "destapador(es)? de cañer[ií]as?", "cinta destapadora"], "q": "Es un cable de acero flexible y largo que se mete por el caño para empujar o enganchar lo que tapa.", "d": "En ferreterías. Para la casa alcanza una de 5 metros."}, {"id": "vastago", "n": "Vástago de la canilla", "a": ["v[aá]stagos?"], "q": "Es la pieza de bronce que se mueve al girar la manija. En la punta lleva la zapatilla con el cuerito.", "d": "Adentro de la canilla. Se desenrosca con llave francesa después de sacar la manija."}, {"id": "interruptor", "n": "Llave de luz (interruptor)", "a": ["llaves? de luz", "interruptor(es)?", "teclas?"], "q": "Es la tecla de la pared que prende y apaga la luz.", "d": "En la pared, al lado de la puerta, a la altura de la mano."}, {"id": "disyuntor", "n": "Disyuntor (diferencial)", "a": ["disyuntor(es)?", "diferencial(es)?"], "q": "Es la llave del tablero con un botón de prueba. Corta la luz si hay una fuga de corriente y te protege de una descarga.", "d": "En el tablero eléctrico, junto a las térmicas. Tiene un botón que dice \"T\" o \"Test\"."}, {"id": "ficha", "n": "Ficha (enchufe del cable)", "a": ["fichas?", "enchufe macho"], "q": "Es la punta del cable con las patitas de metal que se mete en el tomacorriente.", "d": "En la punta del cable del artefacto. Las nuevas son de tres patas planas.", "ctx": "enchufe|cable|el[eé]ctric|toma|velador"}, {"id": "cinta_aisladora", "n": "Cinta aisladora", "a": ["cintas? aisladoras?", "cinta de aislar"], "q": "Es una cinta plástica negra que cubre empalmes de cables para que no queden metales a la vista.", "d": "En ferreterías y casas de electricidad."}, {"id": "lamparita", "n": "Lamparita LED", "a": ["lamparitas?", "focos?", "bombitas?"], "q": "Es la lámpara que se enrosca. Las LED gastan poco y casi no calientan. Fijate la rosca (E27 gruesa, E14 fina) y la luz: cálida o fría.", "d": "En cualquier ferretería o supermercado. Llevá la vieja para comparar.", "ctx": "l[aá]mpara|luz|portal|velador|ara[ñn]a|plaf[oó]n"}, {"id": "cilindro", "n": "Cilindro de la cerradura (bombín)", "a": ["cilindros?", "bomb[ií]n"], "q": "Es la pieza donde metés la llave. Si se cambia el cilindro, cambian las llaves sin cambiar toda la cerradura.", "d": "En la cerradura, del lado de afuera de la puerta. Se saca aflojando un tornillo largo en el canto de la puerta.", "ctx": "cerradura|llave|puerta"}, {"id": "marco", "n": "Marco de la puerta", "a": ["el marco", "marcos?"], "q": "Es la estructura fija alrededor de la puerta, donde van las bisagras y el agujero del pestillo.", "d": "Rodeando la puerta, amurado a la pared.", "ctx": "puerta|pestillo|bisagra|roza", "neg": "ventana"}, {"id": "marco_ventana", "n": "Marco de la ventana", "a": ["el marco", "marcos?"], "q": "Es la parte fija de la ventana, amurada a la pared. La hoja es la parte que se mueve.", "d": "Rodeando la ventana. Ahí se pegan los burletes.", "ctx": "ventana|chiflete|burlete|vidrio"}, {"id": "felpa", "n": "Felpa de la ventana", "a": ["felpas?"], "q": "Es una tira tipo cepillito que va en los bordes de las ventanas corredizas para frenar el aire y la tierra.", "d": "En los perfiles de la hoja de la ventana corrediza. Se vende por metro."}, {"id": "pincel", "n": "Pincel", "a": ["pincel(es)?", "pinceletas?"], "q": "Sirve para pintar bordes, esquinas y lugares chicos donde no entra el rodillo.", "d": "En pinturerías. Una pinceleta de 2\" alcanza para casi todo."}, {"id": "bandeja_pintura", "n": "Bandeja de pintura", "a": ["bandejas?"], "q": "Es la bandeja con una parte en rampa para cargar el rodillo y sacarle el exceso.", "d": "En pinturerías, junto a los rodillos.", "ctx": "pint|rodillo"}, {"id": "latex", "n": "Pintura látex", "a": ["l[aá]tex"], "q": "Es la pintura al agua para paredes y techos. Se limpia con agua y no tiene olor fuerte.", "d": "En pinturerías. Para baño y cocina, pedí látex con antihongos."}, {"id": "fijador", "n": "Fijador sellador", "a": ["fijador(es)?", "sellador al agua"], "q": "Es un líquido que se pasa antes de pintar para que la pintura agarre pareja y no se chupe la pared.", "d": "En pinturerías. Se diluye con agua según el envase."}, {"id": "masilla_madera", "n": "Masilla para madera", "a": ["masillas?"], "q": "Es una pasta del color de la madera para tapar agujeros, rayones y tornillos.", "d": "En ferreterías y pinturerías, por color (cedro, roble, blanca).", "ctx": "madera|mueble|puerta|marco"}, {"id": "zocalo", "n": "Zócalo", "a": ["z[oó]calos?"], "q": "Es la tira que va al pie de la pared, donde se junta con el piso. Protege la pared de golpes y humedad.", "d": "Abajo de todo, en el borde de la pared. Se pega o se clava.", "ctx": "pared|piso|madera|despegad"}, {"id": "excentrico", "n": "Excéntrico (minifix)", "a": ["exc[eé]ntricos?", "minifix"], "q": "Es la piecita redonda de metal que traba las placas de los muebles armables. Se gira con un destornillador para apretar.", "d": "En los costados de los muebles de melamina, en agujeros redondos."}, {"id": "sargento", "n": "Sargento (prensa)", "a": ["sargentos?", "prensas?"], "q": "Es una prensa que aprieta dos piezas mientras se seca la cola.", "d": "En ferreterías. Para muebles chicos, uno de 30 cm."}, {"id": "bomba_lav", "n": "Bomba de desagote", "a": ["bombas?( de desagote)?"], "q": "Es el motorcito que saca el agua del lavarropas al final del lavado. El filtro la protege de pelusas y monedas.", "d": "Abajo del lavarropas, detrás del filtro. Si zumba y no saca agua, probablemente esté trabada con algo.", "ctx": "lavarropas|lavasecarropas|lavavajillas"}, {"id": "manguera_lav", "n": "Manguera del lavarropas", "a": ["mangueras?( de desagote| de entrada)?"], "q": "Son dos: la de entrada trae agua de la canilla y la de desagote la tira a la pileta o al caño. Si se doblan o se tapan, no carga o no desagota.", "d": "Atrás del lavarropas. La gris o blanca corrugada es la de desagote.", "ctx": "lavarropas|lavasecarropas"}, {"id": "patas_niveladoras", "n": "Patas niveladoras", "a": ["patas? niveladoras?", "patas? regulables?"], "q": "Son las patas que se enroscan o desenroscan para que el artefacto quede derecho y no salte al centrifugar.", "d": "Abajo, en las esquinas del lavarropas o de la heladera."}, {"id": "desagote_heladera", "n": "Desagote de la heladera", "a": ["desagotes?", "orificio de desagote", "canaleta"], "q": "Es el agujerito al fondo de la heladera por donde se va el agua del hielo que se derrite. Si se tapa, se junta agua abajo de los cajones.", "d": "Adentro, en la pared del fondo, abajo de todo. Se destapa con un hisopo o una pajita con agua tibia.", "ctx": "heladera|refrigerador"}, {"id": "serpentina_heladera", "n": "Rejilla de atrás de la heladera", "a": ["serpentinas?", "parrilla de atr[aá]s", "condensador"], "q": "Es la parrilla de caños negros atrás de la heladera que larga el calor. Si junta polvo, la heladera enfría menos.", "d": "Atrás de la heladera. Desenchufala antes de limpiarla con un cepillo suave o la aspiradora.", "ctx": "heladera|refrigerador|freezer"}, {"id": "pinza", "n": "Pinza", "a": ["pinzas?", "alicates?"], "q": "Es una herramienta para agarrar, doblar o cortar alambres y piezas chicas.", "d": "En ferreterías. Una pinza universal sirve para casi todo."}, {"id": "pico_loro", "n": "Pinza pico de loro", "a": ["pico de loro"], "q": "Es una pinza grande que se abre en varias medidas. Sirve para agarrar caños y tuercas grandes, como las del sifón.", "d": "En ferreterías."}, {"id": "martillo", "n": "Martillo", "a": ["martillos?"], "q": "Sirve para clavar clavos y golpear suave para encastrar piezas. El de carpintero tiene uña para sacar clavos.", "d": "En ferreterías."}, {"id": "cinta_metrica", "n": "Cinta métrica", "a": ["cintas? m[eé]tricas?", "metro"], "q": "Es el metro que se enrolla. Sirve para medir antes de comprar o de agujerear.", "d": "En ferreterías. Con una de 5 metros alcanza."}, {"id": "guantes", "n": "Guantes", "a": ["guantes?"], "q": "Protegen las manos de cortes, productos de limpieza y mugre. Para limpieza, de látex; para herramientas, de trabajo.", "d": "En ferreterías y supermercados."}, {"id": "escalera", "n": "Escalera", "a": ["escaleras?", "banqueta"], "q": "Usá una escalera firme, abierta del todo, y no te pares en los últimos escalones. Si podés, que alguien te la sostenga.", "d": "Si no tenés, se puede pedir prestada. Nunca uses una silla con ruedas."}, {"id": "vinagre", "n": "Vinagre de alcohol", "a": ["vinagre"], "q": "Es el vinagre blanco común. Disuelve el sarro de canillas y duchas dejando la pieza en remojo unas horas.", "d": "En el supermercado. Nunca lo mezcles con lavandina."}, {"id": "bicarbonato", "n": "Bicarbonato de sodio", "a": ["bicarbonato"], "q": "Es un polvo blanco que limpia y saca olores. Junto con vinagre ayuda a destapar caños con mugre leve.", "d": "En el supermercado o la farmacia."}, {"id": "arandela", "n": "Arandela", "a": ["arandelas?"], "q": "Es un aro plano de metal o goma que va debajo de una tuerca o un tornillo para repartir la fuerza o sellar.", "d": "En ferreterías, por medida."}, {"id": "barral", "n": "Barral", "a": ["barral(es)?"], "q": "Es el caño de donde se cuelga la cortina. Va sobre dos soportes atornillados a la pared.", "d": "Arriba de la ventana o de la ducha."}, {"id": "hidrofugo", "n": "Hidrófugo", "a": ["hidr[oó]fugos?"], "q": "Es un producto que se mezcla o se pasa para que la pared no absorba agua. Se usa en revoques y paredes con humedad.", "d": "En corralones y pinturerías."}];
 const GLOS_ID = Object.fromEntries(GLOS.map(g => [g.id, g]));
 // Una misma palabra puede ser piezas distintas ("filtro" del aire, del lavarropas, de la campana...).
@@ -1794,45 +1931,92 @@ function resolved() {
   say('Lo resolví', 'u');
   const u = me(); u.resueltos = (u.resueltos || 0) + 1;
   (u.hist = u.hist || []).push({t:'vos', caso:CH.caso || 'Arreglo en casa', rubro:CH.rubro || '', ts:Date.now(), ahorro:BASE[CH.rubro] || 18000}); save();
-  say(`¡Bien ahí! Te ahorraste una visita de ${CH.rubro ? CH.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[CH.rubro] || 18000)}). Lo guardé en <b>Mi casa</b>, en tu historial.`);
-  chips([['Nueva consulta', () => ACT.newCase()]]);
+  const tot = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0), cnt = (u.hist || []).filter(h => h.t === 'vos').length;
+  say(`¡Bien ahí! Lo resolviste vos y te ahorraste una visita de ${CH.rubro ? CH.rubro.toLowerCase() : 'un profesional'} (≈ ${money(BASE[CH.rubro] || 18000)}).${cnt > 1 ? ` Ya van <b>${cnt} arreglos</b> por tu cuenta y ≈ <b class="num">${money(tot)}</b> ahorrados.` : ''} Lo guardé en <b>Arreglos</b>, en Resueltos.`);
+  chips([['Ver mis arreglos', () => { V.arr = 'res'; goTo('arreglos'); }], ['Nueva consulta', () => ACT.newCase()]]);
 }
 
 /* ---------- derivación ---------- */
 function summary() {
   return {caso:CH.caso || 'Problema del hogar', rubro:CH.rubro || 'Plomería', hard:CH.hard, code:CH.code,
     desc:CH.resp.filter(x => x && x !== '(foto)').join(' · ') || 'Ver foto adjunta',
-    intentos:CH.intentos || (CH.tut ? 'Siguió la guía de HandyGo' : 'Ninguno'), img:CH.img};
+    intentos:CH.intentos || (CH.tut ? 'Siguió la guía de HandyGo' : 'Ninguno'), img:CH.img, f:CH.ficha || null};
 }
+/* ---------- ficha del caso: lo que los prestadores nos dijeron que les falta ---------- */
+const FQ_BASE = [
+  {k:'viv', q:'¿Dónde es?', o:['Departamento', 'Casa', 'PH', 'Local']},
+  {k:'ant', q:'¿Qué antigüedad tiene, más o menos?', o:['Menos de 10 años', '10 a 30 años', 'Más de 30 años', 'No sé']},
+  {k:'urg', q:'¿Qué tan urgente es?', o:['Puede esperar', 'Esta semana', 'Es urgente']}];
+const FQ_RUBRO = {
+  Gas:[{k:'art', q:'¿Qué artefacto es?', o:['Calefón', 'Termotanque', 'Cocina o anafe', 'Estufa', 'Otro']}, {k:'olor', q:'¿Hay olor a gas?', o:['Sí', 'No']}, {k:'llave', q:'¿Cerraste la llave de paso?', o:['Sí', 'No', 'No sé cuál es']}],
+  Electricidad:[{k:'salto', q:'¿Saltó la térmica o el disyuntor?', o:['Sí', 'No', 'No sé']}, {k:'quem', q:'¿Hay olor a quemado o chispas?', o:['Sí', 'No']}],
+  Plomería:[{k:'paso', q:'¿La llave de paso funciona?', o:['Sí', 'No', 'No sé']}]};
+const FQ_LBL = {viv:'Vivienda', ant:'Antigüedad', urg:'Urgencia', art:'Artefacto', olor:'Olor a gas', llave:'Llave de paso cerrada', salto:'Saltó la térmica', quem:'Olor a quemado o chispas', paso:'Llave de paso funciona'};
+function fichaQs() { return [...FQ_BASE, ...(FQ_RUBRO[CH.rubro] || [])]; }
+function fichaRows(f) {
+  if (!f) return '';
+  const qs = [...FQ_BASE, ...Object.values(FQ_RUBRO).flat()];
+  let h = '';
+  if (f.viv || f.ant) h += `<dt>Vivienda</dt><dd>${esc([f.viv, f.ant && f.ant !== 'No sé' ? f.ant : ''].filter(Boolean).join(' · '))}</dd>`;
+  if (f.urg) h += `<dt>Urgencia</dt><dd><span class="tag ${f.urg === 'Es urgente' ? 'r' : f.urg === 'Esta semana' ? 'y' : ''}">${esc(f.urg)}</span></dd>`;
+  qs.filter(q => !['viv', 'ant', 'urg'].includes(q.k) && f[q.k]).forEach(q => { h += `<dt>${esc(FQ_LBL[q.k])}</dt><dd>${esc(f[q.k])}</dd>`; });
+  return h;
+}
+function fichaForm() {
+  CH.ficha = CH.ficha || {};
+  const f = CH.ficha, toco = CH.intentos && !/^Ninguno/.test(CH.intentos);
+  return `<div class="card ficha" id="ficha">${fichaQs().map(q => `<div class="fq"><b>${q.q}</b><div class="fopts">${q.o.map(o => `<button class="${f[q.k] === o ? 'on' : ''}" data-a="fq" data-v="${q.k}|${esc(o)}" aria-pressed="${f[q.k] === o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
+    <label class="f" for="fToco">¿Tocaste o cambiaste algo?<textarea id="fToco" rows="2" placeholder="Ej: cambié el cuerito, ajusté la tuerca">${esc(f.toco || (toco ? CH.intentos : ''))}</textarea><span class="hint">A los profesionales les sirve muchísimo saberlo antes de llegar.</span></label>
+    <label class="f" for="fCerca">Cerca de (opcional)<input id="fCerca" value="${esc(f.cerca || '')}" placeholder="Calle o esquina, sin la altura exacta"></label>
+    <button class="btn p w" data-a="fichaOk">Listo, ver el resumen</button></div>`;
+}
+ACT.fq = v => { const [k, val] = v.split('|'); CH.ficha = CH.ficha || {}; CH.ficha[k] = CH.ficha[k] === val ? '' : val;
+  const box = $('#ficha'); if (box) box.querySelectorAll(`[data-a="fq"][data-v^="${k}|"]`).forEach(b => { const on = b.dataset.v === k + '|' + CH.ficha[k]; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); };
+ACT.fichaOk = () => {
+  const f = CH.ficha = CH.ficha || {};
+  f.toco = ($('#fToco') || {}).value ? $('#fToco').value.trim().slice(0, 300) : '';
+  f.cerca = ($('#fCerca') || {}).value ? $('#fCerca').value.trim().slice(0, 80) : '';
+  const box = $('#ficha'); if (box) box.closest('.blk, .m, div').querySelectorAll('button, textarea, input').forEach(x => x.disabled = true);
+  if (f.toco) CH.intentos = f.toco;
+  logTrans('k', 'Completó la ficha del caso');
+  say('Te armé el resumen del caso. El prestador lo recibe antes de presupuestar, así no empieza de cero.');
+  const s = summary(); s.zona = me().zona + (f.cerca ? ' · cerca de ' + f.cerca : '');
+  block(`<div style="width:100%">${ticketHTML(s)}</div>`);
+  chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p']]);
+};
 function ticketHTML(s, extra = '') {
+  const toco = s.intentos && !/^Ninguno|^Siguió la guía de HandyGo$/.test(s.intentos);
   return `<div class="ticket"><div class="tk"><span>Orden de caso</span><span>${esc(s.code)}</span></div>
    <h4>${esc(s.caso)}</h4>
+   ${toco ? `<div class="touched">${ico('alert')} <span><b>El cliente tocó esto:</b> ${esc(s.intentos)}</span></div>` : ''}
    <dl><dt>Rubro</dt><dd>${esc(s.rubro)}${s.hard ? ' · <span class="tag r">Requiere matriculado</span>' : ''}</dd>
    <dt>Relato</dt><dd>${esc(s.desc)}</dd>
-   <dt>Intentos</dt><dd>${esc(s.intentos)}</dd>
+   ${toco ? '' : `<dt>Intentos</dt><dd>${esc(s.intentos)}</dd>`}
+   ${fichaRows(s.f)}
    ${s.zona ? `<dt>Zona</dt><dd>${esc(s.zona)}</dd>` : ''}
    ${s.img ? `<dt>Foto</dt><dd><img class="photo" src="${safeImg(s.img)}" alt="Foto del problema"></dd>` : ''}${extra}</dl></div>`;
 }
 function derivar() {
   if (!CH.rubro) CH.rubro = 'Plomería';
-  say('Te armé un resumen del caso. El prestador lo recibe antes de presupuestar, así no empieza de cero.');
-  const s = summary(); s.zona = me().zona;
-  block(`<div style="width:100%">${ticketHTML(s)}</div>`);
-  chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p']]);
+  if (!CH.hard && (CH.meanwhile || []).length) block(`<div class="card meanwhile"><b>${ico('clock')} Mientras tanto</b><ul>${liList(CH.meanwhile)}</ul></div>`);
+  say('Antes de mandarlo, unas preguntas rápidas para que el profesional llegue sabiendo qué pasa. Tocá lo que corresponda; si no sabés algo, dejalo.');
+  block(`<div style="width:100%">${fichaForm()}</div>`);
 }
 function pedir() {
   const u = me(), s = summary();
-  const j = {id:'j' + uid(), uid:u.id, un:u.nombre, zona:u.zona, caso:s.caso, rubro:s.rubro, hard:s.hard, code:s.code, desc:s.desc, intentos:s.intentos, img:s.img, estado:'nuevo', offers:[], msgs:[], ts:Date.now()};
+  const cerca = s.f && s.f.cerca ? ' · cerca de ' + s.f.cerca : '';
+  const j = {id:'j' + uid(), uid:u.id, un:u.nombre, zona:u.zona + cerca, caso:s.caso, rubro:s.rubro, hard:s.hard, code:s.code, desc:s.desc, intentos:s.intentos, img:s.img, f:s.f || null, estado:'nuevo', offers:[], msgs:[], ts:Date.now()};
   if (CLOUD && j.img) { const raw = j.img; j.img = null; upPhoto(raw).then(url => { j.img = url; save(); }); }
   DB.jobs.unshift(j); save(); logTrans('k', 'Pedido enviado a prestadores · ' + j.code);
-  say(`Listo. Enviamos tu caso <b class="num">${esc(j.code)}</b> a prestadores verificados de ${esc(j.rubro.toLowerCase())} en tu zona. Los presupuestos van a aparecer en <b>Pedidos</b>.`);
-  chips([['Ver mi pedido', () => { V.tab = 'ped'; V.job = j.id; render(); }, 'p'], ['Nueva consulta', () => ACT.newCase()]]);
+  say(`Listo. Enviamos tu caso <b class="num">${esc(j.code)}</b> a prestadores verificados de ${esc(j.rubro.toLowerCase())} en tu zona. Los presupuestos van a aparecer en <b>Arreglos</b>.`);
+  chips([['Ver mi arreglo', () => { V.tab = 'ped'; V.arr = 'curso'; V.job = j.id; render(); }, 'p'], ['Nueva consulta', () => ACT.newCase()]]);
   const ps = PROVS.filter(p => p.r === j.rubro);
   const msgs = ['Hola, vi tu caso. Con el resumen ya sé qué llevar. Elegí el turno que te quede mejor.', 'Buenas, puedo ir esta semana. El precio incluye la visita y la mano de obra.'];
   ps.forEach((p, i) => setTimeout(() => {
     const jj = DB.jobs.find(x => x.id === j.id); if (!jj || jj.estado !== 'nuevo') return;
     const sl = slotsFor(p.id, p.agenda, 5);
-    jj.offers.push({pid:p.id, precio:BASE[j.rubro] + (i ? 4000 : 0) + Math.round(Math.random() * 3) * 1000, msg:msgs[i % 2], slots:sl, when:slotLabel(sl[0])}); save();
+    jj.offers.push({pid:p.id, precio:BASE[j.rubro] + (i ? 4000 : 0) + Math.round(Math.random() * 3) * 1000, msg:msgs[i % 2], slots:sl, when:slotLabel(sl[0]),
+      inc:i ? ['Visita incluida', 'Prueba de funcionamiento'] : ['Visita incluida', 'Garantía de 30 días', 'Limpieza al terminar']}); save();
     if (DB.cur && DB.cur.id === j.uid) toast('Nuevo presupuesto de ' + p.n);
     if (DB.cur && DB.cur.t === 'u' && ((V.tab === 'ped' && !V.job) || V.job === jj.id)) render(); else if (DB.cur) renderNav();
   }, 2500 + i * 2800));
@@ -1843,18 +2027,13 @@ function pedir() {
    ============================================================ */
 function vMat() {
   const tut = CH && CH.tutObj && CH.tutObj.mat && CH.tutObj.mat.length ? CH.tutObj : null;
-  const items = tut ? tut.mat : KIT;
-  view(`<button class="back" data-a="tab" data-v="${tut ? 'chat' : 'casa'}">${ico('back')} ${tut ? 'Volver a la guía' : 'Mi casa'}</button>
-   <span class="eyebrow">${tut ? 'Para tu arreglo' : 'Kit básico de la casa'}</span>
-   <h2>${tut ? esc(tut.n) : 'Lo que conviene tener'}</h2>
-   <p class="mut small">${tut ? 'Qué comprar y cómo pedirlo en el mostrador.' : 'Cuando el asistente te guíe en un arreglo, acá vas a ver la lista exacta.'}</p>
-   <div class="list">${items.map(([ic, n, a]) => `<div class="card mat"><span class="ic">${ico(ic)}</span><div style="min-width:0"><h3>${esc(n)}</h3><span class="ask">${esc(a)}</span></div></div>`).join('')}</div>
-   <div class="sec"><h3 class="sh">Ferreterías cerca</h3>
-    <div id="mapBox" class="mapbox"></div>
-    <div class="row" style="margin-top:12px;flex-wrap:nowrap"><button class="btn sm" data-a="locate" id="locBtn" style="flex:none">${ico('pin')} ${LOC ? 'Actualizar ubicación' : 'Usar mi ubicación'}</button><span class="hint" id="locMsg" style="margin:0">${LOC ? 'Mostrando lo que hay cerca tuyo' : 'Mostrando el centro de CABA'}</span></div>
-    <div class="list" id="ferList" style="margin-top:12px"></div></div>
-   <div class="sec"><div class="ad"><span class="lg">T</span><div style="min-width:0"><span class="eyebrow">Publicidad</span><div><b>Tigre Sanitarios</b> · Flotantes y sifones con garantía de 2 años.</div></div></div></div>`);
-  initMap();
+  if (!tut) { V.tab = 'casa'; V.casa = 'herramientas'; return render(); }
+  view(`<button class="back" data-a="tab" data-v="chat">${ico('back')} Volver a la guía</button>
+   <div class="eyebrow" style="margin-top:12px">Para tu arreglo</div>
+   <h2>${esc(tut.n)}</h2>
+   ${handySays('Esto es lo que vas a necesitar. Mostrale esta pantalla al ferretero o pedilo con el nombre que te dejo abajo de cada cosa.')}
+   <div class="list" style="margin-top:16px">${tut.mat.map(([ic, n, a]) => `<div class="card mat"><span class="ic">${ico(ic)}</span><div style="min-width:0"><h3>${esc(n)}</h3><span class="ask">${esc(a)}</span></div></div>`).join('')}</div>
+   <button class="btn p w" style="margin-top:16px" data-a="ferre" data-v="mat">${ico('pin')} Ver ferreterías cerca</button>`);
 }
 /* ---------- mapa real: MapLibre + OpenFreeMap (estilo limpio) + OpenStreetMap (gratis, sin claves) ---------- */
 const CABA = {lat:-34.6037, lon:-58.3816};
@@ -1907,6 +2086,12 @@ async function loadStores(c) {
     clearTimeout(to);
     const d = await r.json(); if (!r.ok || !d.ok) throw new Error('places');
     st = d.items.map(x => ({...x, d:dist(c, x)})).sort((a, b) => a.d - b.d);
+    // Comercios adheridos a HandyGo+: se destacan en el mapa y aparecen primero entre los cercanos
+    const hash = t => [...String(t)].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
+    st.forEach(x => { x.ad = hash(x.n + x.lat) % 4 === 0; });
+    if (st.length && !st.slice(0, 6).some(x => x.ad)) st[Math.min(1, st.length - 1)].ad = true;
+    const near = st.filter(x => x.d < 1500);
+    st = [...near.filter(x => x.ad), ...near.filter(x => !x.ad), ...st.filter(x => x.d >= 1500)];
   } catch (e) {
     if (my === STORE_REQ && $('#ferList')) $('#ferList').innerHTML = '<div class="card"><b>No pudimos cargar los comercios.</b><div class="small mut">Revisá tu conexión e intentá de nuevo.</div><button class="btn sm" style="margin-top:8px" data-a="retryStores">Reintentar</button></div>';
     return;
@@ -1917,15 +2102,15 @@ async function loadStores(c) {
   if (MAP) {
     const b = new maplibregl.LngLatBounds([c.lon, c.lat], [c.lon, c.lat]); let n = 0;
     st.forEach((x, i) => {
-      const el = document.createElement('div'); el.className = 'pinm'; el.innerHTML = PIN('#F2B33D');
-      const pop = new maplibregl.Popup({offset:{'bottom':[0, -40], 'bottom-left':[0, -40], 'bottom-right':[0, -40], 'top':[0, 4], 'top-left':[0, 4], 'top-right':[0, 4], 'left':[16, -20], 'right':[-16, -20]}, closeButton:true, maxWidth:'240px'}).setHTML(`<div class="ferl"><b>${esc(x.n)}</b>${x.dir ? `<span>${esc(x.dir)}</span>` : ''}<span>${fmtD(x.d)}</span><a href="${goUrl(x)}" target="_blank" rel="noopener">Cómo llegar</a></div>`);
+      const el = document.createElement('div'); el.className = 'pinm' + (x.ad ? ' ad' : ''); el.innerHTML = PIN(x.ad ? '#26573F' : '#F2B33D');
+      const pop = new maplibregl.Popup({offset:{'bottom':[0, -40], 'bottom-left':[0, -40], 'bottom-right':[0, -40], 'top':[0, 4], 'top-left':[0, 4], 'top-right':[0, 4], 'left':[16, -20], 'right':[-16, -20]}, closeButton:true, maxWidth:'240px'}).setHTML(`<div class="ferl">${x.ad ? '<span class="adh">Adherido a HandyGo</span>' : ''}<b>${esc(x.n)}</b>${x.dir ? `<span>${esc(x.dir)}</span>` : ''}<span>${fmtD(x.d)}</span><a href="${goUrl(x)}" target="_blank" rel="noopener">Cómo llegar</a></div>`);
       const mk = new maplibregl.Marker({element:el, anchor:'bottom'}).setLngLat([x.lon, x.lat]).setPopup(pop).addTo(MAP);
       MARKS[i] = {mk, el};
       if (x.d < 2500) { b.extend([x.lon, x.lat]); n++; }
     });
     if (n) MAP.fitBounds(b, {padding:{top:50, bottom:30, left:30, right:30}, maxZoom:16, duration:0});
   }
-  $('#ferList').innerHTML = st.map((x, i) => `<div class="card fercard" data-a="focusStore" data-v="${i}"><div class="jobcard"><div class="r1"><h3>${esc(x.n)}</h3><span class="num mut small">${fmtD(x.d)}</span></div>
+  $('#ferList').innerHTML = st.map((x, i) => `<div class="card fercard ${x.ad ? 'ad' : ''}" data-a="focusStore" data-v="${i}"><div class="jobcard">${x.ad ? `<span class="adh">${MARK} Adherido a HandyGo</span>` : ''}<div class="r1"><h3>${esc(x.n)}</h3><span class="num mut small">${fmtD(x.d)}</span></div>
       <div class="small mut">${esc(SHOPTYPE[x.shop] || 'Comercio')}${x.dir ? ' · ' + esc(x.dir) : ''}</div>
       <div class="sub">${x.h ? `<span>${esc(String(x.h).slice(0, 40))}</span><span class="sep"></span>` : ''}<a class="textlink" href="${goUrl(x)}" target="_blank" rel="noopener">Cómo llegar ${ico('back').replace('<svg', '<svg style="transform:rotate(180deg)"')}</a></div></div></div>`).join('');
 }
@@ -1962,21 +2147,49 @@ function emptyState(kind, t, s, btn) {
   return `<div class="empty"><svg class="illo" viewBox="0 0 132 110" aria-hidden="true"><ellipse cx="66" cy="62" rx="58" ry="44" fill="var(--priSoft)"/>${ILLO[kind] || ILLO.clip}</svg>
     <h3 style="color:var(--ink)">${t}</h3><p class="small">${s}</p>${btn ? `<button class="btn p" data-a="tab" data-v="${btn[1]}">${btn[0]}</button>` : ''}</div>`;
 }
+// Arreglos: lo que está en curso, lo que ya se resolvió (por tu cuenta o con un profesional) y tus profesionales
 function vPedU() {
-  const js = DB.jobs.filter(j => j.uid === DB.cur.id);
-  view(`   ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
+  const u = me(), all = DB.jobs.filter(j => j.uid === u.id), tab = V.arr || 'curso';
+  const curso = all.filter(j => ['nuevo', 'aceptado'].includes(j.estado));
+  const jobCard = j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
       <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small num" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
-      <div class="row" style="justify-content:space-between"><span class="stagetxt ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : j.estado === 'cancelado' ? 'r' : j.offers.length ? 'n' : ''}">${j.estado === 'nuevo' && j.offers.length ? `${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''} para ver` : stageName(j)}</span>${isUnseen(j) ? '<span class="newdot" aria-label="Novedades"></span>' : ''}</div>
-      <div class="sub"><span>${esc(j.rubro)}</span>${j.turno && j.estado === 'aceptado' ? `<span class="sep">${esc(slotLabel(j.turno))}</span>` : ''}</div></button>`).join('')}</div>`
-   : emptyState('clip', 'Todavía no pediste nada', 'Si Handy ve que hace falta un profesional, tu pedido aparece acá con sus presupuestos.', ['Contale a Handy', 'chat'])}`);
+      <div class="row" style="justify-content:space-between"><span class="stagetxt ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : j.estado === 'cancelado' ? 'r' : j.offers.length ? 'n' : ''}">${j.estado === 'nuevo' && j.offers.length ? `${j.offers.length} presupuesto${j.offers.length > 1 ? 's' : ''} para ver` : stageName(j)}</span>${isUnseen(j) ? '<span class="newdot">Nuevo</span>' : ''}</div>
+      <div class="sub"><span>${esc(j.rubro)}</span>${j.turno && j.estado === 'aceptado' ? `<span class="sep">${esc(slotLabel(j.turno))}</span>` : ''}</div></button>`;
+  const seg = `<div class="seg segw" role="tablist">${[['curso', 'En curso', curso.length], ['res', 'Resueltos', 0], ['pro', 'Profesionales', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="arr" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
+  let body = '';
+  if (tab === 'curso') {
+    body = curso.length ? `<div class="list">${curso.map(jobCard).join('')}</div>`
+      : emptyState('clip', 'No tenés arreglos en curso', 'Cuando haga falta un profesional, te armo el pedido y aparece acá con sus presupuestos. — Handy', ['Contale a Handy', 'chat']);
+  } else if (tab === 'res') {
+    const fin = all.filter(j => ['finalizado', 'cancelado'].includes(j.estado));
+    const items = [...(u.hist || []).map(h => ({...h})), ...fin.map(j => ({t:j.estado === 'cancelado' ? 'cancel' : 'pro', caso:j.caso, ts:j.fin || j.ts, precio:j.precio, prov:j.prov ? provInfo(j.prov).n : '', jid:j.id}))].sort((a, b) => b.ts - a.ts);
+    const ahorro = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0), gastado = fin.filter(j => j.estado === 'finalizado').reduce((a, j) => a + (j.precio || 0), 0);
+    body = items.length ? `<div class="stat"><div class="card"><b class="num">${money(ahorro)}</b><span>Ahorrado</span></div><div class="card"><b class="num">${money(gastado)}</b><span>En profesionales</span></div></div>
+      <div class="card" style="margin-top:12px"><ul class="hist">${items.map(x => `<li ${x.jid ? `data-a="job" data-v="${x.jid}" style="cursor:pointer"` : ''}>
+      <span class="ic ${x.t === 'cancel' ? 'mant' : x.t}">${ico(x.t === 'pro' ? 'tool' : x.t === 'mant' ? 'cal' : x.t === 'cancel' ? 'x' : 'check')}</span>
+      <div style="min-width:0"><h3 style="font-size:16px">${esc(x.caso)}</h3><div class="small mut">${x.t === 'pro' ? `${esc(x.prov)} · <span class="num">${money(x.precio)}</span>` : x.t === 'mant' ? 'Mantenimiento de temporada' : x.t === 'cancel' ? 'Pedido cancelado' : `Lo resolviste vos · ahorraste ≈ ${money(x.ahorro || 0)}`}</div></div>
+      <span class="when">${ago(x.ts)}</span></li>`).join('')}</ul></div>`
+      : emptyState('check', 'Todavía no resolviste nada', 'Cada problema que arregles con una guía o con un profesional queda guardado acá.', ['Contale a Handy', 'chat']);
+  } else {
+    const by = {};
+    all.filter(j => j.prov && ['aceptado', 'finalizado'].includes(j.estado)).forEach(j => { const b = by[j.prov] = by[j.prov] || {n:0, last:j}; b.n++; if ((j.fin || j.ts) > (b.last.fin || b.last.ts)) b.last = j; });
+    const ids = Object.keys(by);
+    body = ids.length ? `<div class="list">${ids.map(id => { const p = provInfo(id), b = by[id]; return `<div class="card offer"><div class="top2">${avatar(p.n, p.foto)}<div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3>
+        <div class="small">${stars(p.s)} <span class="mut">· ${esc(p.r)}${p.m ? ' · ' + esc(p.m) : ''}</span></div></div></div>
+        <div class="small mut">Último trabajo: ${esc(b.last.caso)} · ${ago(b.last.fin || b.last.ts)}${b.n > 1 ? ` · ${b.n} trabajos` : ''}</div>
+        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="job" data-v="${b.last.id}">Ver el trabajo</button><button class="btn sm" style="flex:1" data-a="prof" data-v="${id}">Ver perfil</button></div></div>`; }).join('')}</div>`
+      : emptyState('user', 'Todavía no contrataste a nadie', 'Los profesionales que contrates quedan guardados acá, para volver a encontrarlos fácil.', ['Contale a Handy', 'chat']);
+  }
+  view(seg + `<div style="margin-top:16px">${body}</div>`);
 }
+ACT.arr = k => { V.arr = k; NEXT_ANIM = 'fade'; render(); };
 ACT.job = id => { NEXT_ANIM = 'right'; V.job = id; render(); };
 ACT.backJob = () => { NEXT_ANIM = 'left'; V.job = null; render(); };
 function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
   if (clearUnseen(j)) { save(); renderNav(); }
-  let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Mis pedidos' : 'Volver'}</button>
+  let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Arreglos' : 'Volver'}</button>
     <div class="row" style="margin-bottom:12px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
     ${j.estado === 'aceptado' && j.turno ? `<div class="card" style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('cal').replace('<svg', '<svg style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"')}</span><div><span class="small mut">Tu turno</span><h3>${esc(slotLabel(j.turno))}</h3></div></div>` : ''}
@@ -1988,8 +2201,11 @@ function vJob() {
       + (j.offers.length > 1 && V.cmp ? compareHTML(j, B) : j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
        ${j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i) ? `<div><span class="tag ${B.precio === i ? 'y' : 'b'}">${B.precio === i ? 'Mejor precio' : B.cal === i ? 'Mejor calificado' : 'Puede antes'}</span></div>` : ''}
        <div class="top2">${avatar(p.n, p.foto)}<div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas · ${p.y} años</span></div></div><span class="price">${money(o.precio)}</span></div>
-       <div class="sub"><span class="ok">${ico('shield')} Verificado</span>${p.m ? `<span class="sep">${esc(p.m)}</span>` : ''}<span class="sep">${ico('cal')} ${esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when)}</span></div>
+       <div class="meta">${plusBadge(p)}${matBadge(p)}<span class="tag v">${ico('shield')} Identidad verificada</span></div>
+       <div class="sub"><span>${ico('cal')} ${esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when)}</span>${p.vis ? `<span class="sep">Visita ${money(p.vis)}${p.visDesc ? ' (se descuenta)' : ''}</span>` : ''}</div>
+       ${(o.inc || []).length ? `<div class="inc"><span class="small mut">Incluye:</span> ${o.inc.map(x => `<span class="tag v">${esc(x)}</span>`).join('')}</div>` : ''}
        <div class="quote">“${esc(o.msg)}”</div>
+       <button class="textlink whyb" data-a="whyPrice" data-v="${i}">${ico('chat')} ¿Por qué sale esto?</button>
        <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
       : `<div class="list" aria-hidden="true">${[1, 2].map(() => `<div class="card skcard"><div class="skrow"><div class="skel" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:grid;gap:8px"><div class="skel" style="height:15px;width:55%"></div><div class="skel" style="height:12px;width:75%"></div></div><div class="skel" style="height:22px;width:70px"></div></div><div class="skel" style="height:34px;border-radius:12px"></div></div>`).join('')}</div><p class="hint" style="text-align:center">Los prestadores están viendo tu caso…</p>`) + `</div>`;
   }
@@ -2028,13 +2244,76 @@ ACT.prof = id => {
   const p = provInfo(id);
   sheet(`<div class="top2" style="display:flex;gap:16px;align-items:center">${avatar(p.n, p.foto, 'lg')}<div><h2 style="margin:0">${esc(p.n)}</h2><span class="mut">${esc(p.r)} · ${esc(p.z || 'CABA')}</span></div></div>
    ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
-   <div class="meta" style="margin:16px 0"><span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag b">${esc(p.m)}</span>` : '<span class="tag">Oficio sin matrícula obligatoria</span>'}</div>
+   <div class="meta" style="margin:16px 0">${plusBadge(p)}<span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag mat">${ico('shield')} Matriculado · ${esc(p.m)}</span>` : `<span class="tag">Sin matrícula (no es obligatoria en ${esc((p.r || '').toLowerCase())})</span>`}</div>
    <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
    <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}${p.hor ? ' · ' + esc(p.hor) : ''}</p>
+   ${p.vis || p.min || p.radio ? `<div class="card conds">${p.vis ? `<div><span>Visita</span><b class="num">${money(p.vis)}</b>${p.visDesc ? '<small>Se descuenta si hace el trabajo</small>' : ''}</div>` : ''}${p.min ? `<div><span>Trabajo mínimo</span><b class="num">${money(p.min)}</b></div>` : ''}${p.radio ? `<div><span>Trabaja</span><b>${esc(p.radio)}</b></div>` : ''}</div>` : ''}
    ${(p.esp || []).length ? `<h3 class="sh">Especialidades</h3><div class="meta" style="margin:8px 0 16px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
    ${(p.port || []).length ? `<h3 class="sh">Trabajos realizados</h3><div class="port" style="margin:8px 0 16px">${p.port.map(x => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
-   <h3 class="sh">Reseñas</h3><div class="card stack" style="margin-top:8px">${(p.rev || []).length ? p.rev.map(([n, c, s]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b><div class="small mut">${esc(c)}</div></div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>'}</div>
+   <h3 class="sh">Reseñas</h3><div class="card stack" style="margin-top:8px">${revHTML(p.rev)}</div>
    <button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
+};
+// Insignias y reseñas con respuesta
+const matBadge = p => p.m ? `<span class="tag mat">${ico('shield')} Matriculado</span>` : '';
+const plusBadge = p => p.plus ? `<span class="tag plus">${MARK} HandyGo+</span>` : '';
+const revHTML = rev => (rev || []).length ? rev.map(([n, c, s, r]) => `<div class="review"><span class="stars">${'★'.repeat(s)}</span> <b>${esc(n)}</b>${c ? `<div class="small mut">${esc(c)}</div>` : ''}${r ? `<div class="reply"><b>Respuesta del profesional</b>${esc(r)}</div>` : ''}</div>`).join('') : '<span class="mut small">Todavía no tiene reseñas.</span>';
+const INCLUYE = ['Visita incluida', 'Materiales incluidos', 'Garantía de 30 días', 'Prueba de funcionamiento', 'Limpieza al terminar'];
+// "¿Por qué sale esto?": Handy explica el trabajo que no se ve
+const WHY = {
+  Plomería:{diy:'Si fuera algo simple, como un cuerito, te lo hubiera explicado yo. Cuando hay que cambiar caños, piezas dentro de la pared o encontrar una pérdida escondida, un error puede terminar en una inundación o en daños al vecino de abajo.', mat:'repuestos, teflón y selladores'},
+  Gas:{diy:'Acá no hay comparación posible: en gas, hacerlo sin matrícula es peligroso y además el trabajo no queda habilitado. Lo que pagás incluye que la instalación quede segura y en regla.', mat:'conexiones flexibles y piezas homologadas'},
+  Electricidad:{diy:'Si fuera levantar una térmica, te lo explicaba yo. Cuando hay que tocar el tablero o los cables, un error puede terminar en una descarga o un incendio, y el trabajo tiene que quedar certificado.', mat:'térmicas, cables y cajas'},
+  Carpintería:{diy:'Algunas cosas las podés hacer vos con una guía, y te ayudo. Cuando hay que cortar, rehacer encastres o ajustar piezas a medida, hacen falta herramientas que no se compran para usar una sola vez.', mat:'herrajes, tornillos y adhesivos'},
+  Albañilería:{diy:'Un arreglo superficial puede tapar un problema más grande. El profesional evalúa por qué pasa, no solo cómo se ve.', mat:'materiales de obra y terminación'}};
+ACT.whyPrice = i => {
+  const j = DB.jobs.find(x => x.id === V.job); if (!j) return;
+  const o = j.offers[+i], p = provInfo(o.pid), w = WHY[j.rubro] || WHY.Plomería, inc = o.inc || [];
+  const li = (ic, t, d) => `<li><span class="wi">${ico(ic)}</span><div><b>${t}</b><span class="small mut">${d}</span></div></li>`;
+  sheet(`<div class="handysays">${MARK}<div class="bub"><span class="nm">Handy</span><p>Un presupuesto no es solo el rato que el profesional está en tu casa. Te cuento qué hay detrás de los <b class="num">${money(o.precio)}</b> de ${esc(first(p.n))}.</p></div></div>
+    <h3 class="sh" style="margin-top:20px">Lo que no se ve</h3>
+    <ul class="whylist">
+      ${li('truck', 'El viaje', 'Ir y volver suele llevar entre una y dos horas, que no puede usar en otro trabajo.')}
+      ${li('eye', 'El diagnóstico', 'Saber qué revisar y encontrar la causa, no solo el síntoma. Por eso le sirve tanto tu resumen.')}
+      ${li('tool', 'Las herramientas', 'Equipos que se compran, se mantienen y se reponen.')}
+      ${li('shield', p.m ? 'La formación y la matrícula' : 'La experiencia', p.m ? `${esc(p.m)}: años de estudio, exámenes y la responsabilidad de firmar el trabajo.` : `${p.y || 'Varios'} años resolviendo problemas como el tuyo.`)}
+      ${li('box', inc.includes('Materiales incluidos') ? 'Los materiales (incluidos)' : 'Los materiales (aparte)', inc.includes('Materiales incluidos') ? `Este precio ya incluye ${w.mat}.` : `Puede que haga falta comprar ${w.mat}; preguntale si están incluidos.`)}
+      ${inc.includes('Garantía de 30 días') ? li('check', 'La garantía', 'Si en 30 días vuelve a fallar por el mismo motivo, vuelve sin cargo.') : ''}
+    </ul>
+    ${inc.length ? `<h3 class="sh" style="margin-top:16px">Este presupuesto incluye</h3><div class="meta" style="margin-top:8px">${inc.map(x => `<span class="tag v">${ico('check')} ${esc(x)}</span>`).join('')}</div>` : ''}
+    <h3 class="sh" style="margin-top:16px">¿Y si lo hago yo?</h3><p style="margin:8px 0 0">${esc(w.diy)}</p>
+    <button class="btn g w" style="margin-top:20px" data-a="close">Entendido</button>`);
+};
+// HandyGo+ para prestadores
+ACT.plus = () => {
+  const u = me(), on = !!u.plus;
+  const inZona = DB.jobs.filter(j => j.rubro === u.rubro).length;
+  const li = (ic, t, d) => `<li><span class="wi">${ico(ic)}</span><div><b>${t}</b><span class="small mut">${d}</span></div></li>`;
+  sheet(`<div style="display:flex;gap:12px;align-items:center">${MARK.replace('class="mark"', 'class="mark" style="width:48px;height:48px"')}<div><h2 style="margin:0">HandyGo+</h2><span class="mut small">Para prestadores que quieren crecer</span></div></div>
+    ${on ? `<div class="card" style="margin-top:16px;background:var(--priSoft);box-shadow:none"><b>Tu suscripción está activa.</b><div class="small mut">Ya tenés el sello y la prioridad en los pedidos.</div></div>
+      <h3 class="sh" style="margin-top:16px">Demanda en tu zona</h3><div class="stat" style="margin-top:8px"><div class="card"><b class="num">${inZona}</b><span>pedidos de ${esc(u.rubro.toLowerCase())} este mes</span></div><div class="card"><b>${esc(u.zona.split(',')[0])}</b><span>tu zona</span></div></div>` : ''}
+    <ul class="whylist" style="margin-top:16px">
+      ${li('inbox', 'Prioridad en los pedidos', 'Los pedidos nuevos de tu rubro te llegan antes que al resto.')}
+      ${li('shield', 'Sello de perfil de alta confianza', 'Tu perfil y tus presupuestos se muestran con el sello HandyGo+.')}
+      ${li('eye', 'Estadísticas de tu zona', 'Qué se pide más, en qué barrios y en qué momento del año.')}
+      ${li('check', 'Menos comisión', 'Pagás menos comisión por cada trabajo cerrado en la app.')}
+    </ul>
+    ${on ? `<button class="btn g w" style="margin-top:16px" data-a="plusOff">Dar de baja</button>` : `<button class="btn p w" style="margin-top:16px" data-a="plusOn">Probar 30 días gratis</button><p class="hint" style="text-align:center">Podés darte de baja cuando quieras.</p>`}
+    <button class="btn g w" style="margin-top:8px" data-a="close">Cerrar</button>`);
+};
+ACT.plusOn = () => { const u = me(); u.plus = true; u.plusDesde = Date.now(); save(); closeSheet(); toast('¡Listo! Ya tenés HandyGo+'); render(); };
+ACT.plusOff = () => { const u = me(); u.plus = false; save(); closeSheet(); toast('Diste de baja HandyGo+'); render(); };
+// Responder reseñas
+ACT.replyRev = i => {
+  const u = me(), r = u.rev[+i]; if (!r) return;
+  sheet(`<h2>Responder a ${esc(r.from)}</h2><div class="review" style="margin:12px 0"><span class="stars">${'★'.repeat(r.s)}</span>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>
+    <label class="f" for="rr">Tu respuesta<textarea id="rr" rows="4" maxlength="300" placeholder="Agradecé o contá tu versión con respeto: la ven todos los clientes.">${esc(r.resp || '')}</textarea></label>
+    <div class="stack" style="margin-top:16px"><button class="btn p w" data-a="saveReply" data-v="${+i}">Publicar respuesta</button><button class="btn g w" data-a="close">Cancelar</button></div>`);
+};
+ACT.saveReply = async i => {
+  const u = me(), t = ($('#rr').value || '').trim().slice(0, 300); if (!t) { toast('Escribí una respuesta'); return; }
+  if (CLOUD) { const { error } = await SB.rpc('reply_review', {p_idx:+i, p_text:t}); if (error) { toast('No pudimos publicarla. Probá de nuevo.'); return; } }
+  u.rev[+i].resp = t; if (CLOUD) SNAP.me = JSON.stringify(u); else save();
+  closeSheet(); toast('Respuesta publicada'); render();
 };
 let ACC = null;
 ACT.cancelJob = () => sheet(`<h2>¿Cancelar el pedido?</h2><p class="mut">${(() => { const j = DB.jobs.find(x => x.id === V.job); return j && j.estado === 'aceptado' ? 'Le avisamos al prestador y se libera el turno.' : 'Los prestadores dejan de verlo y no vas a recibir más presupuestos.'; })()}</p>
@@ -2082,7 +2361,8 @@ function compareHTML(j, B) {
     ${row('Calificación', (o, p) => typeof p.s === 'number' ? '★ ' + String(p.s).replace('.', ',') : 'Nuevo', 'cal')}
     ${row('Reseñas', (o, p) => `<span class="num">${p.v}</span>`)}
     ${row('Experiencia', (o, p) => `${p.y} años`)}
-    ${row('Matrícula', (o, p) => p.m ? esc(p.m) : 'No requiere')}
+    ${row('Matrícula', (o, p) => p.m ? '✓ Matriculado' : 'No requiere')}
+    ${row('Incluye', o => (o.inc || []).length ? esc(o.inc.join(', ')) : '—')}
     ${row('Primer turno', o => esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when), 'turno')}
     ${row('Responde', (o, p) => esc((p.resp || '').replace('Responde en ', '')))}
     <tr><td></td>${j.offers.map((o, i) => `<td><button class="btn p sm w" data-a="acc" data-v="${i}">Aceptar</button></td>`).join('')}</tr>
@@ -2099,7 +2379,9 @@ ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); if (DB.cur.t === 
 /* ============================================================
    PRESTADOR
    ============================================================ */
-function provQueue() { const p = me(); if (!p || DB.cur.t !== 'p') return []; return DB.jobs.filter(j => j.estado === 'nuevo' && j.rubro === p.rubro && !j.offers.some(o => o.pid === p.id) && !(p.desc || []).includes(j.id)); }
+function provQueue() { const p = me(); if (!p || DB.cur.t !== 'p') return []; const barrio = String(p.zona || '').split(',')[0].trim().toLowerCase();
+  return DB.jobs.filter(j => j.estado === 'nuevo' && j.rubro === p.rubro && !j.offers.some(o => o.pid === p.id) && !(p.desc || []).includes(j.id)
+    && (p.radio !== 'Solo mi barrio' || !barrio || String(j.zona || '').toLowerCase().includes(barrio))); }
 function vPedP() {
   const p = me(), js = provQueue();
   view(`<p class="mut small" style="margin-top:0">Clientes de tu zona que necesitan ${esc(p.rubro.toLowerCase())}, con el problema ya explicado.</p>
@@ -2116,6 +2398,9 @@ function offerForm(j) {
    <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">Turnos que le ofrecés</span>${(() => { const sl = slotsFor(DB.cur.id, me().agenda || defAgenda(), 6);
      return sl.length ? `<div class="slots">${sl.map((k, n) => `<label class="slot"><input type="checkbox" name="oslot" value="${k}" ${n < 3 ? 'checked' : ''}> ${esc(slotLabel(k))}</label>`).join('')}</div><span class="hint">Salen de tu agenda. Podés cambiarla en la pestaña Agenda.</span>`
        : '<div class="card small mut">No tenés turnos libres. Cargá tu disponibilidad en la pestaña <b>Agenda</b>.</div>'; })()}</div>
+   <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">¿Qué incluye tu precio?</span>
+     <div class="fopts">${INCLUYE.map(x => `<label class="incl"><input type="checkbox" name="oinc" value="${esc(x)}" ${(me().incDef || ['Visita incluida']).includes(x) ? 'checked' : ''}><span>${esc(x)}</span></label>`).join('')}</div>
+     <span class="hint">El cliente lo ve en tu presupuesto, junto a una explicación de por qué vale lo que vale.</span></div>
    ${field('pm', 'Mensaje para el cliente', 'text', 'Ej: con el resumen ya sé qué llevar')}
    </div></div><div class="stickbar"><div class="row"><button class="btn g" data-a="desc">Descartar</button><button class="btn p" data-a="offer">Enviar presupuesto</button></div></div>`;
 }
@@ -2124,7 +2409,9 @@ ACT.offer = () => {
   if (!pr || pr < 1000) { toast('Ingresá un precio válido'); return; }
   const sl = [...document.querySelectorAll('input[name="oslot"]:checked')].map(x => x.value);
   if (!sl.length) { toast('Elegí al menos un turno'); return; }
-  const o = {pid:DB.cur.id, precio:pr, slots:sl, when:slotLabel(sl[0]), msg:$('#pm').value.trim() || 'Hola, leí el resumen y puedo tomar el trabajo.'};
+  const inc = [...document.querySelectorAll('input[name="oinc"]:checked')].map(x => x.value);
+  me().incDef = inc;
+  const o = {pid:DB.cur.id, precio:pr, slots:sl, when:slotLabel(sl[0]), inc, msg:$('#pm').value.trim() || 'Hola, leí el resumen y puedo tomar el trabajo.'};
   j.offers.push(o); save(); toast('Presupuesto enviado'); V.job = null; V.tab = 'trab'; render();
   if (j.uid === 'demo') setTimeout(() => {
     Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr, etapa:0, hist:{0:Date.now()}, turno:sl[0], when:slotLabel(sl[0])});
@@ -2147,35 +2434,61 @@ ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
    MI CASA (usuario): mantenimiento por temporada + historial
    ============================================================ */
 const ago = ts => { const d = Math.floor((Date.now() - ts) / 864e5); return d < 1 ? 'Hoy' : d === 1 ? 'Ayer' : d < 30 ? `Hace ${d} días` : d < 365 ? `Hace ${Math.round(d / 30)} ${Math.round(d / 30) === 1 ? 'mes' : 'meses'}` : new Date(ts).toLocaleDateString('es-AR', {month:'short', year:'numeric'}); };
+// Mi casa: un menú simple; cada cosa se abre en su propia pantalla
+const handySays = (txt, extra = '') => `<div class="handysays">${MARK}<div class="bub"><span class="nm">Handy</span><p>${txt}</p>${extra}</div></div>`;
 function vCasa() {
   if (me().casaVista !== seasonKey()) { me().casaVista = seasonKey(); save(); setTimeout(renderNav, 0); }
+  if (V.casa === 'temporada') return vTemporada();
+  if (V.casa === 'herramientas') return vHerr();
+  if (V.casa === 'ferreterias') return vFerre();
+  const u = me(), sk = seasonNow(), S = SEASONS[sk], key = seasonKey(), done = u.mant || {};
+  const pend = S.tasks.filter(t => !done[key + '-' + t.id]).length;
+  const ahorro = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0);
+  const n = (u.hist || []).filter(h => h.t !== 'mant').length + DB.jobs.filter(j => j.uid === u.id && j.estado === 'finalizado').length;
+  const item = (to, ic, t, d, badge = '') => `<button class="card casaitem" data-a="casa" data-v="${to}"><span class="ci">${ico(ic)}</span><span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${badge}${ico('back').replace('<svg', '<svg class="go"')}</button>`;
+  view(`${handySays(pend ? `Estamos en ${S.n.toLowerCase()}. Te armé <b>${pend} ${pend === 1 ? 'arreglo' : 'arreglos'}</b> que conviene hacer ahora para que la casa esté a punto.` : `Tu casa está al día para ${S.n.toLowerCase()}. Te aviso cuando cambie la temporada.`,
+      `<button class="btn sm p" style="margin-top:8px" data-a="casa" data-v="temporada">${pend ? 'Ver qué conviene hacer' : 'Ver la temporada'}</button>`)}
+   <div class="list" style="margin-top:16px">
+    ${item('temporada', S.ico, 'Arreglos de temporada', 'Lo que te recomienda Handy y por qué', pend ? `<span class="cnt num">${pend}</span>` : '')}
+    ${item('herramientas', 'box', 'Herramientas básicas', 'Lo que conviene tener y para qué sirve')}
+    ${item('ferreterias', 'pin', 'Ferreterías cerca', 'Un mapa con los comercios de tu zona')}
+   </div>
+   <button class="card casastat" data-a="goTo" data-v="arreglos"><span><b class="num">${n}</b><span class="small mut">arreglos</span></span><span><b class="num">${money(ahorro)}</b><span class="small mut">ahorrado</span></span><span class="small" style="color:var(--pri);font-weight:600">Ver historial</span></button>`);
+}
+ACT.casa = v => { NEXT_ANIM = 'right'; V.tab = 'casa'; V.casa = v; V.casaBack = null; render(); };
+ACT.casaBack = () => { NEXT_ANIM = 'left'; const b = V.casaBack; V.casa = null; V.casaBack = null; if (b) { V.tab = b; } render(); };
+ACT.ferre = from => { NEXT_ANIM = 'right'; V.tab = 'casa'; V.casa = 'ferreterias'; V.casaBack = from && from !== 'casa' ? from : null; V.job = null; render(); };
+const casaBackBtn = () => `<button class="back" data-a="casaBack">${ico('back')} ${V.casaBack === 'chat' ? 'Volver a la guía' : V.casaBack === 'mat' ? 'Materiales' : 'Mi casa'}</button>`;
+function vTemporada() {
   const u = me(), sk = seasonNow(), S = SEASONS[sk], key = seasonKey(), done = u.mant || {};
   const next = SEASONS[SORDER[(SORDER.indexOf(sk) + 1) % 4]];
-  const jobs = DB.jobs.filter(j => j.uid === u.id && j.estado === 'finalizado');
-  const items = [...(u.hist || []).map(h => ({...h})), ...jobs.map(j => ({t:'pro', caso:j.caso, rubro:j.rubro, ts:j.fin || j.ts, precio:j.precio, prov:provInfo(j.prov).n, jid:j.id, img:j.img}))].sort((a, b) => b.ts - a.ts);
-  const gastado = jobs.reduce((a, j) => a + (j.precio || 0), 0), ahorro = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0);
-  const pend = S.tasks.filter(t => !done[key + '-' + t.id]).length;
-  view(`<p class="mut small" style="margin:0">${esc(u.zona)}</p>
-   <div class="stat" style="margin-top:12px"><div class="card"><b class="num">${items.filter(x => x.t !== 'mant').length}</b><span>Arreglos</span></div><div class="card"><b class="num">${money(ahorro)}</b><span>Ahorrado</span></div></div>
-   <div class="sec"><button class="card matcard" data-a="tab" data-v="mat"><span class="ic" style="width:42px;height:42px;border-radius:10px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('box')}</span>
-     <span style="min-width:0;flex:1"><b style="display:block;font:600 16px/1.3 var(--f-display)">Herramientas y ferreterías cerca</b><span class="small mut">El kit básico de la casa y el mapa de comercios</span></span>${ico('back').replace('<svg', '<svg style="width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:currentColor;stroke-width:1.75;color:var(--mut)"')}</button></div>
-   <div class="sec"><div class="season"><span class="sic">${ico(S.ico)}</span><div style="min-width:0"><span class="eyebrow">Mantenimiento de ${S.n.toLowerCase()}</span><h3>${pend ? `${pend} ${pend === 1 ? 'tarea pendiente' : 'tareas pendientes'}` : 'Tu casa está al día'}</h3><p>Lo que conviene revisar de ${S.meses}.</p></div></div>
-    <div class="list" style="margin-top:12px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<div class="card task ${ok ? 'done' : ''}">
-      <div class="r1"><span class="ic">${ico(t.quien === 'pro' ? 'tool' : S.ico)}</span><div style="min-width:0;flex:1"><h3>${esc(t.n)}</h3><div class="small mut">${esc(t.why)}</div>
+  view(`${casaBackBtn()}
+   ${handySays(`En ${S.n.toLowerCase()} (${S.meses}) conviene revisar esto. Te cuento por qué cada uno, y si querés te guío para hacerlo.`)}
+   <div class="list" style="margin-top:16px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<div class="card task ${ok ? 'done' : ''}">
+      <div class="r1"><span class="ic">${ico(t.quien === 'pro' ? 'tool' : S.ico)}</span><div style="min-width:0;flex:1"><h3>${esc(t.n)}</h3><div class="why"><b>Por qué:</b> ${esc(t.why)}</div>
       <div class="sub" style="margin-top:8px">${ok ? `<span class="ok">${ico('check')} Hecho · ${ago(ok)}</span>` : t.quien === 'pro' ? `<span class="warn">Con ${t.rubro === 'Gas' ? 'gasista matriculado' : t.rubro === 'Electricidad' ? 'electricista matriculado' : 'profesional'}</span>` : '<span>Lo podés hacer vos</span>'}</div></div></div>
       ${ok ? '' : `<div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="mantDone" data-v="${t.id}">Ya lo hice</button><button class="btn p sm" style="flex:1" data-a="mantGo" data-v="${t.id}">${t.quien === 'pro' ? 'Pedir profesional' : 'Cómo se hace'}</button></div>`}</div>`; }).join('')}</div>
-    <p class="hint" style="margin-top:8px">${ico(next.ico).replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Próxima temporada (${next.n.toLowerCase()}): ${esc(next.tasks.map(t => t.n.toLowerCase()).join(', '))}.</p></div>
-   <div class="sec"><h3 class="sh">Historial de la casa</h3>
-    ${items.length ? `<div class="card"><ul class="hist">${items.map(x => `<li ${x.jid ? `data-a="job" data-v="${x.jid}" style="cursor:pointer"` : ''}>
-      <span class="ic ${x.t}">${ico(x.t === 'pro' ? 'tool' : x.t === 'mant' ? S.ico : 'check')}</span>
-      <div style="min-width:0"><h3 style="font-size:16px">${esc(x.caso)}</h3><div class="small mut">${x.t === 'pro' ? `${esc(x.prov)} · <span class="num">${money(x.precio)}</span>` : x.t === 'mant' ? 'Mantenimiento preventivo' : `Lo resolviste vos · ahorraste ≈ ${money(x.ahorro || 0)}`}</div></div>
-      <span class="when">${ago(x.ts)}</span></li>`).join('')}</ul></div>
-      <p class="hint" style="margin-top:8px">Gastado en profesionales: <b class="num">${money(gastado)}</b></p>`
-    : emptyState('home', 'Todavía no hay arreglos', 'Cada problema que resuelvas o trabajo que contrates queda guardado acá.', ['Contale a Handy', 'chat'])}</div>`);
+   <p class="hint" style="margin-top:12px">${ico(next.ico).replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Después, en ${next.n.toLowerCase()}: ${esc(next.tasks.map(t => t.n.toLowerCase()).join(', '))}.</p>`);
+}
+function vHerr() {
+  view(`${casaBackBtn()}
+   ${handySays('Con estas herramientas resolvés casi todos los arreglos chicos de la casa. No hace falta comprarlas todas juntas: cuando te guío en un arreglo, te digo cuáles necesitás.')}
+   <div class="list" style="margin-top:16px">${KIT.map(([ic, n, a]) => `<div class="card mat"><span class="ic">${ico(ic)}</span><div style="min-width:0"><h3>${esc(n)}</h3><span class="ask">${esc(a)}</span></div></div>`).join('')}</div>
+   <button class="btn w" style="margin-top:16px" data-a="ferre" data-v="casa">${ico('pin')} Ver ferreterías cerca</button>`);
+}
+function vFerre() {
+  view(`${casaBackBtn()}
+   ${handySays('Estas son las ferreterías y comercios que tenés cerca. Las que tienen el sello de HandyGo son comercios adheridos.')}
+   <div class="sec" style="margin-top:16px">
+    <div id="mapBox" class="mapbox"></div>
+    <div class="row" style="margin-top:12px;flex-wrap:nowrap"><button class="btn sm" data-a="locate" id="locBtn" style="flex:none">${ico('pin')} ${LOC ? 'Actualizar ubicación' : 'Usar mi ubicación'}</button><span class="hint" id="locMsg" style="margin:0">${LOC ? 'Mostrando lo que hay cerca tuyo' : 'Mostrando el centro de CABA'}</span></div>
+    <div class="list" id="ferList" style="margin-top:12px"></div></div>
+   <div class="sec"><div class="ad"><span class="lg">T</span><div style="min-width:0"><span class="eyebrow">Publicidad</span><div><b>Tigre Sanitarios</b> · Flotantes y sifones con garantía de 2 años.</div></div></div></div>`);
+  initMap();
 }
 ACT.mantDone = id => { const u = me(), S = SEASONS[seasonNow()], t = S.tasks.find(x => x.id === id);
   (u.mant = u.mant || {})[seasonKey() + '-' + id] = Date.now(); (u.hist = u.hist || []).push({t:'mant', caso:t.n, ts:Date.now()}); save(); toast('Guardado en tu historial'); render(); };
-ACT.mantGo = id => { const t = SEASONS[seasonNow()].tasks.find(x => x.id === id); V.tab = 'chat'; V.job = null; render(); setTimeout(() => go(t.chat, false), 150); };
+ACT.mantGo = id => { const t = SEASONS[seasonNow()].tasks.find(x => x.id === id); V.tab = 'chat'; V.job = null; V.casa = null; render(); setTimeout(() => go(t.chat, false), 150); };
 
 /* ============================================================
    AGENDA (prestador)
@@ -2215,13 +2528,15 @@ function vPer() {
      <div class="stat" style="margin-top:12px"><div class="card"><b>${avg(u) === 'Nuevo' ? '—' : String(avg(u)).replace('.', ',')}</b><span>${u.rev.length} reseñas</span></div><div class="card"><b class="num" style="font-size:24px">${money(fin.reduce((a, j) => a + j.precio, 0))}</b><span>cobrado en ${fin.length} trabajo${fin.length === 1 ? '' : 's'}</span></div></div>
      ${(u.esp || []).length ? `<div class="sec"><h3 class="sh">Especialidades</h3><div class="meta">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div></div>` : ''}
      ${(u.port || []).length ? `<div class="sec"><h3 class="sh">Trabajos realizados</h3><div class="port">${u.port.map(x => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
-     ${u.rev.length ? `<div class="sec"><h3 class="sh">Tus reseñas</h3><div class="card stack">${u.rev.slice().reverse().map(r => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}</div>`).join('')}</div></div>` : ''}
+     <div class="sec"><button class="card casaitem" data-a="plus"><span class="ci">${MARK}</span><span class="ct"><b>HandyGo+ ${u.plus ? '<span class="tag plus" style="margin-left:4px">Activo</span>' : ''}</b><span class="small mut">${u.plus ? 'Tu sello, la prioridad y las estadísticas de tu zona' : 'Prioridad en pedidos, sello de confianza y menos comisión'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button></div>
+     ${u.vis || u.min || u.radio ? `<div class="sec"><h3 class="sh">Tus condiciones</h3><div class="card conds">${u.vis ? `<div><span>Visita</span><b class="num">${money(u.vis)}</b>${u.visDesc ? '<small>Se descuenta si hacés el trabajo</small>' : ''}</div>` : ''}${u.min ? `<div><span>Trabajo mínimo</span><b class="num">${money(u.min)}</b></div>` : ''}${u.radio ? `<div><span>Trabajás</span><b>${esc(u.radio)}</b></div>` : ''}</div></div>` : ''}
+     ${u.rev.length ? `<div class="sec"><h3 class="sh">Tus reseñas</h3><div class="card stack">${u.rev.map((r, i) => [r, i]).reverse().map(([r, i]) => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}${r.resp ? `<div class="reply"><b>Tu respuesta</b>${esc(r.resp)}</div>` : ''}<button class="textlink" style="margin-top:6px" data-a="replyRev" data-v="${i}">${r.resp ? 'Editar respuesta' : 'Responder'}</button></div>`).join('')}</div></div>` : ''}
      ${tail()}`);
   }
 }
 /* ---------- editar perfil ---------- */
 let EDIT = null;
-ACT.edit = () => { const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; VER = {tel:"", code:"", ok:u.telN || "", until:0}; V.edit = true; vEdit(); };
+ACT.edit = () => { const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; V.edit = true; vEdit(); };
 ACT.quitarFoto = () => { EDIT.foto = null; vEdit(); };
 ACT.quitarPort = i => { EDIT.port.splice(+i, 1); vEdit(); };
 ACT.cancelEdit = () => { V.edit = false; EDIT = null; render(); };
@@ -2229,18 +2544,23 @@ function vEdit() {
   const u = me(), p = DB.cur.t === 'p';
   const keep = id => { const el = $('#' + id); return el ? el.value : null; };
   const cur = {nombre:keep('e_nombre') ?? u.nombre, usuario:keep('e_usuario') ?? (u.usuario || ''), tel:keep('e_tel') ?? (u.tel || ''), zona:keep('e_zona') ?? u.zona, dir:keep('e_dir') ?? (u.dir || ''),
-    bio:keep('e_bio') ?? (u.bio || ''), esp:keep('e_esp') ?? (u.esp || []).join(', '), hor:keep('e_hor') ?? (u.hor || ''), mat:keep('e_mat') ?? (u.mat || ''), anios:keep('e_anios') ?? (u.anios || '')};
+    bio:keep('e_bio') ?? (u.bio || ''), esp:keep('e_esp') ?? (u.esp || []).join(', '), hor:keep('e_hor') ?? (u.hor || ''), mat:keep('e_mat') ?? (u.mat || ''), anios:keep('e_anios') ?? (u.anios || ''),
+    radio:keep('e_radio') ?? (u.radio || 'Hasta 5 km'), min:keep('e_min') ?? (u.min || ''), vis:keep('e_vis') ?? (u.vis || ''), visDesc:$('#e_visd') ? $('#e_visd').checked : !!u.visDesc};
   const inp = (id, l, v, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
   view(`<button class="back" data-a="cancelEdit">${ico('back')} Perfil</button>
    <div class="stack" style="margin-top:16px">
     ${fotoPicker('editFoto', 'edit', EDIT.foto)}
     ${inp('e_nombre', 'Nombre y apellido', cur.nombre)}
     ${inp('e_usuario', 'Nombre de usuario', cur.usuario, 'text', 'Ej: sofi.martinez', 'Para ingresar sin el mail')}
-    ${telBlock('e_tel', cur.tel, !!u.telN && normTel(cur.tel) === u.telN)}
+    ${inp('e_tel', 'Celular (opcional)', cur.tel, 'tel', '11 2345 6789', 'Solo lo ve el profesional cuando confirmás un trabajo, para coordinar.')}
     ${inp('e_zona', p ? 'Zona donde trabajás' : 'Barrio', cur.zona)}
     ${p ? `
     ${inp('e_mat', 'Matrícula', cur.mat, 'text', '', ['Gas', 'Electricidad'].includes(u.rubro) ? 'Obligatoria para ' + u.rubro : 'Opcional en ' + u.rubro)}
     ${inp('e_anios', 'Años de experiencia', cur.anios, 'number')}
+    <label class="f" for="e_radio">¿Hasta dónde trabajás?<select id="e_radio">${['Solo mi barrio', 'Hasta 5 km', 'Hasta 10 km', 'Toda CABA'].map(o => `<option ${o === cur.radio ? 'selected' : ''}>${o}</option>`).join('')}</select><span class="hint">Si elegís “Solo mi barrio”, te llegan solo los pedidos de tu zona.</span></label>
+    ${inp('e_min', 'Trabajo mínimo (ARS)', cur.min, 'number', 'Ej: 15000', 'Opcional. Los clientes lo ven en tu perfil antes de pedirte presupuesto.')}
+    ${inp('e_vis', 'Precio de la visita (ARS)', cur.vis, 'number', 'Ej: 6000', 'Opcional. Lo que cobrás por ir a ver el problema.')}
+    <label class="chk"><input type="checkbox" id="e_visd" ${cur.visDesc ? 'checked' : ''}> La visita se descuenta si el cliente me contrata el trabajo</label>
     <label class="f" for="e_bio">Sobre vos<textarea id="e_bio" rows="3" placeholder="Contá tu experiencia y cómo trabajás">${esc(cur.bio)}</textarea></label>
     ${inp('e_esp', 'Especialidades', cur.esp, 'text', 'Ej: pérdidas, destapaciones, griferías', 'Separalas con comas')}
     <label class="f" for="e_hor">Horario de atención<select id="e_hor">${['Lunes a viernes, 8 a 18 h', 'Lunes a sábado, 8 a 19 h', 'Todos los días, 8 a 20 h', 'Urgencias 24 h'].map(o => `<option ${o === cur.hor ? 'selected' : ''}>${o}</option>`).join('')}</select></label>
@@ -2259,19 +2579,17 @@ ACT.saveEdit = async (x, btn) => {
     EDIT.foto = await upPhoto(EDIT.foto); EDIT.port = await Promise.all((EDIT.port || []).map(upPhoto)); if (btn) { btn.disabled = false; btn.textContent = 'Guardar cambios'; } }
   if (!v('e_nombre') || !v('e_zona')) { $('#err').textContent = 'Completá tu nombre y tu zona.'; return; }
   if (p && ['Gas', 'Electricidad'].includes(u.rubro) && !v('e_mat')) { $('#err').textContent = `Para ${u.rubro} la matrícula es obligatoria.`; return; }
-  const usu = v('e_usuario').toLowerCase(), tel = normTel(v('e_tel'));
+  const usu = v('e_usuario').toLowerCase();
   if ((usu || u.usuario) && !USU_RE.test(usu)) { $('#err').textContent = 'Revisá el nombre de usuario: de 3 a 20 letras o números, sin espacios ni acentos (podés usar . y _).'; return; }
-  if (v('e_tel') && !tel) { $('#err').textContent = 'Revisá el celular: código de área y número, sin 0 ni 15.'; return; }
-  if (tel && tel !== u.telN && VER.ok !== tel) { $('#err').textContent = 'Verificá el celular nuevo con el código que te mandamos.'; return; }
-  if ((usu && usu !== u.usuario) || (tel && tel !== u.telN)) {
-    try { const d = await libre(usu !== u.usuario ? usu : null, tel !== u.telN ? tel : null);
-      if (!d.usuario) { $('#err').textContent = 'Ese nombre de usuario ya existe. Probá con otro.'; return; }
-      if (!d.tel) { $('#err').textContent = 'Ese celular ya está registrado en otra cuenta.'; return; } }
+  if (v('e_tel') && v('e_tel').replace(/\D/g, '').length < 8) { $('#err').textContent = 'Revisá el celular: código de área y número.'; return; }
+  if (usu && usu !== u.usuario) {
+    try { const d = await libre(usu, null); if (!d.usuario) { $('#err').textContent = 'Ese nombre de usuario ya existe. Probá con otro.'; return; } }
     catch (e) { $('#err').textContent = 'No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.'; return; }
   }
-  Object.assign(u, {nombre:v('e_nombre'), tel:v('e_tel'), zona:v('e_zona'), foto:EDIT.foto});
-  if (usu) u.usuario = usu; if (tel) u.telN = tel;
-  if (p) Object.assign(u, {mat:v('e_mat'), anios:+v('e_anios') || 0, bio:v('e_bio'), esp:v('e_esp').split(',').map(x => x.trim()).filter(Boolean).slice(0, 8), hor:v('e_hor'), port:EDIT.port});
+  Object.assign(u, {nombre:v('e_nombre'), tel:v('e_tel').slice(0, 30), zona:v('e_zona'), foto:EDIT.foto});
+  if (usu) u.usuario = usu;
+  if (p) Object.assign(u, {mat:v('e_mat'), anios:+v('e_anios') || 0, bio:v('e_bio'), esp:v('e_esp').split(',').map(x => x.trim()).filter(Boolean).slice(0, 8), hor:v('e_hor'), port:EDIT.port,
+    radio:v('e_radio'), min:Math.max(0, +v('e_min') || 0), vis:Math.max(0, +v('e_vis') || 0), visDesc:$('#e_visd').checked});
   else u.dir = v('e_dir');
   try { save(); } catch (e) {}
   V.edit = false; EDIT = null; toast('Perfil actualizado'); render();
@@ -2289,7 +2607,7 @@ ACT.legal = () => sheet(`<span class="eyebrow">Versión ${LEGAL_V}</span><h2>Té
   <h3>Consultas al asistente</h3>
   <p>Cada problema distinto usa una consulta. Las consultas no son reembolsables ni se pueden transferir a otra cuenta.</p>
   <h3>Qué datos guardamos</h3>
-  <ul><li>Tu cuenta: nombre, mail, celular, barrio y, si la cargás, tu dirección y foto.</li>
+  <ul><li>Tu cuenta: nombre, mail, barrio, celular si lo cargás y, si la cargás, tu dirección y foto.</li>
   <li>Tus pedidos, mensajes, presupuestos, turnos y reseñas.</li>
   <li>Lo que le contás al asistente (texto, fotos y audios) para responderte.</li>
   <li>Tu ubicación, solo si la compartís, para mostrarte comercios cercanos. No la guardamos.</li></ul>
