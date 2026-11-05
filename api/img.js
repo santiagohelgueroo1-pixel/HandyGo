@@ -363,7 +363,7 @@ module.exports = async (req, res) => {
   const no = msg => { res.setHeader('Cache-Control', 'no-store'); return res.status(400).json({ ok: false, error: msg }); };
   // Solo se aceptan las direcciones que arma la app: así nadie puede saltear la caché con parámetros inventados
   if (Object.keys(q).some(k => !PERMITIDOS.has(k) || Array.isArray(q[k]))) return no('Parámetro inválido');
-  if (q.v !== undefined && q.v !== '3' && q.v !== '4') return no('Versión inválida');
+  if (q.v !== undefined && !['3', '4', '5'].includes(q.v)) return no('Versión inválida');
   if (q.r !== undefined && q.r !== '1') return no('Parámetro inválido');
   if (q.g !== undefined && !/^\d{1,2}$/.test(String(q.i || ''))) return no('Paso inválido');
   if (q.p !== undefined && (String(q.p).length > 400 || !firmaValida(String(q.p), q.s))) return no('Imagen no autorizada');
@@ -376,12 +376,29 @@ module.exports = async (req, res) => {
   if (!subject) { res.setHeader('Cache-Control', 'no-store'); return res.status(404).json({ ok: false, error: 'Paso desconocido' }); }
 
   const prompt = `${subject}. ${q.k ? KSTYLE : STYLE}`;
+  // Guardado permanente (Supabase Storage): cada imagen se genera una sola vez en la vida de la app.
+  // Si ya existe, se redirige al archivo guardado, que carga al instante.
+  const sbUrl = process.env.SUPABASE_URL, sbKey = process.env.SUPABASE_SERVICE_KEY;
+  const path = q.t ? `t/${String(q.t).replace(/[^\w-]/g, '_')}-v${q.v || 3}.jpg` : q.p ? `p/${seedOf(prompt)}-${String(q.p).length}.jpg` : q.k ? `k/${String(q.k).replace(/[^\w-]/g, '_')}.jpg` : '';
+  const pub = sbUrl && sbKey && path ? `${sbUrl}/storage/v1/object/public/piezas/${path}` : '';
+  if (pub && !q.r) {
+    try {
+      const h = await fetch(pub, { method: 'HEAD', signal: AbortSignal.timeout(2500) });
+      if (h.ok) { res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=31536000, immutable'); res.setHeader('Location', pub); return res.status(302).end(); }
+    } catch (e) { /* si no responde, se genera igual */ }
+  }
   try {
     // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
     const first = q.k ? dev(acct, token, prompt).catch(e => { console.error('dev:', e.message); return klein(acct, token, prompt, 640, 640, 11000); }) : klein(acct, token, prompt, 512, 512);
     const img = await first.catch(e => { console.error('klein:', e.message); return schnell(acct, token, prompt); });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
+    if (pub) {
+      try {
+        await fetch(`${sbUrl}/storage/v1/object/piezas/${path}`, { method: 'POST', signal: AbortSignal.timeout(4000),
+          headers: { apikey: sbKey, Authorization: 'Bearer ' + sbKey, 'content-type': isPng ? 'image/png' : 'image/jpeg', 'x-upsert': 'true', 'cache-control': '31536000' }, body: img });
+      } catch (e) { console.error('guardar:', e.message); }
+    }
     // Se guarda en la CDN de Vercel: cada imagen se genera una sola vez
     res.setHeader('Cache-Control', 'public, max-age=2592000, s-maxage=31536000, immutable');
     return res.status(200).send(img);
