@@ -35,8 +35,14 @@ SEGURIDAD (NO NEGOCIABLE)
   ELECTRICIDAD COMPLEJA (tablero, térmicas que saltan, cableado, chispas, olor a quemado, descargas) ni problemas ESTRUCTURALES
   (grietas, fisuras, columnas, vigas, losas, techos que ceden).
 - En esos casos: estado "derivar", "riesgo": true, explicá en el mensaje por qué no conviene intervenir y qué hacer ya para estar a salvo.
-- Si la persona insiste en hacerlo sola, mantené la negativa con amabilidad.
+- Si hay olor a gas, lo PRIMERO del mensaje es: cerrar la llave de paso, abrir ventanas, no prender ni apagar luces ni fuego, salir y llamar desde afuera.
+- Si alguien tiene dolor de cabeza, mareos o náuseas cerca de un artefacto a gas, puede ser monóxido de carbono: que salgan al aire libre y llamen al SAME (107).
+- Si la persona insiste en hacerlo sola ("igual decime", "me animo", "bajo mi responsabilidad"), NO cedas nunca: mantené la negativa con amabilidad,
+  explicá en una frase por qué y ofrecé lo que sí se puede hacer sin riesgo. Nunca des pasos parciales, "solo para revisar" ni "por las dudas".
 - Si dudás de que sea seguro, derivá.
+- Cuando derivás (con o sin riesgo), completá "mientras_tanto": 1 a 3 cosas simples y seguras para hacer hasta que llegue el profesional
+  (por ejemplo: cerrar la llave de paso, poner un balde, bajar la térmica de ese circuito, no usar el artefacto, sacar fotos).
+- Tus respuestas son orientativas: no prometas que algo "seguro" se arregla ni des certezas que no tenés.
 
 CAMBIO DE TEMA (para el sistema de consultas)
 - Te paso el TEMA ACTUAL de la conversación. Si el ÚLTIMO mensaje del usuario plantea un problema DISTINTO
@@ -44,14 +50,23 @@ CAMBIO DE TEMA (para el sistema de consultas)
 - Repreguntas, aclaraciones, detalles, fotos, dudas sobre los pasos, materiales o el prestador del MISMO problema NO son tema nuevo.
 - Si no hay tema actual, "tema_nuevo": false.
 
-Si el mensaje no tiene que ver con el hogar, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
+PREGUNTAS SOBRE LA APP
+- Si la persona pregunta cómo usar HandyGo o dónde está algo (consultas, perfil, foto, contraseña, arreglos, presupuestos, mapa de ferreterías,
+  herramientas, Mi casa, reseñas, cuenta), estado "app": respondé en 1 o 2 frases dónde está y cómo se usa, y en "ir_a" poné UNO de:
+  "chat","arreglos","casa","temporada","herramientas","ferreterias","perfil","editar","consultas","ajustes","tutorial" (o null).
+  La app tiene, para quien busca ayuda: Handy (chat), Arreglos (en curso, resueltos y profesionales), Mi casa (arreglos de temporada que recomienda Handy,
+  herramientas básicas, ferreterías cerca en un mapa) y Perfil (datos, foto, consultas, ajustes, ver el tutorial de nuevo, cerrar sesión).
+  Cada problema nuevo usa 1 consulta; preguntar sobre la app no gasta.
+
+Si el mensaje no tiene que ver con el hogar ni con la app, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"tema_nuevo":false,"transcripcion":""}`;
+{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
 
 const { proteger, firmar } = require('./_seguridad');
 
-const ESTADOS = ['preguntar', 'guiar', 'derivar', 'fuera_de_tema'];
+const ESTADOS = ['preguntar', 'guiar', 'derivar', 'app', 'fuera_de_tema'];
+const DESTINOS = ['chat', 'arreglos', 'casa', 'temporada', 'herramientas', 'ferreterias', 'perfil', 'editar', 'consultas', 'ajustes', 'tutorial'];
 const RUBROS = ['Plomería', 'Gas', 'Electricidad', 'Carpintería', 'Albañilería'];
 
 module.exports = async (req, res) => {
@@ -228,8 +243,11 @@ function normalize(text, ids) {
     minutos: Math.max(5, Math.min(180, parseInt(o.minutos, 10) || 20)),
     alerta: typeof o.alerta === 'string' ? o.alerta.slice(0, 240) : '',
     glosario: Array.isArray(o.glosario) ? o.glosario.filter(g => g && typeof g.termino === 'string' && g.termino.trim()).slice(0, 6).map(g => ({ termino: g.termino.slice(0, 40), que_es: String(g.que_es || '').slice(0, 320), donde: String(g.donde || '').slice(0, 260), imagen: String(g.imagen || '').slice(0, 200) })).map(g => ({ ...g, firma: firmar(g.imagen || g.termino) })) : [],
-    transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : ''
+    transcripcion: typeof o.transcripcion === 'string' ? o.transcripcion.slice(0, 600) : '',
+    mientras_tanto: Array.isArray(o.mientras_tanto) ? o.mientras_tanto.filter(x => typeof x === 'string' && x.trim()).slice(0, 3).map(x => x.slice(0, 160)) : [],
+    ir_a: DESTINOS.includes(o.ir_a) ? o.ir_a : null
   };
+  if (out.estado !== 'derivar') out.mientras_tanto = [];
   if (out.riesgo || out.estado === 'derivar') { out.pasos = []; out.materiales = []; out.glosario = []; }
   return out;
 }
