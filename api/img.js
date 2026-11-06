@@ -757,7 +757,7 @@ module.exports = async (req, res) => {
   const sbUrl = process.env.SUPABASE_URL, sbKey = process.env.SUPABASE_SERVICE_KEY;
   const path = q.t ? `t/${String(q.t).replace(/[^\w-]/g, '_')}-v${q.v || 3}.jpg` : q.p ? `p/${seedOf(prompt)}-${String(q.p).length}.jpg` : q.k ? `k/${String(q.k).replace(/[^\w-]/g, '_')}.jpg` : '';
   const pub = sbUrl && sbKey && path ? `${sbUrl}/storage/v1/object/public/piezas/${path}` : '';
-  if (pub && !q.r) {
+  if (pub) {
     try {
       const h = await fetch(pub, { method: 'HEAD', signal: AbortSignal.timeout(2500) });
       if (h.ok) { res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=31536000, immutable'); res.setHeader('Location', pub); return res.status(302).end(); }
