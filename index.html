@@ -2151,12 +2151,19 @@ function piezasHTML(tut) {
 // Carga las fotos de las piezas de a 4 a la vez (las ya guardadas aparecen al instante)
 const IMG_Q = []; let IMG_ON = 0;
 function pumpImgs() {
-  while (IMG_ON < 2 && IMG_Q.length) {
+  const gal = location.hash === '#imagenes';
+  while (IMG_ON < (gal ? 1 : 2) && IMG_Q.length) {
     const [el, src] = IMG_Q.shift(); if (!el.isConnected) continue;
-    IMG_ON++; const img = new Image(); img.alt = ''; img.decoding = 'async';
+    IMG_ON++; const img = new Image(), t0 = Date.now(); img.alt = ''; img.decoding = 'async';
     const done = () => { IMG_ON--; pumpImgs(); };
-    img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } done(); };
-    img.onerror = () => { done(); if (!img.dataset.r && el.isConnected) { img.dataset.r = 1; setTimeout(() => { IMG_Q.push([el, src + '&r=1']); pumpImgs(); }, 6000); } };
+    img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } if (gal && Date.now() - t0 > 2000) setTimeout(done, 2500); else done(); };
+    img.onerror = () => {
+      const n = (+el.dataset.try || 0) + 1; el.dataset.try = n;
+      // En la galería se reintenta varias veces con pausa (el servicio gratis limita los pedidos por minuto)
+      const tope = gal ? 6 : 1, espera = gal ? 15000 : 6000;
+      if (n <= tope && el.isConnected) { if (gal) IMG_ON++; setTimeout(() => { if (gal) IMG_ON--; IMG_Q.push([el, src.replace(/&r=1$/, '') + '&r=1']); pumpImgs(); }, espera); }
+      done();
+    };
     img.src = src;
   }
 }
