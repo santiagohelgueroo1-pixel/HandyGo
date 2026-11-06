@@ -136,7 +136,8 @@ h3{font:600 16px/1.3 var(--f-display);margin:0}
 label.f{display:block;font:600 14px/1.3 var(--f-body)}
 label.f input,label.f select,label.f textarea{display:block;width:100%;margin-top:8px;border:2px solid var(--line);border-radius:12px;padding:12px;background:var(--surface);font-weight:400}
 label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--pri);outline:none}
-  box-shadow:0 16px 40px -12px rgba(0,0,0,.45);display:flex;gap:12px;align-items:flex-start;transform:translateY(-140%);transition:transform .35s cubic-bezier(.2,.8,.2,1);cursor:pointer}
+.gside input,input#e_espn{display:block;width:100%;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);font:400 15px/1.3 var(--f-body);color:var(--ink)}
+.gside input:focus,input#e_espn:focus{border-color:var(--pri);outline:none}
 .hint{font-size:14px;color:var(--mut);font-weight:400;margin-top:4px;display:block}
 .err{color:var(--bad);font-weight:600;font-size:14px;min-height:20px}
 
@@ -370,6 +371,39 @@ label.chk input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:
 .casaitem.big{padding:12px}
 .casaitem.done .cimg{opacity:.55}
 .okt{color:var(--ok);font-weight:600}
+.offband{display:flex;gap:12px;align-items:center;background:var(--warnSoft);color:var(--warnInk);border-radius:var(--r);padding:12px 14px;margin-bottom:16px}
+.offband>svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75}
+.offband>div{flex:1;min-width:0;display:flex;flex-direction:column}.offband .btn{flex:none}
+.jobcard.pcard{display:flex;align-items:center;gap:12px;text-align:left}
+.pcard .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.pcard .ct b{font:600 16px/1.3 var(--f-display)}
+.pcard .ct .small svg{width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75}
+.pcard .meta:empty{display:none}
+.pcard .go{width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:var(--mut);stroke-width:1.75;flex:none}
+.armado .todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.armado .todo button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:10px 0;text-align:left;color:var(--ink);cursor:pointer}
+.armado .todo li+li button{border-top:1px solid var(--line)}
+.armado .todo .tb{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none}
+.armado .todo .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.armado .todo .go{width:16px;height:16px;transform:rotate(180deg);fill:none;stroke:var(--mut);stroke-width:1.75;flex:none}
+.gal{display:grid;grid-auto-flow:column;grid-auto-columns:42%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:12px;padding-bottom:4px;scrollbar-width:none}
+.gal::-webkit-scrollbar{display:none}
+.gal .gph{position:relative;aspect-ratio:1;border:0;padding:0;border-radius:14px;overflow:hidden;background:var(--sunk);scroll-snap-align:start;cursor:pointer}
+.gal .gph.cover{grid-column:span 2;aspect-ratio:auto}
+.gal .gph img{width:100%;height:100%;object-fit:cover;display:block}
+.gal .gph span{position:absolute;left:0;right:0;bottom:0;padding:18px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font:600 12px/1.3 var(--f-body);text-align:left}
+.gal.pub{grid-auto-columns:70%}.gal.pub .gph.cover{grid-column:auto;aspect-ratio:1}
+.galempty{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;border:2px dashed var(--line);box-shadow:none;background:none;text-align:left;cursor:pointer;color:var(--ink)}
+.galempty .ct{display:flex;flex-direction:column;gap:2px}
+.gedit{display:flex;flex-direction:column;gap:12px}
+.gitem{display:flex;gap:12px;padding:10px}
+.gimg{position:relative;width:96px;height:96px;flex:none;border-radius:10px;overflow:hidden;background:var(--sunk)}
+.gimg img{width:100%;height:100%;object-fit:cover}
+.gcov{position:absolute;left:6px;top:6px;font-size:11px}
+.gside{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;justify-content:space-between}
+.gside .btn svg{width:14px;height:14px}
+.gadd{cursor:pointer}
+.lbox{border-radius:16px;overflow:hidden;background:var(--sunk)}.lbox img{width:100%;display:block;max-height:60vh;object-fit:contain}
 .galgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-bottom:24px}
 .galcat{margin:22px 0 10px;font-size:16px}
 .galitem{display:flex;flex-direction:column;gap:4px;font-size:12px}
@@ -480,6 +514,7 @@ img.av{object-fit:cover;background:var(--sunk)}
 .seg{display:inline-flex;background:var(--sunk);border-radius:12px;padding:4px;gap:4px}
 .seg button{border:0;background:none;padding:8px 16px;border-radius:9px;font:600 14px/1 var(--f-body);color:var(--mut)}
 .seg button.on{background:var(--surface);color:var(--pri);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg.segw button{white-space:nowrap;padding:8px 6px}
 .cmpwrap{overflow-x:auto;margin-top:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
 table.cmp{border-collapse:collapse;width:100%;min-width:440px;font-size:14px}
 table.cmp th,table.cmp td{padding:12px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
@@ -1021,7 +1056,7 @@ const SEED_BIO = {
   p10:['Albañilería general y pintura.', ['Pintura', 'Revoques', 'Pisos']]
 };
 PROVS.forEach(p => { if (SEED_BIO[p.id]) { p.bio = SEED_BIO[p.id][0]; p.esp = SEED_BIO[p.id][1]; p.hor = 'Lunes a sábado, 8 a 19 h'; } });
-const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], rev:p.rev.map(r => [r.from, r.c || '', r.s, r.resp || '']), vis:p.vis, visDesc:p.visDesc, min:p.min, radio:p.radio, plus:p.plus} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
+const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], portTxt:p.portTxt || [], rev:p.rev.map(r => [r.from, r.c || '', r.s, r.resp || '']), vis:p.vis, visDesc:p.visDesc, min:p.min, radio:p.radio, plus:p.plus} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
 /* ---------- agenda y turnos ---------- */
 const FR = {m:'9 a 12 h', t:'14 a 18 h'}, FRN = {m:'Mañana', t:'Tarde'};
 const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], DOWL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -1057,7 +1092,7 @@ function advance(jid, k, actor) {
   save();
   if (DB.cur && DB.cur.t === 'u' && DB.cur.id === j.uid) toast('Trabajo terminado: contanos cómo te fue');
   if (DB.cur && DB.cur.t === 'p' && DB.cur.id === j.prov && k === 3 && j.uid === 'demo') toast(`${un} confirmó que el trabajo terminó`);
-  if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
+  if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'neg' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
 }
 
 /* ---------- mantenimiento por temporada (hemisferio sur) ---------- */
@@ -1149,13 +1184,14 @@ document.addEventListener('focusout', e => { if (e.target.matches && e.target.ma
 })();
 function swipeNav(dir) {
   // En una pantalla interna, deslizar hacia la derecha vuelve atrás (como en el resto de las apps)
-  const inner = V.job || V.edit || V.casa || V.guia || V.tab === 'mat';
+  const inner = V.job || V.edit || V.casa || V.neg || V.guia || V.tab === 'mat';
   if (inner) {
     if (dir !== 'prev') return;
     if (V.job) return ACT.backJob();
     if (V.guia) return ACT.backGuia();
     if (V.edit) return ACT.cancelEdit();
     if (V.casa) return ACT.casaBack();
+    if (V.neg) return ACT.negBack();
     return ACT.matBack();
   }
   // En Arreglos, primero se recorren sus solapas
@@ -1182,7 +1218,7 @@ document.addEventListener('change', async e => {
   try {
     if (el.dataset.ph === 'reg') { REG.foto = await readPhoto(f, 256); $('#regAv').innerHTML = `<img src="${safeImg(REG.foto)}" alt="Tu foto">`; }
     if (el.dataset.ph === 'edit') { EDIT.foto = await readPhoto(f, 256); vEdit(); }
-    if (el.dataset.ph === 'port') { if ((EDIT.port || []).length >= 6) { toast('Podés subir hasta 6 fotos'); return; } EDIT.port = [...(EDIT.port || []), await readPhoto(f, 700)]; vEdit(); }
+    if (el.dataset.ph === 'port') { if ((EDIT.port || []).length >= 9) { toast('Podés subir hasta 9 fotos'); return; } keepPortTxt(); EDIT.port = [...(EDIT.port || []), await readPhoto(f, 900)]; vEdit(); }
   } catch (err) { toast('No se pudo cargar esa imagen'); }
 });
 const fotoPicker = (id, ph, foto, name) => `<div class="avpick"><label class="av lg" for="${id}" id="${ph === 'reg' ? 'regAv' : 'editAv'}" aria-label="Elegir foto">${foto ? `<img src="${safeImg(foto)}" alt="Tu foto">` : ico('cam')}</label>
@@ -1383,7 +1419,7 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLO
    ESTRUCTURA DE LA APP
    ============================================================ */
 const TABS = {u:[['chat', 'Handy', 'chat'], ['ped', 'Arreglos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
-              p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['agenda', 'Agenda', 'cal'], ['per', 'Perfil', 'user']]};
+              p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['neg', 'Mi negocio', 'tool'], ['per', 'Perfil', 'user']]};
 function enter() {
   V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null;
   const needTour = !me().tour; if (needTour) TOUR_ON = true;
@@ -1405,11 +1441,11 @@ const TOURS = {
   ],
   p:[
     {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Charlo con los clientes para entender el problema y te lo paso ordenado, así no arrancás de cero. Te muestro cómo funciona.', tab:'ped'},
-    {sel:'#nav [data-v="ped"]', tab:'ped', ic:'inbox', lbl:'Pedidos nuevos', t:'Pedidos de tu zona', d:'Te llegan los pedidos de tu rubro con el resumen que armo yo: qué pasa, fotos, qué tipo de vivienda es y qué tocó el cliente. Desde ahí mandás tu presupuesto.'},
-    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'clip', lbl:'Trabajos', t:'Tus trabajos', d:'Seguís tus presupuestos y trabajos, y hablás con cada cliente. Cuando terminás, lo marcás como terminado.'},
-    {sel:'#nav [data-v="agenda"]', tab:'agenda', ic:'cal', lbl:'Agenda', t:'Tu agenda', d:'Marcá qué días y horarios trabajás. Los clientes eligen el turno según tu disponibilidad.'},
+    {sel:'#nav [data-v="ped"]', tab:'ped', ic:'inbox', lbl:'Pedidos', t:'Pedidos de tu zona', d:'Te llegan los pedidos de tu rubro con el resumen que armo yo: qué pasa, fotos y qué tocó el cliente. Desde ahí mandás tu presupuesto.'},
+    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'clip', lbl:'Trabajos', t:'Tus trabajos', d:'En curso, presupuestados y terminados, cada uno en su pestaña. Ahí hablás con cada cliente y ves lo que cobraste.'},
+    {sel:'#nav [data-v="neg"]', tab:'neg', ic:'tool', lbl:'Mi negocio', t:'Tu negocio', d:'Tu agenda, tus precios y condiciones, tus reseñas y HandyGo+. Cada cosa en su lugar.'},
     {sel:'#hpill', ic:'check', lbl:'Disponible', t:'Pausar pedidos', d:'Tocá acá cuando no puedas tomar trabajos nuevos.'},
-    {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Tu matrícula, tu zona, el trabajo mínimo, el precio de la visita y fotos de trabajos. Un perfil completo genera más confianza.'},
+    {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Armalo por partes: foto, presentación, galería de trabajos y tu oficio. Te marco qué te falta para que quede completo.'},
     {t:'Listo', d:'Te aviso cuando entre un pedido para vos.', tab:'ped', last:'Empezar'}
   ]
 };
@@ -1427,7 +1463,7 @@ function tourStep() {
   const el = $('#tour'); if (!el) return;
   const st = TOUR_STEPS[TOUR_I];
   // Handy te lleva a cada sección mientras te la explica
-  if (st.tab && (V.tab !== st.tab || V.job || V.casa || V.edit)) { V.tab = st.tab; V.job = null; V.casa = null; V.edit = false; NEXT_ANIM = 'fade'; render(); }
+  if (st.tab && (V.tab !== st.tab || V.job || V.casa || V.neg || V.edit)) { V.tab = st.tab; V.job = null; V.casa = null; V.neg = null; V.edit = false; NEXT_ANIM = 'fade'; render(); }
   const dev = $('#device').getBoundingClientRect(), hole = el.querySelector('.hole'), card = el.querySelector('.tcard');
   const tg = st.sel && document.querySelector(st.sel);
   card.innerHTML = `<div class="ti">${MARK.replace('class="mark"', '')}<div style="min-width:0"><span class="who2">Handy${st.lbl ? ` · <span class="lbl">${ico(st.ic)} ${st.lbl}</span>` : ''}</span><h3>${st.t}</h3></div></div><p>${st.d}</p>
@@ -1456,7 +1492,7 @@ ACT.tourEnd = () => {
 };
 ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'ped'; V.job = null; render(); setTimeout(startTour, 200); };
 window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
-ACT.tab = t => { if (V.tab !== t || V.job || V.edit || V.casa || V.guia) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; V.guia = null; render(); };
+ACT.tab = t => { if (String(t).startsWith('neg:')) return ACT.neg(t.slice(4)); if (V.tab !== t || V.job || V.edit || V.casa || V.neg || V.guia) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; V.neg = null; V.guia = null; render(); };
 function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
@@ -1469,8 +1505,8 @@ function render() {
   const u = me(); if (!u) { DB.cur = null; return welcome(); }
   document.body.className = c.t === 'p' ? 'prov' : '';
   $('#top').hidden = false;
-  const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Arreglos' : 'Pedidos nuevos', casa:'Mi casa', per:'Perfil', trab:'Mis trabajos', agenda:'Agenda'};
-  $('#ht').textContent = V.guia && V.tab === 'ped' ? 'Tu guía' : V.job ? (c.t === 'u' ? 'Mi arreglo' : 'Pedido') : V.edit ? 'Editar perfil' : (TT[V.tab] || 'HandyGo');
+  const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Arreglos' : 'Pedidos', casa:'Mi casa', per:'Perfil', trab:'Trabajos', neg:'Mi negocio'};
+  $('#ht').textContent = V.guia && V.tab === 'ped' ? 'Tu guía' : V.job ? (c.t === 'u' ? 'Mi arreglo' : 'Pedido') : V.edit ? (c.t === 'p' ? ({datos:'Foto y datos', present:'Presentación', galeria:'Galería', oficio:'Tu oficio'})[V.edit] || 'Editar perfil' : 'Editar perfil') : (TT[V.tab] || 'HandyGo');
   const inChat = V.tab === 'chat' && !V.job && c.t === 'u';
   const hs = $('#hs'); hs.className = ''; hs.textContent = '';
   const ha = $('#hacts'); ha.hidden = !inChat;
@@ -1483,7 +1519,7 @@ function render() {
   if (V.job) return vJob();
   if (V.guia && V.tab === 'ped') return vGuia();
   if (V.edit && V.tab === 'per') return vEdit();
-  ({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer, casa:vCasa, agenda:vAgenda})[V.tab]();
+  (({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer, casa:vCasa, neg:vNeg})[V.tab] || (c.t === 'u' ? vChat : vPedP))();
 }
 function renderNav() {
   const c = DB.cur; if (!c) return;
@@ -2462,13 +2498,13 @@ ACT.sendRev = () => {
 ACT.prof = id => {
   const p = provInfo(id);
   sheet(`<div class="top2" style="display:flex;gap:16px;align-items:center">${avatar(p.n, p.foto, 'lg')}<div><h2 style="margin:0">${esc(p.n)}</h2><span class="mut">${esc(p.r)} · ${esc(p.z || 'CABA')}</span></div></div>
+   ${(p.port || []).length ? `<div class="gal pub" data-noswipe style="margin-top:16px">${p.port.map((x, i) => `<button class="gph ${i ? '' : 'cover'}" data-a="verFoto" data-v="${esc(id)}|${i}"><img src="${safeImg(x)}" alt="${esc((p.portTxt || [])[i] || 'Trabajo realizado')}">${(p.portTxt || [])[i] ? `<span>${esc(p.portTxt[i])}</span>` : ''}</button>`).join('')}</div>` : ''}
    ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
    <div class="meta" style="margin:16px 0">${plusBadge(p)}<span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag mat">${ico('shield')} Matriculado · ${esc(p.m)}</span>` : `<span class="tag">Sin matrícula (no es obligatoria en ${esc((p.r || '').toLowerCase())})</span>`}</div>
    <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
    <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}${p.hor ? ' · ' + esc(p.hor) : ''}</p>
    ${p.vis || p.min || p.radio ? `<div class="card conds">${p.vis ? `<div><span>Visita</span><b class="num">${money(p.vis)}</b>${p.visDesc ? '<small>Se descuenta si hace el trabajo</small>' : ''}</div>` : ''}${p.min ? `<div><span>Trabajo mínimo</span><b class="num">${money(p.min)}</b></div>` : ''}${p.radio ? `<div><span>Trabaja</span><b>${esc(p.radio)}</b></div>` : ''}</div>` : ''}
    ${(p.esp || []).length ? `<h3 class="sh">Especialidades</h3><div class="meta" style="margin:8px 0 16px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
-   ${(p.port || []).length ? `<h3 class="sh">Trabajos realizados</h3><div class="port" style="margin:8px 0 16px">${p.port.map(x => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo realizado"></div>`).join('')}</div>` : ''}
    <h3 class="sh">Reseñas</h3><div class="card stack" style="margin-top:8px">${revHTML(p.rev)}</div>
    <button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
 };
@@ -2502,25 +2538,6 @@ ACT.whyPrice = i => {
     <h3 class="sh" style="margin-top:16px">¿Y si lo hago yo?</h3><p style="margin:8px 0 0">${esc(w.diy)}</p>
     <button class="btn g w" style="margin-top:20px" data-a="close">Entendido</button>`);
 };
-// HandyGo+ para prestadores
-ACT.plus = () => {
-  const u = me(), on = !!u.plus;
-  const inZona = DB.jobs.filter(j => j.rubro === u.rubro).length;
-  const li = (ic, t, d) => `<li><span class="wi">${ico(ic)}</span><div><b>${t}</b><span class="small mut">${d}</span></div></li>`;
-  sheet(`<div style="display:flex;gap:12px;align-items:center">${MARK.replace('class="mark"', 'class="mark" style="width:48px;height:48px"')}<div><h2 style="margin:0">HandyGo+</h2><span class="mut small">Para prestadores que quieren crecer</span></div></div>
-    ${on ? `<div class="card" style="margin-top:16px;background:var(--priSoft);box-shadow:none"><b>Tu suscripción está activa.</b><div class="small mut">Ya tenés el sello y la prioridad en los pedidos.</div></div>
-      <h3 class="sh" style="margin-top:16px">Demanda en tu zona</h3><div class="stat" style="margin-top:8px"><div class="card"><b class="num">${inZona}</b><span>pedidos de ${esc(u.rubro.toLowerCase())} este mes</span></div><div class="card"><b>${esc(u.zona.split(',')[0])}</b><span>tu zona</span></div></div>` : ''}
-    <ul class="whylist" style="margin-top:16px">
-      ${li('inbox', 'Prioridad en los pedidos', 'Los pedidos nuevos de tu rubro te llegan antes que al resto.')}
-      ${li('shield', 'Sello de perfil de alta confianza', 'Tu perfil y tus presupuestos se muestran con el sello HandyGo+.')}
-      ${li('eye', 'Estadísticas de tu zona', 'Qué se pide más, en qué barrios y en qué momento del año.')}
-      ${li('check', 'Menos comisión', 'Pagás menos comisión por cada trabajo cerrado en la app.')}
-    </ul>
-    ${on ? `<button class="btn g w" style="margin-top:16px" data-a="plusOff">Dar de baja</button>` : `<button class="btn p w" style="margin-top:16px" data-a="plusOn">Probar 30 días gratis</button><p class="hint" style="text-align:center">Podés darte de baja cuando quieras.</p>`}
-    <button class="btn g w" style="margin-top:8px" data-a="close">Cerrar</button>`);
-};
-ACT.plusOn = () => { const u = me(); u.plus = true; u.plusDesde = Date.now(); save(); closeSheet(); toast('¡Listo! Ya tenés HandyGo+'); render(); };
-ACT.plusOff = () => { const u = me(); u.plus = false; save(); closeSheet(); toast('Diste de baja HandyGo+'); render(); };
 // Responder reseñas
 ACT.replyRev = i => {
   const u = me(), r = u.rev[+i]; if (!r) return;
@@ -2601,22 +2618,249 @@ ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); if (DB.cur.t === 
 function provQueue() { const p = me(); if (!p || DB.cur.t !== 'p') return []; const barrio = String(p.zona || '').split(',')[0].trim().toLowerCase();
   return DB.jobs.filter(j => j.estado === 'nuevo' && j.rubro === p.rubro && !j.offers.some(o => o.pid === p.id) && !(p.desc || []).includes(j.id)
     && (p.radio !== 'Solo mi barrio' || !barrio || String(j.zona || '').toLowerCase().includes(barrio))); }
+/* ============================================================
+   PRESTADOR: pedidos, trabajos, Mi negocio y perfil
+   ============================================================ */
+const negBackBtn = () => `<button class="back" data-a="negBack">${ico('back')} Mi negocio</button>`;
+const perBackBtn = () => `<button class="back" data-a="cancelEdit">${ico('back')} Perfil</button>`;
 function vPedP() {
-  const p = me(), js = provQueue();
-  view(`<p class="mut small" style="margin-top:0">Clientes de tu zona que necesitan ${esc(p.rubro.toLowerCase())}, con el problema ya explicado.</p>
-   ${!p.on ? '<div class="card" style="margin-top:12px;border-color:var(--acc)"><b>Estás como “No disponible”.</b><div class="small mut">No vas a recibir pedidos nuevos hasta que te actives.</div></div>' : ''}
-   ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}">
-     <div class="r1"><h3>${esc(j.caso)}</h3><span class="mut small" style="font-family:var(--f-mono)">${esc(j.code)}</span></div>
-     <div class="small mut">${esc(j.desc)}</div>
-     <div class="sub"><span>${ico('pin')} ${esc(j.zona.split(',')[0])}</span>${j.img ? '<span class="sep">Con foto</span>' : ''}${j.hard ? '<span class="sep warn">Requiere matriculado</span>' : ''}</div></button>`).join('')}</div>`
-   : emptyState('inbox', 'No hay pedidos nuevos', 'Cuando un vecino de tu zona necesite ' + esc(p.rubro.toLowerCase()) + ', te llega acá con el resumen del caso.', ['Revisar mi agenda', 'agenda'])}`);
+  const p = me(), js = provQueue(), rub = p.rubro.toLowerCase();
+  view(`${!p.on ? `<div class="offband">${ico('alert')}<div><b>Estás como “No disponible”</b><span class="small">No te llegan pedidos nuevos.</span></div><button class="btn y sm" data-a="tog">Activarme</button></div>` : ''}
+   ${js.length ? handySays(`Te ${js.length === 1 ? 'llegó 1 pedido' : `llegaron ${js.length} pedidos`} de ${esc(rub)} en tu zona. Ya hablé con cada cliente: tocá uno y vas a ver el resumen.`) : ''}
+   ${js.length ? `<div class="list" style="margin-top:16px">${js.map(j => `<button class="card jobcard pcard" data-a="job" data-v="${j.id}">${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'tool', 'md')}
+     <span class="ct"><b>${esc(j.caso)}</b><span class="small mut">${ico('pin')} ${esc(j.zona.split(',')[0])} · ${ago(j.ts)}</span>
+     <span class="meta">${j.img ? `<span class="tag">${ico('cam')} Con foto</span>` : ''}${j.hard ? '<span class="tag warn">Requiere matriculado</span>' : ''}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`).join('')}</div>`
+   : emptyState('inbox', 'No hay pedidos nuevos', `Cuando un vecino de tu zona necesite ${esc(rub)}, te lo paso acá con el resumen del caso. — Handy`, ['Revisar mi agenda', 'neg:agenda'])}`);
 }
+function vTrab() {
+  const p = me(), tab = V.trabSeg || 'curso';
+  const mine = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
+  const curso = mine.filter(j => j.prov === p.id && j.estado === 'aceptado').sort((a, b) => String(a.turno || '').localeCompare(String(b.turno || '')));
+  const presu = mine.filter(j => j.estado === 'nuevo' && j.prov !== p.id);
+  const term = mine.filter(j => !curso.includes(j) && !presu.includes(j)).sort((a, b) => (b.fin || b.ts) - (a.fin || a.ts));
+  const fin = term.filter(j => j.prov === p.id && j.estado === 'finalizado'), cobrado = fin.reduce((a, j) => a + (j.precio || 0), 0);
+  const card = (j, st, cls) => `<button class="card jobcard pcard" data-a="job" data-v="${j.id}">${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'tool', 'md')}
+     <span class="ct"><b>${esc(j.caso)}</b><span class="small mut">${esc(j.un)} · ${esc(j.zona.split(',')[0])}</span>
+     <span class="row" style="justify-content:space-between;gap:8px"><span class="stagetxt ${cls}">${st}</span>${isUnseen(j) && j.prov === p.id ? '<span class="newdot" aria-label="Novedades"></span>' : ''}</span></span>
+     ${j.prov === p.id && j.precio ? `<span class="price" style="font-size:16px">${money(j.precio)}</span>` : ''}</button>`;
+  const seg = `<div class="seg segw" role="tablist">${[['curso', 'En curso', curso.length], ['presu', 'Presupuestados', presu.length], ['term', 'Terminados', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="trabSeg" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
+  let body = '';
+  if (tab === 'curso') body = curso.length ? `<div class="list">${curso.map(j => card(j, j.turno ? esc(slotLabel(j.turno)) : stageName(j), 'y')).join('')}</div>`
+    : emptyState('tool', 'No tenés trabajos en curso', 'Cuando un cliente acepte tu presupuesto, el trabajo aparece acá con su turno. — Handy', ['Ver pedidos nuevos', 'ped']);
+  else if (tab === 'presu') body = presu.length ? `<div class="list">${presu.map(j => { const o = j.offers.find(x => x.pid === p.id); return card(j, `Presupuesto enviado · ${money(o ? o.precio : 0)}`, 'n'); }).join('')}</div>`
+    : emptyState('inbox', 'No tenés presupuestos esperando', 'Los presupuestos que mandes quedan acá hasta que el cliente responda.', ['Ver pedidos nuevos', 'ped']);
+  else body = term.length ? `<div class="stat"><button class="card statbtn" data-a="cobradoInfo"><b class="num">${money(cobrado)}</b><span>Cobrado ${ico('eye')}</span></button><div class="card"><b class="num">${fin.length}</b><span>Trabajo${fin.length === 1 ? '' : 's'} hecho${fin.length === 1 ? '' : 's'}</span></div></div>
+      <div class="list" style="margin-top:12px">${term.map(j => j.prov === p.id ? card(j, j.estado === 'finalizado' ? 'Terminado' : 'Cancelado', j.estado === 'finalizado' ? 'v' : 'r') : card(j, j.estado === 'cancelado' ? 'El cliente canceló' : 'Eligió a otro prestador', '')).join('')}</div>`
+    : emptyState('check', 'Todavía no terminaste trabajos', 'Cada trabajo que termines queda guardado acá, con lo que cobraste.', ['Ver pedidos nuevos', 'ped']);
+  view(seg + `<div style="margin-top:16px">${body}</div>`);
+}
+ACT.trabSeg = k => { V.trabSeg = k; NEXT_ANIM = 'fade'; render(); };
+ACT.cobradoInfo = () => {
+  const p = me(), fin = DB.jobs.filter(j => j.prov === p.id && j.estado === 'finalizado').sort((a, b) => (b.fin || b.ts) - (a.fin || a.ts)), tot = fin.reduce((a, j) => a + (j.precio || 0), 0);
+  sheet(`<h2>¿Cómo calculamos lo cobrado?</h2>
+    <p class="mut">Sumamos el precio del presupuesto que aceptó el cliente en cada trabajo que marcaste como terminado. Los cancelados no cuentan.</p>
+    ${fin.length ? `<div class="card" style="margin-top:12px"><ul class="hist">${fin.map(j => `<li>${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'check', 'sm')}<h3 style="font-size:16px;margin:0">${esc(j.caso)}</h3><span class="num">${money(j.precio || 0)}</span></li>`).join('')}</ul>
+      <p style="margin:12px 0 0;display:flex;justify-content:space-between"><b>Total</b><b class="num">${money(tot)}</b></p></div>` : ''}
+    <p class="hint">Si cobraste algo aparte fuera de la app (materiales, un extra), no figura acá.</p>
+    <button class="btn g w" style="margin-top:12px" data-a="close">Entendido</button>`);
+};
+/* ---------- Mi negocio ---------- */
+function vNeg() {
+  if (V.neg === 'agenda') return vAgenda();
+  if (V.neg === 'precios') return vPrecios();
+  if (V.neg === 'resenas') return vResenas();
+  if (V.neg === 'plus') return vPlus();
+  const p = me(), tur = DB.jobs.filter(j => j.prov === p.id && j.turno && j.estado === 'aceptado').length, sinResp = (p.rev || []).filter(r => !r.resp).length;
+  const item = (to, img, fb, t, d, badge = '') => `<button class="card casaitem big" data-a="neg" data-v="${to}">${catImg(img, fb, 'md')}<span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${badge}${ico('back').replace('<svg', '<svg class="go"')}</button>`;
+  view(`${handySays('Acá ordenás cómo trabajás: tus horarios, tus precios y lo que dicen tus clientes.')}
+   <div class="list" style="margin-top:16px">
+    ${item('agenda', 'n_agenda', 'cal', 'Agenda', tur ? `${tur} turno${tur === 1 ? '' : 's'} confirmado${tur === 1 ? '' : 's'}` : 'Tus turnos y tu disponibilidad', tur ? `<span class="cnt num">${tur}</span>` : '')}
+    ${item('precios', 'n_precios', 'box', 'Precios y condiciones', p.vis || p.min ? [p.vis ? `Visita ${money(p.vis)}` : '', p.min ? `Mínimo ${money(p.min)}` : ''].filter(Boolean).join(' · ') : 'Visita, trabajo mínimo y qué incluís')}
+    ${item('resenas', 'n_resenas', 'star', 'Reseñas', p.rev.length ? `${String(avg(p)).replace('.', ',')} ★ · ${p.rev.length} reseña${p.rev.length === 1 ? '' : 's'}` : 'Lo que opinan tus clientes', sinResp ? `<span class="cnt num">${sinResp}</span>` : '')}
+    ${item('plus', 'n_plus', 'star', 'HandyGo+', p.plus ? 'Activo · prioridad y sello de confianza' : 'Prioridad en pedidos y sello de confianza', p.plus ? '<span class="tag plus">Activo</span>' : '')}
+   </div>`);
+}
+ACT.neg = v => { NEXT_ANIM = 'right'; V.tab = 'neg'; V.neg = v; V.job = null; render(); };
+ACT.negBack = () => { NEXT_ANIM = 'left'; V.neg = null; render(); };
+function vAgenda() {
+  const p = me(); p.agenda = p.agenda || defAgenda();
+  const js = DB.jobs.filter(j => j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).sort((a, b) => a.turno.localeCompare(b.turno));
+  view(`${negBackBtn()}<h2 style="margin:12px 0 12px">Agenda</h2>
+   ${handySays('Marcá en qué franjas podés trabajar. Cuando mandás un presupuesto, le ofrezco al cliente solo esos horarios y saco los que ya están reservados.')}
+   <div class="sec"><h3 class="sh">Próximos turnos</h3>
+    ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}"><div class="r1"><h3>${esc(slotLabel(j.turno))}</h3><span class="price" style="font-size:16px">${money(j.precio)}</span></div>
+      <div class="small mut">${esc(j.caso)} · ${esc(j.un)} · ${esc(j.zona.split(',')[0])}</div><div class="meta"><span class="tag y">${stageName(j)}</span></div></button>`).join('')}</div>`
+      : `<div class="card small mut">Todavía no tenés turnos. Cuando un cliente acepte tu presupuesto y elija horario, aparece acá.</div>`}</div>
+   <div class="sec"><h3 class="sh">Tu disponibilidad semanal</h3>
+    <div class="card"><div class="agrid"><span></span><span class="h">Mañana<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.m}</span></span><span class="h">Tarde<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.t}</span></span>
+     ${[1, 2, 3, 4, 5, 6, 0].map(d => `<b style="font:600 14px var(--f-display)">${DOW[d]}</b>${['m', 't'].map(f => { const on = (p.agenda[d] || []).includes(f); return `<button class="${on ? 'on' : ''}" data-a="agTog" data-v="${d}|${f}" aria-pressed="${on}" aria-label="${DOWL[d]} ${FRN[f]}">${on ? 'Disponible' : '—'}</button>`; }).join('')}`).join('')}</div></div></div>`);
+}
+ACT.agTog = v => { const p = me(), [d, f] = v.split('|'); p.agenda = p.agenda || defAgenda(); const a = p.agenda[d] = p.agenda[d] || [];
+  const i = a.indexOf(f); if (i >= 0) a.splice(i, 1); else a.push(f); save(); vAgenda(); };
+function vPrecios() {
+  const p = me(), inc = p.incDef || ['Visita incluida'];
+  view(`${negBackBtn()}<h2 style="margin:12px 0 12px">Precios y condiciones</h2>
+   ${handySays('Esto lo ven los clientes antes de pedirte presupuesto, así llegan sabiendo cómo trabajás. Todo es opcional.')}
+   <div class="stack" style="margin-top:16px">
+    <label class="f" for="n_vis">Precio de la visita (ARS)<input id="n_vis" type="number" inputmode="numeric" value="${esc(p.vis || '')}" placeholder="Ej: 6000"><span class="hint">Lo que cobrás por ir a ver el problema.</span></label>
+    <label class="chk"><input type="checkbox" id="n_visd" ${p.visDesc ? 'checked' : ''}> La visita se descuenta si el cliente me contrata el trabajo</label>
+    <label class="f" for="n_min">Trabajo mínimo (ARS)<input id="n_min" type="number" inputmode="numeric" value="${esc(p.min || '')}" placeholder="Ej: 15000"><span class="hint">El precio más bajo por el que tomás un trabajo.</span></label>
+    <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">Qué incluyen tus presupuestos</span>
+     <div class="fopts">${INCLUYE.map(x => `<button type="button" class="${inc.includes(x) ? 'on' : ''}" data-a="incTog" data-v="${esc(x)}" aria-pressed="${inc.includes(x)}">${esc(x)}</button>`).join('')}</div>
+     <span class="hint">Vienen marcados cada vez que mandás un presupuesto. Igual los podés cambiar en cada uno.</span></div>
+    <button class="btn p w" data-a="savePrecios">Guardar</button></div>`);
+}
+ACT.incTog = x => { const p = me(), inc = p.incDef = [...(p.incDef || ['Visita incluida'])]; const i = inc.indexOf(x); if (i >= 0) inc.splice(i, 1); else inc.push(x);
+  document.querySelectorAll('[data-a="incTog"]').forEach(b => { const on = inc.includes(b.dataset.v); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); };
+ACT.savePrecios = () => { const p = me(); Object.assign(p, {vis:Math.max(0, +$('#n_vis').value || 0), visDesc:$('#n_visd').checked, min:Math.max(0, +$('#n_min').value || 0)}); save(); toast('Guardado'); ACT.negBack(); };
+function vResenas() {
+  const p = me(), rev = (p.rev || []).map((r, i) => [r, i]).reverse();
+  view(`${negBackBtn()}<h2 style="margin:12px 0 12px">Reseñas</h2>
+   ${handySays(rev.length ? 'Responder las reseñas, aunque sean buenas, muestra que te importa el trabajo. Tu respuesta la ven todos los clientes.' : 'Cuando termines un trabajo, el cliente puede dejarte una reseña. Aparecen acá y en tu perfil.')}
+   ${rev.length ? `<div class="stat" style="margin-top:16px"><div class="card"><b>${String(avg(p)).replace('.', ',')} ★</b><span>promedio</span></div><div class="card"><b class="num">${rev.length}</b><span>reseña${rev.length === 1 ? '' : 's'}</span></div></div>
+    <div class="card stack" style="margin-top:12px">${rev.map(([r, i]) => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}${r.resp ? `<div class="reply"><b>Tu respuesta</b>${esc(r.resp)}</div>` : ''}<button class="textlink" style="margin-top:6px" data-a="replyRev" data-v="${i}">${r.resp ? 'Editar respuesta' : 'Responder'}</button></div>`).join('')}</div>` : ''}`);
+}
+function plusBody() {
+  const u = me(), on = !!u.plus, inZona = DB.jobs.filter(j => j.rubro === u.rubro).length;
+  const li = (ic, t, d) => `<li><span class="wi">${ico(ic)}</span><div><b>${t}</b><span class="small mut">${d}</span></div></li>`;
+  return `${on ? `<div class="card" style="margin-top:16px;background:var(--priSoft);box-shadow:none"><b>Tu suscripción está activa.</b><div class="small mut">Ya tenés el sello y la prioridad en los pedidos.</div></div>
+      <h3 class="sh" style="margin-top:16px">Demanda en tu zona</h3><div class="stat" style="margin-top:8px"><div class="card"><b class="num">${inZona}</b><span>pedidos de ${esc(u.rubro.toLowerCase())} este mes</span></div><div class="card"><b>${esc(u.zona.split(',')[0])}</b><span>tu zona</span></div></div>` : ''}
+    <ul class="whylist" style="margin-top:16px">
+      ${li('inbox', 'Prioridad en los pedidos', 'Los pedidos nuevos de tu rubro te llegan antes que al resto.')}
+      ${li('shield', 'Sello de perfil de alta confianza', 'Tu perfil y tus presupuestos se muestran con el sello HandyGo+.')}
+      ${li('eye', 'Estadísticas de tu zona', 'Qué se pide más, en qué barrios y en qué momento del año.')}
+      ${li('check', 'Menos comisión', 'Pagás menos comisión por cada trabajo cerrado en la app.')}
+    </ul>
+    ${on ? `<button class="btn g w" style="margin-top:16px" data-a="plusOff">Dar de baja</button>` : `<button class="btn p w" style="margin-top:16px" data-a="plusOn">Probar 30 días gratis</button><p class="hint" style="text-align:center">Podés darte de baja cuando quieras.</p>`}`;
+}
+function vPlus() {
+  view(`${negBackBtn()}<div style="display:flex;gap:12px;align-items:center;margin-top:12px">${catImg('n_plus', 'star', 'md')}<div><h2 style="margin:0">HandyGo+</h2><span class="mut small">Para prestadores que quieren crecer</span></div></div>${plusBody()}`);
+}
+ACT.plus = () => ACT.neg('plus');
+ACT.plusOn = () => { const u = me(); u.plus = true; u.plusDesde = Date.now(); save(); toast('¡Listo! Ya tenés HandyGo+'); render(); };
+ACT.plusOff = () => { const u = me(); u.plus = false; save(); toast('Diste de baja HandyGo+'); render(); };
+/* ---------- Perfil del prestador ---------- */
+const ESP_SUG = {
+  Plomería:['Pérdidas de agua', 'Destapaciones', 'Griferías', 'Inodoros y mochilas', 'Tanques y bombas', 'Termotanques', 'Cañerías'],
+  Gas:['Calefones', 'Estufas', 'Termotanques', 'Cocinas y anafes', 'Pérdidas de gas', 'Instalaciones nuevas', 'Planos y habilitaciones'],
+  Electricidad:['Tableros', 'Térmicas y disyuntores', 'Instalaciones nuevas', 'Iluminación', 'Tomas y llaves', 'Certificados DCI', 'Portero eléctrico'],
+  Carpintería:['Puertas', 'Muebles a medida', 'Placares', 'Ventanas de madera', 'Arreglos de muebles', 'Pisos de madera', 'Persianas'],
+  Albañilería:['Humedad', 'Revoques', 'Cerámicos', 'Durlock', 'Pintura', 'Impermeabilización', 'Refacciones']};
+function perfilChecks(u) {
+  const matReq = ['Gas', 'Electricidad'].includes(u.rubro);
+  return [
+    ['datos', 'Tu foto', !!u.foto, 'Una cara genera más confianza que una inicial.'],
+    ['present', 'Tu presentación', (u.bio || '').length >= 20, 'Contá en dos frases cómo trabajás.'],
+    ['present', 'Especialidades', (u.esp || []).length > 0, 'Así te encuentran por lo que mejor hacés.'],
+    ['galeria', 'Fotos de trabajos', (u.port || []).length >= 3, 'Subí al menos 3: es lo primero que miran.'],
+    ['oficio', matReq ? 'Matrícula' : 'Experiencia y zona', matReq ? !!u.mat : !!u.anios, matReq ? `Obligatoria para ${u.rubro.toLowerCase()}.` : 'Años de experiencia y hasta dónde vas.'],
+    ['neg:precios', 'Precios y condiciones', !!(u.vis || u.min), 'Visita y trabajo mínimo.']];
+}
+function vPerProv() {
+  const u = me(), ch = perfilChecks(u), ok = ch.filter(x => x[2]).length, pct = Math.round(ok / ch.length * 100), port = u.port || [], txt = u.portTxt || [];
+  const sec = (k, img, fb, t, d) => `<button class="card casaitem" data-a="editSec" data-v="${k}">${catImg(img, fb, 'sm')}<span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`;
+  view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg', 'background:var(--acc);color:var(--accInk)')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
+   <div class="meta" style="margin:12px 0 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}${u.anios ? `<span class="tag">${u.anios} años de experiencia</span>` : ''}${plusBadge(u)}</div>
+   <div class="card switch" style="margin-top:16px"><div><b>Disponible para pedidos</b><div class="small mut">${u.on ? 'Te llegan pedidos nuevos de tu zona' : 'No te llegan pedidos nuevos'}</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
+   ${pct < 100 ? `<div class="card armado" style="margin-top:12px"><div class="row" style="justify-content:space-between"><b>Tu perfil está al ${pct}%</b><span class="small mut">${ok} de ${ch.length}</span></div><span class="gprog" style="margin:8px 0 12px"><i style="width:${pct}%"></i></span>
+     <ul class="todo">${ch.filter(x => !x[2]).map(([k, t, , d]) => `<li><button data-a="editSec" data-v="${k}"><span class="tb"></span><span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button></li>`).join('')}</ul></div>` : ''}
+   <div class="sec"><div class="row" style="justify-content:space-between;align-items:baseline"><h3 class="sh" style="margin:0">Tus trabajos</h3><button class="textlink" data-a="editSec" data-v="galeria">${port.length ? 'Editar' : 'Agregar fotos'}</button></div>
+    ${port.length ? `<div class="gal" data-noswipe>${port.map((x, i) => `<button class="gph ${i ? '' : 'cover'}" data-a="verFoto" data-v="me|${i}"><img src="${safeImg(x)}" alt="${esc(txt[i] || 'Trabajo realizado')}">${txt[i] ? `<span>${esc(txt[i])}</span>` : ''}</button>`).join('')}</div>`
+      : `<button class="card galempty" data-a="editSec" data-v="galeria">${catImg('n_galeria', 'cam', 'md')}<span class="ct"><b>Mostrá lo que hacés</b><span class="small mut">Las fotos de tus trabajos son lo primero que miran los clientes al elegir.</span></span></button>`}</div>
+   <button class="btn w" style="margin-top:16px" data-a="verPublico">${ico('eye')} Cómo te ven los clientes</button>
+   <div class="sec"><h3 class="sh">Tu perfil</h3><div class="list">
+    ${sec('datos', 'n_datos', 'user', 'Foto y datos', 'Nombre, usuario, celular y zona')}
+    ${sec('present', 'n_present', 'chat', 'Presentación', 'Sobre vos y especialidades')}
+    ${sec('galeria', 'n_galeria', 'cam', 'Galería de trabajos', `${port.length} de 9 fotos`)}
+    ${sec('oficio', 'n_oficio', 'tool', 'Tu oficio', 'Matrícula, experiencia, horario y zona')}
+   </div></div>
+   ${tail(true)}`);
+}
+ACT.editSec = k => {
+  if (k.startsWith('neg:')) return ACT.neg(k.slice(4));
+  const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])], portTxt:[...(u.portTxt || [])], esp:[...(u.esp || [])]};
+  NEXT_ANIM = 'right'; V.tab = 'per'; V.edit = k; V.job = null; render();
+};
+ACT.verPublico = () => ACT.prof(DB.cur.id);
+ACT.verFoto = v => {
+  const [who, i] = v.split('|'), p = who === 'me' ? {port:me().port || [], portTxt:me().portTxt || []} : provInfo(who), src = (p.port || [])[+i]; if (!src) return;
+  sheet(`<div class="lbox"><img src="${safeImg(src)}" alt="Trabajo realizado"></div>${(p.portTxt || [])[+i] ? `<p style="margin:12px 0 0;font-weight:600">${esc(p.portTxt[+i])}</p>` : ''}
+    <p class="small mut" style="margin:4px 0 0">Foto ${+i + 1} de ${p.port.length}</p><button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
+};
+function vEditProv() {
+  const u = me(), k = V.edit, keep = (id, d) => { const el = $('#' + id); return el ? el.value : d; };
+  const inp = (id, l, v, t = 'text', ph = '', hint = '') => `<label class="f" for="${id}">${l}<input id="${id}" type="${t}" value="${esc(v)}" placeholder="${esc(ph)}" autocomplete="off">${hint ? `<span class="hint">${hint}</span>` : ''}</label>`;
+  const head = (t, h) => `${perBackBtn()}<h2 style="margin:12px 0 12px">${t}</h2>${h ? handySays(h) : ''}<div class="stack" style="margin-top:16px">`;
+  const foot = `<div class="err" id="err" role="alert"></div><button class="btn p w" data-a="saveSec">Guardar</button></div>`;
+  if (k === 'datos') return view(`${head('Foto y datos', '')}
+    ${fotoPicker('editFoto', 'edit', EDIT.foto)}
+    ${inp('e_nombre', 'Nombre y apellido', keep('e_nombre', u.nombre))}
+    ${inp('e_usuario', 'Nombre de usuario', keep('e_usuario', u.usuario || ''), 'text', 'Ej: juan.plomero', 'Para ingresar sin el mail')}
+    ${inp('e_tel', 'Celular', keep('e_tel', u.tel || ''), 'tel', '11 2345 6789', 'Solo lo ve el cliente cuando confirma un trabajo, para coordinar.')}
+    ${inp('e_zona', 'Barrio o zona donde trabajás', keep('e_zona', u.zona))}${foot}`);
+  if (k === 'present') {
+    const sug = [...new Set([...(ESP_SUG[u.rubro] || []), ...EDIT.esp])];
+    return view(`${head('Presentación', 'Escribilo como si se lo contaras a un vecino: cuántos años llevás, cómo trabajás y qué te diferencia. Corto y claro.')}
+    <label class="f" for="e_bio">Sobre vos<textarea id="e_bio" rows="4" maxlength="400" placeholder="Ej: Soy plomero hace 12 años. Llego a horario, te explico qué hice y dejo todo limpio.">${esc(keep('e_bio', u.bio || ''))}</textarea></label>
+    <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">Especialidades <span class="mut" style="font-weight:500">· hasta 8</span></span>
+     <div class="fopts">${sug.map(x => `<button type="button" class="${EDIT.esp.includes(x) ? 'on' : ''}" data-a="espTog" data-v="${esc(x)}" aria-pressed="${EDIT.esp.includes(x)}">${esc(x)}</button>`).join('')}</div>
+     <div class="row" style="margin-top:12px;flex-wrap:nowrap"><input id="e_espn" type="text" placeholder="Agregar otra" maxlength="30" autocomplete="off" style="flex:1"><button type="button" class="btn sm" data-a="espAdd">Agregar</button></div></div>${foot}`);
+  }
+  if (k === 'galeria') {
+    const n = EDIT.port.length;
+    return view(`${head('Galería de trabajos', 'Subí fotos de trabajos que hiciste: el antes y el después funciona muy bien. La primera es tu portada y es la que más se ve.')}
+    ${n ? `<div class="gedit">${EDIT.port.map((x, i) => `<div class="gitem card"><div class="gimg"><img src="${safeImg(x)}" alt="Trabajo ${i + 1}">${i === 0 ? '<span class="tag plus gcov">Portada</span>' : ''}</div>
+      <div class="gside"><input id="pt_${i}" type="text" maxlength="60" placeholder="¿Qué hiciste? Ej: cambio de flexible" value="${esc(keep('pt_' + i, EDIT.portTxt[i] || ''))}" autocomplete="off">
+      <div class="row" style="gap:8px">${i ? `<button type="button" class="btn g sm" data-a="portCover" data-v="${i}">Poner de portada</button>` : ''}<button type="button" class="btn g sm" data-a="quitarPort" data-v="${i}">${ico('trash')} Quitar</button></div></div></div>`).join('')}</div>` : ''}
+    ${n < 9 ? `<label class="btn w gadd" for="e_port">${ico('cam')} ${n ? 'Agregar otra foto' : 'Subir la primera foto'}</label><input type="file" id="e_port" accept="image/*" data-ph="port" hidden>` : ''}
+    <span class="hint" style="text-align:center">${n} de 9 fotos</span>${foot}`);
+  }
+  return view(`${head('Tu oficio', '')}
+    <label class="f">Rubro<input value="${esc(u.rubro)}" disabled><span class="hint">Para cambiar de rubro, escribinos desde Ajustes.</span></label>
+    ${inp('e_mat', 'Matrícula', keep('e_mat', u.mat || ''), 'text', '', ['Gas', 'Electricidad'].includes(u.rubro) ? 'Obligatoria para ' + u.rubro.toLowerCase() : 'Opcional en ' + u.rubro.toLowerCase())}
+    ${inp('e_anios', 'Años de experiencia', keep('e_anios', u.anios || ''), 'number')}
+    <label class="f" for="e_radio">¿Hasta dónde vas?<select id="e_radio">${['Solo mi barrio', 'Hasta 5 km', 'Hasta 10 km', 'Toda CABA'].map(o => `<option ${o === keep('e_radio', u.radio || 'Hasta 5 km') ? 'selected' : ''}>${o}</option>`).join('')}</select><span class="hint">Te llegan solo los pedidos dentro de esa distancia.</span></label>
+    <label class="f" for="e_hor">Horario de atención<select id="e_hor">${['Lunes a viernes, 8 a 18 h', 'Lunes a sábado, 8 a 19 h', 'Todos los días, 8 a 20 h', 'Urgencias 24 h'].map(o => `<option ${o === keep('e_hor', u.hor || '') ? 'selected' : ''}>${o}</option>`).join('')}</select></label>${foot}`);
+}
+const keepPortTxt = () => { (EDIT.port || []).forEach((x, i) => { const el = $('#pt_' + i); if (el) EDIT.portTxt[i] = el.value.trim().slice(0, 60); }); };
+ACT.espTog = x => { const i = EDIT.esp.indexOf(x); if (i >= 0) EDIT.esp.splice(i, 1); else if (EDIT.esp.length < 8) EDIT.esp.push(x); else { toast('Podés elegir hasta 8'); return; }
+  document.querySelectorAll('[data-a="espTog"]').forEach(b => { const on = EDIT.esp.includes(b.dataset.v); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); };
+ACT.espAdd = () => { const el = $('#e_espn'), t = (el.value || '').trim().slice(0, 30); if (!t) return; if (EDIT.esp.length >= 8) { toast('Podés elegir hasta 8'); return; }
+  if (!EDIT.esp.some(x => x.toLowerCase() === t.toLowerCase())) EDIT.esp.push(t); el.value = ''; vEdit(); };
+ACT.portCover = i => { keepPortTxt(); i = +i; const [p] = EDIT.port.splice(i, 1), [t] = EDIT.portTxt.splice(i, 1); EDIT.port.unshift(p); EDIT.portTxt.unshift(t || ''); vEdit(); };
+ACT.saveSec = async (x, btn) => {
+  const u = me(), k = V.edit, v = id => ($('#' + id)?.value || '').trim(), err = t => { $('#err').textContent = t; };
+  if (k === 'datos') {
+    if (!v('e_nombre') || !v('e_zona')) return err('Completá tu nombre y tu zona.');
+    const usu = v('e_usuario').toLowerCase();
+    if ((usu || u.usuario) && !USU_RE.test(usu)) return err('Revisá el nombre de usuario: de 3 a 20 letras o números, sin espacios ni acentos (podés usar . y _).');
+    if (v('e_tel') && v('e_tel').replace(/\D/g, '').length < 8) return err('Revisá el celular: código de área y número.');
+    if (usu && usu !== u.usuario) {
+      try { const d = await libre(usu, null); if (!d.usuario) return err('Ese nombre de usuario ya existe. Probá con otro.'); }
+      catch (e) { return err('No pudimos conectarnos. Revisá tu conexión e intentá de nuevo.'); }
+    }
+    if (CLOUD) { const done = busy(btn, 'Guardando…'); EDIT.foto = await upPhoto(EDIT.foto); done(); }
+    Object.assign(u, {nombre:v('e_nombre'), tel:v('e_tel').slice(0, 30), zona:v('e_zona'), foto:EDIT.foto}); if (usu) u.usuario = usu;
+  } else if (k === 'present') {
+    Object.assign(u, {bio:v('e_bio').slice(0, 400), esp:EDIT.esp.slice(0, 8)});
+  } else if (k === 'galeria') {
+    keepPortTxt();
+    if (CLOUD) { const done = busy(btn, 'Subiendo fotos…'); EDIT.port = await Promise.all(EDIT.port.map(upPhoto)); done(); }
+    Object.assign(u, {port:EDIT.port.slice(0, 9), portTxt:EDIT.port.slice(0, 9).map((x, i) => EDIT.portTxt[i] || '')});
+  } else {
+    if (['Gas', 'Electricidad'].includes(u.rubro) && !v('e_mat')) return err(`Para ${u.rubro.toLowerCase()} la matrícula es obligatoria.`);
+    Object.assign(u, {mat:v('e_mat'), anios:Math.max(0, +v('e_anios') || 0), radio:v('e_radio'), hor:v('e_hor')});
+  }
+  try { save(); } catch (e) {}
+  V.edit = false; EDIT = null; toast('Perfil actualizado'); NEXT_ANIM = 'left'; render();
+};
+
 function offerForm(j) {
   return `<div class="sec card"><h3>Enviar presupuesto</h3><p class="mut small">El cliente compara precio, reseñas y disponibilidad.</p>
    <div class="stack" style="margin-top:12px">${field('pr', 'Precio (ARS)', 'number', String(BASE[j.rubro] || 20000))}
    <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">Turnos que le ofrecés</span>${(() => { const sl = slotsFor(DB.cur.id, me().agenda || defAgenda(), 6);
-     return sl.length ? `<div class="slots">${sl.map((k, n) => `<label class="slot"><input type="checkbox" name="oslot" value="${k}" ${n < 3 ? 'checked' : ''}> ${esc(slotLabel(k))}</label>`).join('')}</div><span class="hint">Salen de tu agenda. Podés cambiarla en la pestaña Agenda.</span>`
-       : '<div class="card small mut">No tenés turnos libres. Cargá tu disponibilidad en la pestaña <b>Agenda</b>.</div>'; })()}</div>
+     return sl.length ? `<div class="slots">${sl.map((k, n) => `<label class="slot"><input type="checkbox" name="oslot" value="${k}" ${n < 3 ? 'checked' : ''}> ${esc(slotLabel(k))}</label>`).join('')}</div><span class="hint">Salen de tu agenda. Podés cambiarla en Mi negocio → Agenda.</span>`
+       : '<div class="card small mut">No tenés turnos libres. Cargá tu disponibilidad en <b>Mi negocio → Agenda</b>.</div>'; })()}</div>
    <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">¿Qué incluye tu precio?</span>
      <div class="fopts">${INCLUYE.map(x => `<label class="incl"><input type="checkbox" name="oinc" value="${esc(x)}" ${(me().incDef || ['Visita incluida']).includes(x) ? 'checked' : ''}><span>${esc(x)}</span></label>`).join('')}</div>
      <span class="hint">El cliente lo ve en tu presupuesto, junto a una explicación de por qué vale lo que vale.</span></div>
@@ -2631,7 +2875,7 @@ ACT.offer = () => {
   const inc = [...document.querySelectorAll('input[name="oinc"]:checked')].map(x => x.value);
   me().incDef = inc;
   const o = {pid:DB.cur.id, precio:pr, slots:sl, when:slotLabel(sl[0]), inc, msg:$('#pm').value.trim() || 'Hola, leí el resumen y puedo tomar el trabajo.'};
-  j.offers.push(o); save(); toast('Presupuesto enviado'); V.job = null; V.tab = 'trab'; render();
+  j.offers.push(o); save(); toast('Presupuesto enviado'); V.job = null; V.tab = 'trab'; V.trabSeg = 'presu'; render();
   if (j.uid === 'demo') setTimeout(() => {
     Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr, etapa:0, hist:{0:Date.now()}, turno:sl[0], when:slotLabel(sl[0])});
     j.msgs.push({f:'s', t:'Presupuesto aceptado · turno ' + slotLabel(sl[0])}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. Te espero el ' + slotLabel(sl[0]).toLowerCase() + '.'}); markUnseen(j, DB.cur.id); save();
@@ -2639,14 +2883,6 @@ ACT.offer = () => {
   }, 3000);
 };
 ACT.desc = () => { const p = me(); (p.desc = p.desc || []).push(V.job); save(); V.job = null; render(); };
-function vTrab() {
-  const p = me(), js = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
-  view(`${js.length ? `<div class="list">${js.map(j => { const st = j.prov === p.id ? stageName(j) : (j.estado === 'nuevo' ? 'Presupuesto enviado' : j.estado === 'cancelado' ? 'El cliente canceló' : 'Eligió a otro prestador'); return `<button class="card jobcard" data-a="job" data-v="${j.id}">
-     <div class="r1"><h3>${esc(j.caso)}</h3><span class="price" style="font-size:18px">${j.prov === p.id ? money(j.precio) : ''}</span></div>
-     <div class="row" style="justify-content:space-between"><span class="stagetxt ${j.prov === p.id ? (j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : j.estado === 'cancelado' ? 'r' : '') : ''}">${st}</span>${isUnseen(j) && j.prov === p.id ? '<span class="newdot" aria-label="Novedades"></span>' : ''}</div>
-     <div class="sub"><span>${esc(j.un)}</span>${j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado) ? `<span class="sep">${esc(slotLabel(j.turno))}</span>` : ''}</div></button>`; }).join('')}</div>`
-   : emptyState('tool', 'Todavía no tenés trabajos', 'Cuando envíes presupuestos, los vas a seguir desde acá.', ['Ver pedidos nuevos', 'ped'])}`);
-}
 ACT.tog = () => { const p = me(); p.on = !p.on; save(); render(); };
 
 /* ============================================================
@@ -2730,22 +2966,6 @@ ACT.mantGo = id => { closeSheet(); const t = SEASONS[seasonNow()].tasks.find(x =
 /* ============================================================
    AGENDA (prestador)
    ============================================================ */
-function vAgenda() {
-  const p = me(); p.agenda = p.agenda || defAgenda();
-  const js = DB.jobs.filter(j => j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).sort((a, b) => a.turno.localeCompare(b.turno));
-  view(`<p class="mut small" style="margin-top:0">Tus turnos confirmados y los horarios en que podés trabajar.</p>
-   <div class="sec"><h3 class="sh">Próximos turnos</h3>
-    ${js.length ? `<div class="list">${js.map(j => `<button class="card jobcard" data-a="job" data-v="${j.id}"><div class="r1"><h3>${esc(slotLabel(j.turno))}</h3><span class="price" style="font-size:16px">${money(j.precio)}</span></div>
-      <div class="small mut">${esc(j.caso)} · ${esc(j.un)} · ${esc(j.zona.split(',')[0])}</div><div class="meta"><span class="tag y">${stageName(j)}</span></div></button>`).join('')}</div>`
-      : `<div class="card small mut">Todavía no tenés turnos. Cuando un cliente acepte tu presupuesto y elija horario, aparece acá.</div>`}</div>
-   <div class="sec"><h3 class="sh">Tu disponibilidad semanal</h3>
-    <div class="card"><div class="agrid"><span></span><span class="h">Mañana<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.m}</span></span><span class="h">Tarde<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.t}</span></span>
-     ${[1, 2, 3, 4, 5, 6, 0].map(d => `<b style="font:600 14px var(--f-display)">${DOW[d]}</b>${['m', 't'].map(f => { const on = (p.agenda[d] || []).includes(f); return `<button class="${on ? 'on' : ''}" data-a="agTog" data-v="${d}|${f}" aria-pressed="${on}" aria-label="${DOWL[d]} ${FRN[f]}">${on ? 'Disponible' : '—'}</button>`; }).join('')}`).join('')}</div></div>
-    <p class="hint">Cuando mandás un presupuesto, la app ofrece solo estos horarios y saca los que ya están reservados.</p></div>`);
-}
-ACT.agTog = v => { const p = me(), [d, f] = v.split('|'); p.agenda = p.agenda || defAgenda(); const a = p.agenda[d] = p.agenda[d] || [];
-  const i = a.indexOf(f); if (i >= 0) a.splice(i, 1); else a.push(f); save(); vAgenda(); };
-
 /* ============================================================
    PERFIL
    ============================================================ */
@@ -2756,28 +2976,16 @@ function vPer() {
     view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${u.usuario ? '@' + esc(u.usuario) + ' · ' : ''}${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
      <div class="card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
      ${tail()}`);
-  } else {
-    const fin = DB.jobs.filter(j => j.prov === u.id && j.estado === 'finalizado');
-    view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg', 'background:var(--acc);color:var(--accInk)')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
-     ${u.bio ? `<p class="bio">${esc(u.bio)}</p>` : ''}
-     <div class="meta" style="margin:16px 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}${u.anios ? `<span class="tag">${u.anios} años de experiencia</span>` : ''}</div>
-     <div class="card switch"><div><b>Disponible para pedidos</b><div class="small mut">Los clientes te ven en las búsquedas</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
-     <div class="stat" style="margin-top:12px"><div class="card"><b>${avg(u) === 'Nuevo' ? '—' : String(avg(u)).replace('.', ',')}</b><span>${u.rev.length} reseñas</span></div><div class="card"><b class="num" style="font-size:24px">${money(fin.reduce((a, j) => a + j.precio, 0))}</b><span>cobrado en ${fin.length} trabajo${fin.length === 1 ? '' : 's'}</span></div></div>
-     ${(u.esp || []).length ? `<div class="sec"><h3 class="sh">Especialidades</h3><div class="meta">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div></div>` : ''}
-     ${(u.port || []).length ? `<div class="sec"><h3 class="sh">Trabajos realizados</h3><div class="port">${u.port.map(x => `<div class="ph"><img src="${safeImg(x)}" alt="Trabajo realizado"></div>`).join('')}</div></div>` : ''}
-     <div class="sec"><button class="card casaitem" data-a="plus"><span class="ci">${MARK}</span><span class="ct"><b>HandyGo+ ${u.plus ? '<span class="tag plus" style="margin-left:4px">Activo</span>' : ''}</b><span class="small mut">${u.plus ? 'Tu sello, la prioridad y las estadísticas de tu zona' : 'Prioridad en pedidos, sello de confianza y menos comisión'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button></div>
-     ${u.vis || u.min || u.radio ? `<div class="sec"><h3 class="sh">Tus condiciones</h3><div class="card conds">${u.vis ? `<div><span>Visita</span><b class="num">${money(u.vis)}</b>${u.visDesc ? '<small>Se descuenta si hacés el trabajo</small>' : ''}</div>` : ''}${u.min ? `<div><span>Trabajo mínimo</span><b class="num">${money(u.min)}</b></div>` : ''}${u.radio ? `<div><span>Trabajás</span><b>${esc(u.radio)}</b></div>` : ''}</div></div>` : ''}
-     ${u.rev.length ? `<div class="sec"><h3 class="sh">Tus reseñas</h3><div class="card stack">${u.rev.map((r, i) => [r, i]).reverse().map(([r, i]) => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}${r.resp ? `<div class="reply"><b>Tu respuesta</b>${esc(r.resp)}</div>` : ''}<button class="textlink" style="margin-top:6px" data-a="replyRev" data-v="${i}">${r.resp ? 'Editar respuesta' : 'Responder'}</button></div>`).join('')}</div></div>` : ''}
-     ${tail()}`);
-  }
+  } else vPerProv();
 }
 /* ---------- editar perfil ---------- */
 let EDIT = null;
-ACT.edit = () => { const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; V.edit = true; vEdit(); };
+ACT.edit = () => { if (DB.cur.t === 'p') return ACT.editSec('datos'); const u = me(); EDIT = {foto:u.foto || null, port:[...(u.port || [])]}; V.edit = true; vEdit(); };
 ACT.quitarFoto = () => { EDIT.foto = null; vEdit(); };
-ACT.quitarPort = i => { EDIT.port.splice(+i, 1); vEdit(); };
+ACT.quitarPort = i => { if (EDIT.portTxt) { keepPortTxt(); EDIT.portTxt.splice(+i, 1); } EDIT.port.splice(+i, 1); vEdit(); };
 ACT.cancelEdit = () => { V.edit = false; EDIT = null; render(); };
 function vEdit() {
+  if (DB.cur.t === 'p') return vEditProv();
   const u = me(), p = DB.cur.t === 'p';
   const keep = id => { const el = $('#' + id); return el ? el.value : null; };
   const cur = {nombre:keep('e_nombre') ?? u.nombre, usuario:keep('e_usuario') ?? (u.usuario || ''), tel:keep('e_tel') ?? (u.tel || ''), zona:keep('e_zona') ?? u.zona, dir:keep('e_dir') ?? (u.dir || ''),
