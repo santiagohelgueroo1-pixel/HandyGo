@@ -2080,12 +2080,12 @@ function piezasHTML(tut) {
 // Carga las fotos de las piezas de a 4 a la vez (las ya guardadas aparecen al instante)
 const IMG_Q = []; let IMG_ON = 0;
 function pumpImgs() {
-  while (IMG_ON < 4 && IMG_Q.length) {
+  while (IMG_ON < 2 && IMG_Q.length) {
     const [el, src] = IMG_Q.shift(); if (!el.isConnected) continue;
     IMG_ON++; const img = new Image(); img.alt = ''; img.decoding = 'async';
     const done = () => { IMG_ON--; pumpImgs(); };
     img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } done(); };
-    img.onerror = () => { done(); if (!img.dataset.r && el.isConnected) { img.dataset.r = 1; setTimeout(() => { IMG_Q.push([el, src + '&r=1']); pumpImgs(); }, 2000); } };
+    img.onerror = () => { done(); if (!img.dataset.r && el.isConnected) { img.dataset.r = 1; setTimeout(() => { IMG_Q.push([el, src + '&r=1']); pumpImgs(); }, 6000); } };
     img.src = src;
   }
 }
