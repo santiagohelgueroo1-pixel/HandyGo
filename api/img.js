@@ -767,7 +767,8 @@ module.exports = async (req, res) => {
     // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
     // Siempre el modelo económico: el de más calidad gasta el cupo gratis del día en unas pocas fotos
     const first = klein(acct, token, prompt, 512, 512);
-    const img = await first.catch(e => { console.error('klein:', e.message); return schnell(acct, token, prompt); });
+    let kErr = '';
+    const img = await first.catch(e => { kErr = String(e.message); console.error('klein:', kErr); return schnell(acct, token, prompt).catch(e2 => { throw new Error(kErr + ' | ' + e2.message); }); });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
     if (pub) {
@@ -783,7 +784,7 @@ module.exports = async (req, res) => {
     console.error('Imagen:', e.message);
     res.setHeader('Cache-Control', 'no-store');
     const cupo = /neuron|allocation|quota|429|4006/i.test(String(e.message));
-    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Se terminó el cupo gratis de imágenes de hoy (se renueva a las 21 h de Argentina)' : 'No se pudo generar la imagen' });
+    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Cloudflare no dejó generar más imágenes por ahora (cupo o demasiados pedidos juntos)' : 'No se pudo generar la imagen', detalle: String(e.message).replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g, '').slice(0, 300) });
   }
 };
 
@@ -825,7 +826,7 @@ async function schnell(acct, token, prompt) {
   try {
     const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${acct}/ai/run/@cf/black-forest-labs/flux-1-schnell`, {
       method: 'POST', signal: ctl.signal, headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ prompt, steps: 8, seed: seedOf(prompt) })
+      body: JSON.stringify({ prompt, steps: 8 })
     });
     return await readImage(r);
   } finally { clearTimeout(t); }
