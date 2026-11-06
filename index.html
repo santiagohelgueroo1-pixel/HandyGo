@@ -374,6 +374,19 @@ label.chk input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:
 .offband{display:flex;gap:12px;align-items:center;background:var(--warnSoft);color:var(--warnInk);border-radius:var(--r);padding:12px 14px;margin-bottom:16px}
 .offband>svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75}
 .offband>div{flex:1;min-width:0;display:flex;flex-direction:column}.offband .btn{flex:none}
+.convrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;cursor:pointer;color:var(--ink)}
+.convrow .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.convrow .r1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.convrow .r1 b{font:600 16px/1.3 var(--f-display)}
+.convrow .cs{font-weight:600;color:var(--pri)}
+.convrow .lm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.convrow.un .lm{color:var(--ink);font-weight:600}
+.convhead .top2{display:flex;gap:16px;align-items:center}
+.convhead .cdata{display:flex;flex-direction:column;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:14px}
+.convhead .cdata svg{width:15px;height:15px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75}
+.convjob{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;border:0;text-align:left;cursor:pointer;color:var(--ink)}
+.convjob .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.thread.conv{margin-top:16px}
 .jobcard.pcard{display:flex;align-items:center;gap:12px;text-align:left}
 .pcard .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
 .pcard .ct b{font:600 16px/1.3 var(--f-display)}
@@ -395,6 +408,13 @@ label.chk input{width:20px;height:20px;accent-color:var(--pri);flex:none;margin:
 .gal.pub{grid-auto-columns:70%}.gal.pub .gph.cover{grid-column:auto;aspect-ratio:1}
 .galempty{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;border:2px dashed var(--line);box-shadow:none;background:none;text-align:left;cursor:pointer;color:var(--ink)}
 .galempty .ct{display:flex;flex-direction:column;gap:2px}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pgrid .gph{aspect-ratio:1;border:0;padding:0;border-radius:10px;overflow:hidden;background:var(--sunk);cursor:pointer}
+.pgrid .gph img{width:100%;height:100%;object-fit:cover;display:block}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat3 .card{padding:12px}
+.stat3 b{display:block;font:700 20px/1.1 var(--f-display)}
+.stat3 span{font-size:12px;color:var(--mut)}
 .gedit{display:flex;flex-direction:column;gap:12px}
 .gitem{display:flex;gap:12px;padding:10px}
 .gimg{position:relative;width:96px;height:96px;flex:none;border-radius:10px;overflow:hidden;background:var(--sunk)}
@@ -527,6 +547,12 @@ table.cmp .best::after{content:" ★";color:var(--acc)}
 .slot{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:12px;padding:12px 12px;background:var(--surface);cursor:pointer;font-weight:600}
 .slot input{width:20px;height:20px;accent-color:var(--pri);margin:0}
 .slot:has(input:checked){border-color:var(--pri);background:var(--priSoft)}
+.agw{display:flex;flex-direction:column;gap:10px}
+.agday{display:flex;align-items:center;gap:8px}
+.agday>b{font:600 14px var(--f-display);width:34px;flex:none}
+.agfr{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.agfr button{border:2px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 0;font:600 12px/1 var(--f-body);color:var(--mut);font-variant-numeric:tabular-nums;cursor:pointer}
+.agfr button.on{border-color:var(--pri);background:var(--pri);color:var(--priInk)}
 .agrid{display:grid;grid-template-columns:64px 1fr 1fr;gap:8px;align-items:center}
 .agrid .h{font:600 12px/1 var(--f-body);color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
 .agrid button{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 4px;font:600 14px/1 var(--f-body);color:var(--mut)}
@@ -1058,9 +1084,12 @@ const SEED_BIO = {
 PROVS.forEach(p => { if (SEED_BIO[p.id]) { p.bio = SEED_BIO[p.id][0]; p.esp = SEED_BIO[p.id][1]; p.hor = 'Lunes a sábado, 8 a 19 h'; } });
 const provInfo = id => PROVS.find(p => p.id === id) || (() => { const p = DB.provs.find(x => x.id === id); return p ? {id, n:p.nombre, r:p.rubro, m:p.mat, s:avg(p), v:p.rev.length, y:p.anios, z:p.zona, resp:'Prestador nuevo', foto:p.foto, bio:p.bio, esp:p.esp || [], hor:p.hor, port:p.port || [], portTxt:p.portTxt || [], rev:p.rev.map(r => [r.from, r.c || '', r.s, r.resp || '']), vis:p.vis, visDesc:p.visDesc, min:p.min, radio:p.radio, plus:p.plus} : {n:'Prestador', r:'', s:'-', v:0, y:0, rev:[]}; })();
 /* ---------- agenda y turnos ---------- */
-const FR = {m:'9 a 12 h', t:'14 a 18 h'}, FRN = {m:'Mañana', t:'Tarde'};
+// Franjas de turnos (m y t quedan solo para leer turnos viejos)
+const FR = {a:'9 a 11 h', b:'11 a 13 h', c:'13 a 15 h', d:'15 a 18 h', e:'desde las 18 h', m:'9 a 12 h', t:'14 a 18 h'};
+const FRK = ['a', 'b', 'c', 'd', 'e'], FRS = {a:'9–11', b:'11–13', c:'13–15', d:'15–18', e:'18+'};
+const normAg = ag => { const o = {}; Object.entries(ag || {}).forEach(([d, fs]) => { const set = new Set(); (fs || []).forEach(f => { if (f === 'm') { set.add('a'); set.add('b'); } else if (f === 't') { set.add('c'); set.add('d'); } else if (FRK.includes(f)) set.add(f); }); o[d] = FRK.filter(f => set.has(f)); }); return o; };
 const DOW = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'], DOWL = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const defAgenda = (k = 0) => ({1:['m', 't'], 2:k % 2 ? ['t'] : ['m', 't'], 3:['m', 't'], 4:k % 3 ? ['m', 't'] : ['m'], 5:['m', 't'], 6:k % 2 ? [] : ['m']});
+const defAgenda = (k = 0) => ({1:['a', 'b', 'c', 'd'], 2:k % 2 ? ['c', 'd', 'e'] : ['a', 'b', 'c', 'd'], 3:['a', 'b', 'c', 'd'], 4:k % 3 ? ['a', 'b', 'c', 'd'] : ['a', 'b'], 5:['a', 'b', 'c', 'd'], 6:k % 2 ? [] : ['a', 'b']});
 const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 function slotLabel(k) { if (!k) return ''; const [d, f] = k.split('|'); const [y, m, dd] = d.split('-').map(Number); const dt = new Date(y, m - 1, dd);
   const t = new Date(); t.setHours(0, 0, 0, 0); const diff = Math.round((dt - t) / 864e5);
@@ -1069,7 +1098,7 @@ function bookedOf(pid) { return DB.jobs.filter(j => j.prov === pid && j.turno &&
 function slotsFor(pid, agenda, n = 6) {
   const out = [], booked = bookedOf(pid), d = new Date(); d.setHours(0, 0, 0, 0);
   for (let i = 1; i <= 14 && out.length < n; i++) { const x = new Date(d); x.setDate(d.getDate() + i);
-    (agenda[x.getDay()] || []).forEach(f => { const k = ymd(x) + '|' + f; if (!booked.includes(k) && out.length < n) out.push(k); }); }
+    (normAg(agenda)[x.getDay()] || []).forEach(f => { const k = ymd(x) + '|' + f; if (!booked.includes(k) && out.length < n) out.push(k); }); }
   return out;
 }
 PROVS.forEach((p, i) => { p.agenda = defAgenda(i); });
@@ -1092,7 +1121,7 @@ function advance(jid, k, actor) {
   save();
   if (DB.cur && DB.cur.t === 'u' && DB.cur.id === j.uid) toast('Trabajo terminado: contanos cómo te fue');
   if (DB.cur && DB.cur.t === 'p' && DB.cur.id === j.prov && k === 3 && j.uid === 'demo') toast(`${un} confirmó que el trabajo terminó`);
-  if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'neg' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
+  if (DB.cur) { if (viewing || (V.tab === 'ped' && !V.job) || (V.tab === 'cli' && !V.job) || (V.tab === 'trab' && !V.job) || (V.tab === 'neg' && !V.job) || (V.tab === 'casa' && !V.job)) render(); else renderNav(); }
 }
 
 /* ---------- mantenimiento por temporada (hemisferio sur) ---------- */
@@ -1199,9 +1228,14 @@ function swipeNav(dir) {
     const sub = ['curso', 'res', 'pro'], k = sub.indexOf(V.arr || 'curso'), n = dir === 'next' ? k + 1 : k - 1;
     if (n >= 0 && n < sub.length) { V.arr = sub[n]; NEXT_ANIM = dir === 'next' ? 'right' : 'left'; return render(); }
   }
+  if (DB.cur.t === 'p' && V.tab === 'trab') {
+    const sub = ['nuevos', 'presu', 'term'], k = sub.indexOf(V.trabSeg || 'nuevos'), n = dir === 'next' ? k + 1 : k - 1;
+    if (n >= 0 && n < sub.length) { V.trabSeg = sub[n]; NEXT_ANIM = dir === 'next' ? 'right' : 'left'; return render(); }
+  }
   const tabs = TABS[DB.cur.t].map(x => x[0]), i = tabs.indexOf(V.tab), j = dir === 'next' ? i + 1 : i - 1;
   if (i < 0 || j < 0 || j >= tabs.length) return;
   if (DB.cur.t === 'u' && tabs[j] === 'ped') V.arr = dir === 'next' ? 'curso' : 'pro';
+  if (DB.cur.t === 'p' && tabs[j] === 'trab') V.trabSeg = dir === 'next' ? 'nuevos' : 'term';
   NEXT_ANIM = dir === 'next' ? 'right' : 'left'; V.tab = tabs[j]; render();
 }
 const avatar = (name, foto, cls = '', style = '') => foto ? `<img class="av ${cls}" src="${safeImg(foto)}" alt="" style="${style}">` : `<span class="av ${cls}" style="${style}">${esc(ini(name))}</span>`;
@@ -1419,9 +1453,9 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLO
    ESTRUCTURA DE LA APP
    ============================================================ */
 const TABS = {u:[['chat', 'Handy', 'chat'], ['ped', 'Arreglos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
-              p:[['ped', 'Pedidos', 'inbox'], ['trab', 'Trabajos', 'clip'], ['neg', 'Mi negocio', 'tool'], ['per', 'Perfil', 'user']]};
+              p:[['cli', 'Clientes', 'chat'], ['trab', 'Trabajos', 'clip'], ['neg', 'Mi negocio', 'tool'], ['per', 'Perfil', 'user']]};
 function enter() {
-  V = {tab:DB.cur.t === 'u' ? 'chat' : 'ped', job:null}; CH = null; chatEl = null;
+  V = {tab:DB.cur.t === 'u' ? 'chat' : 'cli', job:null}; CH = null; chatEl = null;
   const needTour = !me().tour; if (needTour) TOUR_ON = true;
   render();
   if (needTour) setTimeout(startTour, LAUNCH_ON ? Math.max(500, 1600 - (performance.now() - T0)) : 450);
@@ -1440,13 +1474,13 @@ const TOURS = {
     {t:'Listo, te espero acá', d:'Cuando quieras, contame qué pasa en tu casa.', tab:'chat', last:'Empezar'}
   ],
   p:[
-    {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Charlo con los clientes para entender el problema y te lo paso ordenado, así no arrancás de cero. Te muestro cómo funciona.', tab:'ped'},
-    {sel:'#nav [data-v="ped"]', tab:'ped', ic:'inbox', lbl:'Pedidos', t:'Pedidos de tu zona', d:'Te llegan los pedidos de tu rubro con el resumen que armo yo: qué pasa, fotos y qué tocó el cliente. Desde ahí mandás tu presupuesto.'},
-    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'clip', lbl:'Trabajos', t:'Tus trabajos', d:'En curso, presupuestados y terminados, cada uno en su pestaña. Ahí hablás con cada cliente y ves lo que cobraste.'},
+    {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Charlo con los clientes para entender el problema y te lo paso ordenado, así no arrancás de cero. Te muestro cómo funciona.', tab:'cli'},
+    {sel:'#nav [data-v="cli"]', tab:'cli', ic:'chat', lbl:'Clientes', t:'Tus clientes', d:'Cuando un cliente acepta tu presupuesto, se abre acá la conversación con esa persona, junto con su pedido y el turno.'},
+    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'clip', lbl:'Trabajos', t:'Pedidos y trabajos', d:'Los pedidos nuevos de tu zona, con el resumen que armo yo, los presupuestos que mandaste y los trabajos terminados.'},
     {sel:'#nav [data-v="neg"]', tab:'neg', ic:'tool', lbl:'Mi negocio', t:'Tu negocio', d:'Tu agenda, tus precios y condiciones, tus reseñas y HandyGo+. Cada cosa en su lugar.'},
     {sel:'#hpill', ic:'check', lbl:'Disponible', t:'Pausar pedidos', d:'Tocá acá cuando no puedas tomar trabajos nuevos.'},
-    {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Armalo por partes: foto, presentación, galería de trabajos y tu oficio. Te marco qué te falta para que quede completo.'},
-    {t:'Listo', d:'Te aviso cuando entre un pedido para vos.', tab:'ped', last:'Empezar'}
+    {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Armalo por partes: foto, presentación, tu oficio y fotos de trabajos. Te marco qué te falta para que quede completo.'},
+    {t:'Listo', d:'Te aviso cuando entre un pedido para vos.', tab:'trab', last:'Empezar'}
   ]
 };
 function startTour() {
@@ -1490,14 +1524,15 @@ ACT.tourEnd = () => {
   const u = me(); if (u && !u.tour) { u.tour = true; save(); }
   if (GREET_PENDING && chatEl) { GREET_PENDING = false; greet(); }
 };
-ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'ped'; V.job = null; render(); setTimeout(startTour, 200); };
+ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'cli'; V.job = null; render(); setTimeout(startTour, 200); };
 window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
-ACT.tab = t => { if (String(t).startsWith('neg:')) return ACT.neg(t.slice(4)); if (V.tab !== t || V.job || V.edit || V.casa || V.neg || V.guia) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; V.neg = null; V.guia = null; render(); };
+ACT.tab = t => { if (String(t).startsWith('neg:')) return ACT.neg(t.slice(4)); if (String(t).startsWith('trab:')) { V.trabSeg = t.slice(5); t = 'trab'; } if (V.tab !== t || V.job || V.edit || V.casa || V.neg || V.guia) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; V.neg = null; V.guia = null; render(); };
 function badge(t) {
   const c = DB.cur;
   if (c.t === 'u' && t === 'ped') return DB.jobs.filter(j => j.uid === c.id && ((j.estado === 'nuevo' && j.offers.length) || isUnseen(j))).length;
   if (c.t === 'u' && t === 'casa') { const u = me(); return u.casaVista !== seasonKey() && pendingTasks(u).length ? 'dot' : 0; }
-  if (c.t === 'p' && t === 'ped') return provQueue().length;
+  if (c.t === 'p' && t === 'trab') return provQueue().length;
+  if (c.t === 'p' && t === 'cli') return DB.jobs.filter(j => j.prov === c.id && j.estado === 'aceptado' && isUnseen(j)).length;
   return 0;
 }
 function render() {
@@ -1505,8 +1540,8 @@ function render() {
   const u = me(); if (!u) { DB.cur = null; return welcome(); }
   document.body.className = c.t === 'p' ? 'prov' : '';
   $('#top').hidden = false;
-  const TT = {chat:'Handy', mat:'Materiales', ped:c.t === 'u' ? 'Arreglos' : 'Pedidos', casa:'Mi casa', per:'Perfil', trab:'Trabajos', neg:'Mi negocio'};
-  $('#ht').textContent = V.guia && V.tab === 'ped' ? 'Tu guía' : V.job ? (c.t === 'u' ? 'Mi arreglo' : 'Pedido') : V.edit ? (c.t === 'p' ? ({datos:'Foto y datos', present:'Presentación', galeria:'Galería', oficio:'Tu oficio'})[V.edit] || 'Editar perfil' : 'Editar perfil') : (TT[V.tab] || 'HandyGo');
+  const TT = {chat:'Handy', mat:'Materiales', ped:'Arreglos', casa:'Mi casa', per:'Perfil', trab:'Trabajos', neg:'Mi negocio', cli:'Clientes'};
+  $('#ht').textContent = V.guia && V.tab === 'ped' ? 'Tu guía' : V.job ? (c.t === 'u' ? 'Mi arreglo' : V.tab === 'cli' ? (DB.jobs.find(x => x.id === V.job) || {un:'Cliente'}).un : 'Pedido') : V.edit ? (c.t === 'p' ? ({datos:'Foto y datos', present:'Presentación', galeria:'Galería', oficio:'Tu oficio'})[V.edit] || 'Editar perfil' : 'Editar perfil') : (TT[V.tab] || 'HandyGo');
   const inChat = V.tab === 'chat' && !V.job && c.t === 'u';
   const hs = $('#hs'); hs.className = ''; hs.textContent = '';
   const ha = $('#hacts'); ha.hidden = !inChat;
@@ -1519,7 +1554,7 @@ function render() {
   if (V.job) return vJob();
   if (V.guia && V.tab === 'ped') return vGuia();
   if (V.edit && V.tab === 'per') return vEdit();
-  (({chat:vChat, mat:vMat, ped:c.t === 'u' ? vPedU : vPedP, trab:vTrab, per:vPer, casa:vCasa, neg:vNeg})[V.tab] || (c.t === 'u' ? vChat : vPedP))();
+  (({chat:vChat, mat:vMat, ped:vPedU, trab:vTrab, per:vPer, casa:vCasa, neg:vNeg, cli:vCli})[V.tab] || (c.t === 'u' ? vChat : vCli))();
 }
 function renderNav() {
   const c = DB.cur; if (!c) return;
@@ -2444,6 +2479,7 @@ function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
   if (clearUnseen(j)) { save(); renderNav(); }
+  if (!isU && V.tab === 'cli' && j.prov === DB.cur.id && j.estado !== 'nuevo') return vConv(j);
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Arreglos' : 'Volver'}</button>
     <div class="row" style="margin-bottom:12px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
@@ -2498,13 +2534,13 @@ ACT.sendRev = () => {
 ACT.prof = id => {
   const p = provInfo(id);
   sheet(`<div class="top2" style="display:flex;gap:16px;align-items:center">${avatar(p.n, p.foto, 'lg')}<div><h2 style="margin:0">${esc(p.n)}</h2><span class="mut">${esc(p.r)} · ${esc(p.z || 'CABA')}</span></div></div>
-   ${(p.port || []).length ? `<div class="gal pub" data-noswipe style="margin-top:16px">${p.port.map((x, i) => `<button class="gph ${i ? '' : 'cover'}" data-a="verFoto" data-v="${esc(id)}|${i}"><img src="${safeImg(x)}" alt="${esc((p.portTxt || [])[i] || 'Trabajo realizado')}">${(p.portTxt || [])[i] ? `<span>${esc(p.portTxt[i])}</span>` : ''}</button>`).join('')}</div>` : ''}
    ${p.bio ? `<p class="bio">${esc(p.bio)}</p>` : ''}
    <div class="meta" style="margin:16px 0">${plusBadge(p)}<span class="tag v">${ico('shield')} DNI verificado (RENAPER)</span>${p.m ? `<span class="tag mat">${ico('shield')} Matriculado · ${esc(p.m)}</span>` : `<span class="tag">Sin matrícula (no es obligatoria en ${esc((p.r || '').toLowerCase())})</span>`}</div>
    <div class="stat"><div class="card"><b>${typeof p.s === 'number' ? String(p.s).replace('.', ',') : '—'}</b><span>${p.v} reseñas</span></div><div class="card"><b class="num">${p.y}</b><span>años de experiencia</span></div></div>
    <p class="mut small" style="margin:12px 0">${esc(p.resp || '')}${p.hor ? ' · ' + esc(p.hor) : ''}</p>
    ${p.vis || p.min || p.radio ? `<div class="card conds">${p.vis ? `<div><span>Visita</span><b class="num">${money(p.vis)}</b>${p.visDesc ? '<small>Se descuenta si hace el trabajo</small>' : ''}</div>` : ''}${p.min ? `<div><span>Trabajo mínimo</span><b class="num">${money(p.min)}</b></div>` : ''}${p.radio ? `<div><span>Trabaja</span><b>${esc(p.radio)}</b></div>` : ''}</div>` : ''}
    ${(p.esp || []).length ? `<h3 class="sh">Especialidades</h3><div class="meta" style="margin:8px 0 16px">${p.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}
+   ${(p.port || []).length ? `<h3 class="sh">Trabajos realizados</h3><div class="pgrid" style="margin:8px 0 16px">${p.port.map((x, i) => `<button class="gph" data-a="verFoto" data-v="${esc(id)}|${i}"><img src="${safeImg(x)}" alt="${esc((p.portTxt || [])[i] || 'Trabajo realizado')}"></button>`).join('')}</div>` : ''}
    <h3 class="sh">Reseñas</h3><div class="card stack" style="margin-top:8px">${revHTML(p.rev)}</div>
    <button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
 };
@@ -2623,35 +2659,70 @@ function provQueue() { const p = me(); if (!p || DB.cur.t !== 'p') return []; co
    ============================================================ */
 const negBackBtn = () => `<button class="back" data-a="negBack">${ico('back')} Mi negocio</button>`;
 const perBackBtn = () => `<button class="back" data-a="cancelEdit">${ico('back')} Perfil</button>`;
-function vPedP() {
+function pedidosHTML() {
   const p = me(), js = provQueue(), rub = p.rubro.toLowerCase();
-  view(`${!p.on ? `<div class="offband">${ico('alert')}<div><b>Estás como “No disponible”</b><span class="small">No te llegan pedidos nuevos.</span></div><button class="btn y sm" data-a="tog">Activarme</button></div>` : ''}
+  return `${!p.on ? `<div class="offband">${ico('alert')}<div><b>Estás como “No disponible”</b><span class="small">No te llegan pedidos nuevos.</span></div><button class="btn y sm" data-a="tog">Activarme</button></div>` : ''}
    ${js.length ? handySays(`Te ${js.length === 1 ? 'llegó 1 pedido' : `llegaron ${js.length} pedidos`} de ${esc(rub)} en tu zona. Ya hablé con cada cliente: tocá uno y vas a ver el resumen.`) : ''}
    ${js.length ? `<div class="list" style="margin-top:16px">${js.map(j => `<button class="card jobcard pcard" data-a="job" data-v="${j.id}">${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'tool', 'md')}
      <span class="ct"><b>${esc(j.caso)}</b><span class="small mut">${ico('pin')} ${esc(j.zona.split(',')[0])} · ${ago(j.ts)}</span>
      <span class="meta">${j.img ? `<span class="tag">${ico('cam')} Con foto</span>` : ''}${j.hard ? '<span class="tag warn">Requiere matriculado</span>' : ''}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`).join('')}</div>`
-   : emptyState('inbox', 'No hay pedidos nuevos', `Cuando un vecino de tu zona necesite ${esc(rub)}, te lo paso acá con el resumen del caso. — Handy`, ['Revisar mi agenda', 'neg:agenda'])}`);
+   : emptyState('inbox', 'No hay pedidos nuevos', `Cuando un vecino de tu zona necesite ${esc(rub)}, te lo paso acá con el resumen del caso. — Handy`, ['Revisar mi agenda', 'neg:agenda'])}`;
 }
+// Clientes: una conversación por cada trabajo aceptado
+function vCli() {
+  const p = me(), act = DB.jobs.filter(j => j.prov === p.id && j.estado === 'aceptado').sort((a, b) => String(a.turno || '').localeCompare(String(b.turno || '')));
+  const rec = DB.jobs.filter(j => j.prov === p.id && j.estado === 'finalizado' && Date.now() - (j.fin || j.ts) < 14 * 864e5).sort((a, b) => (b.fin || b.ts) - (a.fin || a.ts));
+  const last = j => { const m = [...(j.msgs || [])].reverse().find(x => x.f !== 's'); return m ? (m.f === 'p' ? 'Vos: ' : '') + m.t : 'Escribile para coordinar.'; };
+  const row = j => { const cu = DB.users.find(x => x.id === j.uid) || {}, un = isUnseen(j); return `<button class="card convrow ${un ? 'un' : ''}" data-a="conv" data-v="${j.id}">${avatar(j.un, cu.foto)}
+    <span class="ct"><span class="r1"><b>${esc(j.un)}</b><span class="small mut">${j.estado === 'aceptado' && j.turno ? esc(slotLabel(j.turno).split(' · ')[0]) : 'Terminado'}</span></span>
+    <span class="small cs">${esc(j.caso)}</span><span class="small mut lm">${esc(last(j))}</span></span>${un ? '<span class="newdot" aria-label="Novedades"></span>' : ''}</button>`; };
+  view(act.length || rec.length ? `${act.length ? `<div class="list">${act.map(row).join('')}</div>` : ''}
+    ${rec.length ? `<h3 class="sh" style="margin:${act.length ? 24 : 0}px 0 12px">Terminados hace poco</h3><div class="list">${rec.map(row).join('')}</div>` : ''}`
+    : emptyState('chat', 'Todavía no tenés clientes', 'Cuando un cliente acepte tu presupuesto, se abre acá la conversación con esa persona y su pedido. — Handy', ['Ver pedidos nuevos', 'trab:nuevos']));
+}
+ACT.conv = id => { NEXT_ANIM = 'right'; V.tab = 'cli'; V.job = id; render(); };
+// Se abre sola la conversación cuando un cliente acepta el presupuesto
+function openConv(j) {
+  if (!DB.cur || DB.cur.t !== 'p' || j.prov !== DB.cur.id) return;
+  if (V.edit || $('#scrim') || $('#tour') || (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) return renderNav();
+  NEXT_ANIM = 'right'; V.tab = 'cli'; V.job = j.id; V.neg = null; render();
+}
+function vConv(j) {
+  const cu = DB.users.find(x => x.id === j.uid) || {}, juntos = DB.jobs.filter(x => x.uid === j.uid && x.prov === DB.cur.id && x.estado !== 'cancelado').length;
+  let h = `<button class="back" data-a="backJob">${ico('back')} Clientes</button>
+   <div class="card convhead"><div class="top2">${avatar(j.un, cu.foto, 'lg')}<div style="flex:1;min-width:0"><h2 style="margin:0">${esc(j.un)}</h2><span class="small mut">${esc(j.zona)}</span>
+     <div class="small mut">${juntos > 1 ? `${juntos} trabajos juntos` : 'Primer trabajo juntos'}</div></div></div>
+     ${cu.dir || cu.tel ? `<div class="cdata">${cu.dir ? `<span>${ico('pin')} ${esc(cu.dir)}</span>` : ''}${cu.tel ? `<span>${ico('phone')} ${esc(cu.tel)}</span>` : ''}</div>` : ''}</div>
+   <button class="card convjob" data-a="convPedido">${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'tool', 'sm')}<span class="ct"><b>${esc(j.caso)}</b>
+     <span class="small mut">${j.turno && j.estado === 'aceptado' ? esc(slotLabel(j.turno)) + ' · ' : ''}${money(j.precio || 0)} · ${stageName(j)}</span></span><span class="textlink">Ver pedido</span></button>
+   <div class="thread conv">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
+   ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribile a ${esc(first(j.un))}" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
+   <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Toda la comunicación queda dentro de HandyGo.</p>`;
+  if (j.estado === 'aceptado') h += `<div class="stickbar"><button class="btn p w" data-a="fin">Marcar como terminado</button></div>`;
+  view(h);
+  const th = document.querySelector('.thread.conv'); if (th) th.scrollTop = th.scrollHeight;
+  const mi = $('#mi'); if (mi) mi.addEventListener('keydown', e => { if (e.key === 'Enter') ACT.msg(); });
+}
+ACT.convPedido = () => { const j = DB.jobs.find(x => x.id === V.job); if (!j) return;
+  sheet(`${ticketHTML({...j, zona:j.zona})}${j.f ? '' : ''}<button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`); };
 function vTrab() {
-  const p = me(), tab = V.trabSeg || 'curso';
+  const p = me(), tab = V.trabSeg || 'nuevos', nq = provQueue().length;
   const mine = DB.jobs.filter(j => j.prov === p.id || j.offers.some(o => o.pid === p.id));
-  const curso = mine.filter(j => j.prov === p.id && j.estado === 'aceptado').sort((a, b) => String(a.turno || '').localeCompare(String(b.turno || '')));
   const presu = mine.filter(j => j.estado === 'nuevo' && j.prov !== p.id);
-  const term = mine.filter(j => !curso.includes(j) && !presu.includes(j)).sort((a, b) => (b.fin || b.ts) - (a.fin || a.ts));
+  const term = mine.filter(j => !(j.prov === p.id && j.estado === 'aceptado') && !presu.includes(j)).sort((a, b) => (b.fin || b.ts) - (a.fin || a.ts));
   const fin = term.filter(j => j.prov === p.id && j.estado === 'finalizado'), cobrado = fin.reduce((a, j) => a + (j.precio || 0), 0);
   const card = (j, st, cls) => `<button class="card jobcard pcard" data-a="job" data-v="${j.id}">${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'tool', 'md')}
      <span class="ct"><b>${esc(j.caso)}</b><span class="small mut">${esc(j.un)} · ${esc(j.zona.split(',')[0])}</span>
-     <span class="row" style="justify-content:space-between;gap:8px"><span class="stagetxt ${cls}">${st}</span>${isUnseen(j) && j.prov === p.id ? '<span class="newdot" aria-label="Novedades"></span>' : ''}</span></span>
+     <span class="stagetxt ${cls}">${st}</span></span>
      ${j.prov === p.id && j.precio ? `<span class="price" style="font-size:16px">${money(j.precio)}</span>` : ''}</button>`;
-  const seg = `<div class="seg segw" role="tablist">${[['curso', 'En curso', curso.length], ['presu', 'Presupuestados', presu.length], ['term', 'Terminados', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="trabSeg" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
+  const seg = `<div class="seg segw" role="tablist">${[['nuevos', 'Pedidos', nq], ['presu', 'Presupuestados', presu.length], ['term', 'Terminados', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="trabSeg" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
   let body = '';
-  if (tab === 'curso') body = curso.length ? `<div class="list">${curso.map(j => card(j, j.turno ? esc(slotLabel(j.turno)) : stageName(j), 'y')).join('')}</div>`
-    : emptyState('tool', 'No tenés trabajos en curso', 'Cuando un cliente acepte tu presupuesto, el trabajo aparece acá con su turno. — Handy', ['Ver pedidos nuevos', 'ped']);
+  if (tab === 'nuevos') body = pedidosHTML();
   else if (tab === 'presu') body = presu.length ? `<div class="list">${presu.map(j => { const o = j.offers.find(x => x.pid === p.id); return card(j, `Presupuesto enviado · ${money(o ? o.precio : 0)}`, 'n'); }).join('')}</div>`
-    : emptyState('inbox', 'No tenés presupuestos esperando', 'Los presupuestos que mandes quedan acá hasta que el cliente responda.', ['Ver pedidos nuevos', 'ped']);
+    : emptyState('inbox', 'No tenés presupuestos esperando', 'Los presupuestos que mandes quedan acá hasta que el cliente responda.', ['Ver pedidos nuevos', 'trab:nuevos']);
   else body = term.length ? `<div class="stat"><button class="card statbtn" data-a="cobradoInfo"><b class="num">${money(cobrado)}</b><span>Cobrado ${ico('eye')}</span></button><div class="card"><b class="num">${fin.length}</b><span>Trabajo${fin.length === 1 ? '' : 's'} hecho${fin.length === 1 ? '' : 's'}</span></div></div>
       <div class="list" style="margin-top:12px">${term.map(j => j.prov === p.id ? card(j, j.estado === 'finalizado' ? 'Terminado' : 'Cancelado', j.estado === 'finalizado' ? 'v' : 'r') : card(j, j.estado === 'cancelado' ? 'El cliente canceló' : 'Eligió a otro prestador', '')).join('')}</div>`
-    : emptyState('check', 'Todavía no terminaste trabajos', 'Cada trabajo que termines queda guardado acá, con lo que cobraste.', ['Ver pedidos nuevos', 'ped']);
+    : emptyState('check', 'Todavía no terminaste trabajos', 'Cada trabajo que termines queda guardado acá, con lo que cobraste.', ['Ver pedidos nuevos', 'trab:nuevos']);
   view(seg + `<div style="margin-top:16px">${body}</div>`);
 }
 ACT.trabSeg = k => { V.trabSeg = k; NEXT_ANIM = 'fade'; render(); };
@@ -2683,7 +2754,7 @@ function vNeg() {
 ACT.neg = v => { NEXT_ANIM = 'right'; V.tab = 'neg'; V.neg = v; V.job = null; render(); };
 ACT.negBack = () => { NEXT_ANIM = 'left'; V.neg = null; render(); };
 function vAgenda() {
-  const p = me(); p.agenda = p.agenda || defAgenda();
+  const p = me(); p.agenda = normAg(p.agenda || defAgenda()); const ag = p.agenda;
   const js = DB.jobs.filter(j => j.prov === p.id && j.turno && !['finalizado', 'cancelado'].includes(j.estado)).sort((a, b) => a.turno.localeCompare(b.turno));
   view(`${negBackBtn()}<h2 style="margin:12px 0 12px">Agenda</h2>
    ${handySays('Marcá en qué franjas podés trabajar. Cuando mandás un presupuesto, le ofrezco al cliente solo esos horarios y saco los que ya están reservados.')}
@@ -2692,11 +2763,11 @@ function vAgenda() {
       <div class="small mut">${esc(j.caso)} · ${esc(j.un)} · ${esc(j.zona.split(',')[0])}</div><div class="meta"><span class="tag y">${stageName(j)}</span></div></button>`).join('')}</div>`
       : `<div class="card small mut">Todavía no tenés turnos. Cuando un cliente acepte tu presupuesto y elija horario, aparece acá.</div>`}</div>
    <div class="sec"><h3 class="sh">Tu disponibilidad semanal</h3>
-    <div class="card"><div class="agrid"><span></span><span class="h">Mañana<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.m}</span></span><span class="h">Tarde<br><span style="text-transform:none;letter-spacing:0;font-weight:500">${FR.t}</span></span>
-     ${[1, 2, 3, 4, 5, 6, 0].map(d => `<b style="font:600 14px var(--f-display)">${DOW[d]}</b>${['m', 't'].map(f => { const on = (p.agenda[d] || []).includes(f); return `<button class="${on ? 'on' : ''}" data-a="agTog" data-v="${d}|${f}" aria-pressed="${on}" aria-label="${DOWL[d]} ${FRN[f]}">${on ? 'Disponible' : '—'}</button>`; }).join('')}`).join('')}</div></div></div>`);
+    <p class="small mut" style="margin:4px 0 12px">Tocá las franjas horarias en las que podés ir. “18+” es desde las 18 h.</p>
+    <div class="card agw">${[1, 2, 3, 4, 5, 6, 0].map(d => `<div class="agday"><b>${DOW[d]}</b><div class="agfr">${FRK.map(f => { const on = (ag[d] || []).includes(f); return `<button class="${on ? 'on' : ''}" data-a="agTog" data-v="${d}|${f}" aria-pressed="${on}" aria-label="${DOWL[d]} ${FR[f]}">${FRS[f]}</button>`; }).join('')}</div></div>`).join('')}</div></div>`);
 }
-ACT.agTog = v => { const p = me(), [d, f] = v.split('|'); p.agenda = p.agenda || defAgenda(); const a = p.agenda[d] = p.agenda[d] || [];
-  const i = a.indexOf(f); if (i >= 0) a.splice(i, 1); else a.push(f); save(); vAgenda(); };
+ACT.agTog = v => { const p = me(), [d, f] = v.split('|'); p.agenda = normAg(p.agenda || defAgenda()); const a = p.agenda[d] = p.agenda[d] || [];
+  const i = a.indexOf(f); if (i >= 0) a.splice(i, 1); else a.push(f); p.agenda[d] = FRK.filter(x => a.includes(x)); save(); vAgenda(); };
 function vPrecios() {
   const p = me(), inc = p.incDef || ['Visita incluida'];
   view(`${negBackBtn()}<h2 style="margin:12px 0 12px">Precios y condiciones</h2>
@@ -2752,28 +2823,39 @@ function perfilChecks(u) {
     ['datos', 'Tu foto', !!u.foto, 'Una cara genera más confianza que una inicial.'],
     ['present', 'Tu presentación', (u.bio || '').length >= 20, 'Contá en dos frases cómo trabajás.'],
     ['present', 'Especialidades', (u.esp || []).length > 0, 'Así te encuentran por lo que mejor hacés.'],
-    ['galeria', 'Fotos de trabajos', (u.port || []).length >= 3, 'Subí al menos 3: es lo primero que miran.'],
+    ['galeria', 'Fotos de trabajos', (u.port || []).length >= 3, 'Subí al menos 3 para mostrar cómo trabajás.'],
     ['oficio', matReq ? 'Matrícula' : 'Experiencia y zona', matReq ? !!u.mat : !!u.anios, matReq ? `Obligatoria para ${u.rubro.toLowerCase()}.` : 'Años de experiencia y hasta dónde vas.'],
     ['neg:precios', 'Precios y condiciones', !!(u.vis || u.min), 'Visita y trabajo mínimo.']];
 }
 function vPerProv() {
   const u = me(), ch = perfilChecks(u), ok = ch.filter(x => x[2]).length, pct = Math.round(ok / ch.length * 100), port = u.port || [], txt = u.portTxt || [];
+  const fin = DB.jobs.filter(j => j.prov === u.id && j.estado === 'finalizado').length, prom = avg(u);
   const sec = (k, img, fb, t, d) => `<button class="card casaitem" data-a="editSec" data-v="${k}">${catImg(img, fb, 'sm')}<span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`;
+  const head = (t, k) => `<div class="row" style="justify-content:space-between;align-items:baseline;margin-bottom:8px"><h3 class="sh" style="margin:0">${t}</h3><button class="textlink" data-a="editSec" data-v="${k}">Editar</button></div>`;
   view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg', 'background:var(--acc);color:var(--accInk)')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${esc(u.rubro)} · ${esc(u.zona)}</span></div></div>
-   <div class="meta" style="margin:12px 0 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}${u.anios ? `<span class="tag">${u.anios} años de experiencia</span>` : ''}${plusBadge(u)}</div>
+   <div class="meta" style="margin:12px 0 0"><span class="tag v">${ico('shield')} Identidad verificada</span>${u.mat ? `<span class="tag b">Matrícula ${esc(u.mat)}</span>` : ''}${plusBadge(u)}</div>
    <div class="card switch" style="margin-top:16px"><div><b>Disponible para pedidos</b><div class="small mut">${u.on ? 'Te llegan pedidos nuevos de tu zona' : 'No te llegan pedidos nuevos'}</div></div><button class="tg ${u.on ? 'on' : ''}" data-a="tog" aria-pressed="${u.on}" aria-label="Disponible"></button></div>
    ${pct < 100 ? `<div class="card armado" style="margin-top:12px"><div class="row" style="justify-content:space-between"><b>Tu perfil está al ${pct}%</b><span class="small mut">${ok} de ${ch.length}</span></div><span class="gprog" style="margin:8px 0 12px"><i style="width:${pct}%"></i></span>
      <ul class="todo">${ch.filter(x => !x[2]).map(([k, t, , d]) => `<li><button data-a="editSec" data-v="${k}"><span class="tb"></span><span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button></li>`).join('')}</ul></div>` : ''}
-   <div class="sec"><div class="row" style="justify-content:space-between;align-items:baseline"><h3 class="sh" style="margin:0">Tus trabajos</h3><button class="textlink" data-a="editSec" data-v="galeria">${port.length ? 'Editar' : 'Agregar fotos'}</button></div>
-    ${port.length ? `<div class="gal" data-noswipe>${port.map((x, i) => `<button class="gph ${i ? '' : 'cover'}" data-a="verFoto" data-v="me|${i}"><img src="${safeImg(x)}" alt="${esc(txt[i] || 'Trabajo realizado')}">${txt[i] ? `<span>${esc(txt[i])}</span>` : ''}</button>`).join('')}</div>`
-      : `<button class="card galempty" data-a="editSec" data-v="galeria">${catImg('n_galeria', 'cam', 'md')}<span class="ct"><b>Mostrá lo que hacés</b><span class="small mut">Las fotos de tus trabajos son lo primero que miran los clientes al elegir.</span></span></button>`}</div>
-   <button class="btn w" style="margin-top:16px" data-a="verPublico">${ico('eye')} Cómo te ven los clientes</button>
-   <div class="sec"><h3 class="sh">Tu perfil</h3><div class="list">
+   <div class="stat3"><div class="card"><b>${prom === 'Nuevo' ? '—' : String(prom).replace('.', ',') + ' ★'}</b><span>${u.rev.length} reseña${u.rev.length === 1 ? '' : 's'}</span></div><div class="card"><b class="num">${fin}</b><span>trabajo${fin === 1 ? '' : 's'} hecho${fin === 1 ? '' : 's'}</span></div><div class="card"><b class="num">${u.anios || '—'}</b><span>años de oficio</span></div></div>
+   <div class="sec">${head('Sobre vos', 'present')}<div class="card">${u.bio ? `<p style="margin:0">${esc(u.bio)}</p>` : '<p class="mut small" style="margin:0">Todavía no escribiste tu presentación.</p>'}
+     ${(u.esp || []).length ? `<div class="meta" style="margin-top:12px">${u.esp.map(x => `<span class="tag b">${esc(x)}</span>`).join('')}</div>` : ''}</div></div>
+   <div class="sec">${head('Cómo trabajás', 'oficio')}<div class="card conds" style="margin:0">
+     <div><span>Visita</span><b class="num">${u.vis ? money(u.vis) : '—'}</b>${u.vis && u.visDesc ? '<small>Se descuenta si hacés el trabajo</small>' : ''}</div>
+     <div><span>Trabajo mínimo</span><b class="num">${u.min ? money(u.min) : '—'}</b></div>
+     <div><span>Hasta dónde vas</span><b>${esc(u.radio || 'Hasta 5 km')}</b></div>
+     <div><span>Horario</span><b>${esc(u.hor || '—')}</b></div></div>
+     <button class="textlink" style="margin-top:8px" data-a="neg" data-v="precios">Cambiar precios y condiciones</button></div>
+   <div class="sec"><h3 class="sh">Editar tu perfil</h3><div class="list" style="margin-top:8px">
     ${sec('datos', 'n_datos', 'user', 'Foto y datos', 'Nombre, usuario, celular y zona')}
     ${sec('present', 'n_present', 'chat', 'Presentación', 'Sobre vos y especialidades')}
-    ${sec('galeria', 'n_galeria', 'cam', 'Galería de trabajos', `${port.length} de 9 fotos`)}
     ${sec('oficio', 'n_oficio', 'tool', 'Tu oficio', 'Matrícula, experiencia, horario y zona')}
+    ${sec('galeria', 'n_galeria', 'cam', 'Fotos de trabajos', `${port.length} de 9 fotos`)}
    </div></div>
+   <div class="sec">${head('Fotos de trabajos', 'galeria')}
+    ${port.length ? `<div class="pgrid">${port.slice(0, 6).map((x, i) => `<button class="gph" data-a="verFoto" data-v="me|${i}"><img src="${safeImg(x)}" alt="${esc(txt[i] || 'Trabajo realizado')}"></button>`).join('')}</div>${port.length > 6 ? `<p class="small mut" style="margin:8px 0 0">y ${port.length - 6} más</p>` : ''}`
+      : `<button class="card galempty" data-a="editSec" data-v="galeria">${catImg('n_galeria', 'cam', 'sm')}<span class="ct"><b>Sumá fotos de trabajos</b><span class="small mut">Ayudan a que el cliente vea cómo trabajás.</span></span></button>`}</div>
+   <button class="btn w" style="margin-top:16px" data-a="verPublico">${ico('eye')} Cómo te ven los clientes</button>
    ${tail(true)}`);
 }
 ACT.editSec = k => {
@@ -2808,10 +2890,10 @@ function vEditProv() {
   }
   if (k === 'galeria') {
     const n = EDIT.port.length;
-    return view(`${head('Galería de trabajos', 'Subí fotos de trabajos que hiciste: el antes y el después funciona muy bien. La primera es tu portada y es la que más se ve.')}
-    ${n ? `<div class="gedit">${EDIT.port.map((x, i) => `<div class="gitem card"><div class="gimg"><img src="${safeImg(x)}" alt="Trabajo ${i + 1}">${i === 0 ? '<span class="tag plus gcov">Portada</span>' : ''}</div>
+    return view(`${head('Galería de trabajos', 'Subí fotos de trabajos que hiciste: el antes y el después funciona muy bien. La primera es la que se ve primero en tu perfil.')}
+    ${n ? `<div class="gedit">${EDIT.port.map((x, i) => `<div class="gitem card"><div class="gimg"><img src="${safeImg(x)}" alt="Trabajo ${i + 1}">${i === 0 ? '<span class="tag plus gcov">Primera</span>' : ''}</div>
       <div class="gside"><input id="pt_${i}" type="text" maxlength="60" placeholder="¿Qué hiciste? Ej: cambio de flexible" value="${esc(keep('pt_' + i, EDIT.portTxt[i] || ''))}" autocomplete="off">
-      <div class="row" style="gap:8px">${i ? `<button type="button" class="btn g sm" data-a="portCover" data-v="${i}">Poner de portada</button>` : ''}<button type="button" class="btn g sm" data-a="quitarPort" data-v="${i}">${ico('trash')} Quitar</button></div></div></div>`).join('')}</div>` : ''}
+      <div class="row" style="gap:8px">${i ? `<button type="button" class="btn g sm" data-a="portCover" data-v="${i}">Poner primera</button>` : ''}<button type="button" class="btn g sm" data-a="quitarPort" data-v="${i}">${ico('trash')} Quitar</button></div></div></div>`).join('')}</div>` : ''}
     ${n < 9 ? `<label class="btn w gadd" for="e_port">${ico('cam')} ${n ? 'Agregar otra foto' : 'Subir la primera foto'}</label><input type="file" id="e_port" accept="image/*" data-ph="port" hidden>` : ''}
     <span class="hint" style="text-align:center">${n} de 9 fotos</span>${foot}`);
   }
@@ -2858,7 +2940,7 @@ ACT.saveSec = async (x, btn) => {
 function offerForm(j) {
   return `<div class="sec card"><h3>Enviar presupuesto</h3><p class="mut small">El cliente compara precio, reseñas y disponibilidad.</p>
    <div class="stack" style="margin-top:12px">${field('pr', 'Precio (ARS)', 'number', String(BASE[j.rubro] || 20000))}
-   <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">Turnos que le ofrecés</span>${(() => { const sl = slotsFor(DB.cur.id, me().agenda || defAgenda(), 6);
+   <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">Turnos que le ofrecés</span>${(() => { const sl = slotsFor(DB.cur.id, me().agenda || defAgenda(), 10);
      return sl.length ? `<div class="slots">${sl.map((k, n) => `<label class="slot"><input type="checkbox" name="oslot" value="${k}" ${n < 3 ? 'checked' : ''}> ${esc(slotLabel(k))}</label>`).join('')}</div><span class="hint">Salen de tu agenda. Podés cambiarla en Mi negocio → Agenda.</span>`
        : '<div class="card small mut">No tenés turnos libres. Cargá tu disponibilidad en <b>Mi negocio → Agenda</b>.</div>'; })()}</div>
    <div><span class="f" style="display:block;font:600 14px/1.3 var(--f-body);margin-bottom:8px">¿Qué incluye tu precio?</span>
@@ -2879,7 +2961,7 @@ ACT.offer = () => {
   if (j.uid === 'demo') setTimeout(() => {
     Object.assign(j, {estado:'aceptado', prov:DB.cur.id, precio:pr, etapa:0, hist:{0:Date.now()}, turno:sl[0], when:slotLabel(sl[0])});
     j.msgs.push({f:'s', t:'Presupuesto aceptado · turno ' + slotLabel(sl[0])}); j.msgs.push({f:'u', t:'Hola, me sirve tu presupuesto. Te espero el ' + slotLabel(sl[0]).toLowerCase() + '.'}); markUnseen(j, DB.cur.id); save();
-    toast(first(j.un) + ' aceptó tu presupuesto'); if (DB.cur && DB.cur.t === 'p') { if (V.job && V.job !== j.id) renderNav(); else render(); }
+    toast(first(j.un) + ' aceptó tu presupuesto'); openConv(j);
   }, 3000);
 };
 ACT.desc = () => { const p = me(); (p.desc = p.desc || []).push(V.job); save(); V.job = null; render(); };
@@ -3173,7 +3255,7 @@ function notify(old, j) {
     const m = j.msgs[j.msgs.length - 1];
     if (m.f === 's') toast(m.t); else if (m.f !== DB.cur.t) toast('Mensaje nuevo de ' + first(DB.cur.t === 'u' ? provInfo(j.prov).n : j.un));
   }
-  if (DB.cur.t === 'p' && old.estado === 'nuevo' && j.estado === 'aceptado' && j.prov === DB.cur.id) toast(first(j.un) + ' aceptó tu presupuesto');
+  if (DB.cur.t === 'p' && old.estado === 'nuevo' && j.estado === 'aceptado' && j.prov === DB.cur.id) { toast(first(j.un) + ' aceptó tu presupuesto'); setTimeout(() => openConv(j), 0); }
 }
 function softRender() {
   if (!DB.cur) return;
