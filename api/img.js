@@ -766,9 +766,15 @@ module.exports = async (req, res) => {
   try {
     // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
     // Siempre el modelo económico: el de más calidad gasta el cupo gratis del día en unas pocas fotos
-    const first = klein(acct, token, prompt, 512, 512);
+    // Orden: Cloudflare (klein) → si Cloudflare no tiene cupo, Pollinations (gratis, sin clave) → si no, Cloudflare (schnell)
+    const t0 = Date.now(), resto = () => Math.max(4000, 27500 - (Date.now() - t0));
     let kErr = '';
-    const img = await first.catch(e => { kErr = String(e.message); console.error('klein:', kErr); return schnell(acct, token, prompt).catch(e2 => { throw new Error(kErr + ' | ' + e2.message); }); });
+    const img = await klein(acct, token, prompt, 512, 512, 14000).catch(async e => {
+      kErr = String(e.message); console.error('klein:', kErr);
+      const sinCupo = /neuron|allocation|quota|429|4006/i.test(kErr);
+      if (sinCupo) return polli(prompt, resto()).catch(e2 => { throw new Error(kErr + ' | pollinations: ' + e2.message); });
+      return schnell(acct, token, prompt).catch(e2 => polli(prompt, resto()).catch(e3 => { throw new Error(kErr + ' | ' + e2.message + ' | pollinations: ' + e3.message); }));
+    });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
     if (pub) {
@@ -784,7 +790,7 @@ module.exports = async (req, res) => {
     console.error('Imagen:', e.message);
     res.setHeader('Cache-Control', 'no-store');
     const cupo = /neuron|allocation|quota|429|4006/i.test(String(e.message));
-    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Cloudflare no dejó generar más imágenes por ahora (cupo o demasiados pedidos juntos)' : 'No se pudo generar la imagen', detalle: String(e.message).replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g, '').slice(0, 300) });
+    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Cloudflare y Pollinations no dejaron generar más imágenes por ahora (cupo o demasiados pedidos juntos)' : 'No se pudo generar la imagen', detalle: String(e.message).replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g, '').slice(0, 300) });
   }
 };
 
@@ -819,6 +825,21 @@ async function klein(acct, token, prompt, w = 768, h = 480, ms = 25000) {
     });
     return await readImage(r);
   } finally { clearTimeout(t); }
+}
+
+// Pollinations: servicio gratis de imágenes con FLUX, sin cuenta ni clave (tiene un límite de pedidos por minuto)
+async function polli(prompt, ms = 25000) {
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt.slice(0, 900))}?width=512&height=512&model=flux&nologo=true&private=true&seed=${seedOf(prompt) % 1000000}&referrer=handygo`;
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctl.signal });
+    const type = r.headers.get('content-type') || '';
+    if (!r.ok || !type.startsWith('image/')) throw new Error(String(r.status) + ' ' + (await r.text().catch(() => '')).slice(0, 120));
+    const buf = Buffer.from(await r.arrayBuffer());
+    if (buf.length < 6000) throw new Error('imagen vacía');
+    return buf;
+  } catch (e) { throw new Error(e.name === 'AbortError' ? 'tardó demasiado' : e.message); }
+  finally { clearTimeout(t); }
 }
 
 async function schnell(acct, token, prompt) {
