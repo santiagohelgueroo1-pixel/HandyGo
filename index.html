@@ -233,7 +233,14 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 .iconbtn.p{background:var(--pri);color:var(--priInk)}
 .iconbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .attach{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:14px;color:var(--mut)}
-.attach img{width:46px;height:46px;object-fit:cover;border-radius:10px}
+.attach{flex-wrap:wrap}
+.attach .thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.attach .th{position:relative;width:56px;height:56px}
+.attach .th img{width:56px;height:56px;object-fit:cover;border-radius:10px;display:block}
+.attach .thx{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;padding:0;background:var(--ink);color:var(--bg);font-size:15px;line-height:22px;text-align:center;cursor:pointer}
+.attach .thadd{width:56px;height:56px;border-radius:10px;border:1.5px dashed var(--line);display:grid;place-items:center;font-size:24px;color:var(--mut);cursor:pointer}
+.m .mimgs{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;max-width:220px;margin-bottom:8px}
+.m .mimgs img{margin:0;aspect-ratio:1;object-fit:cover;border-radius:8px}
 .attach button{border:0;background:none;color:var(--bad);font-weight:700}
 .mode{display:inline-flex;align-items:center;gap:8px}
 .mode i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
@@ -1071,7 +1078,7 @@ let CH = null;           // conversación actual
 let chatEl = null;       // nodo del chat (se conserva al cambiar de pestaña)
 let AI_OK = null;        // null = sin probar, true / false
 let AI_RETRY = null;
-let pendingImg = null;
+let pendingImgs = []; const MAX_FOTOS = 4;
 
 const me = () => DB.cur && (DB.cur.t === 'u' ? DB.users : DB.provs).find(x => x.id === DB.cur.id);
 const SEED_BIO = {
@@ -1597,8 +1604,8 @@ function vChat() {
       <div id="log" aria-live="polite"></div>
       <div class="composer"><div class="attach" id="att" hidden></div>
       <div class="bar"><div class="pillin"><textarea id="inp" rows="1" placeholder="Escribile a Handy…" aria-label="Mensaje para Handy"></textarea>
-      <label class="cam" title="Mandar una foto" for="pic">${ico('cam')}<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Mandar una foto</span></label>
-      <input type="file" id="pic" accept="image/*" hidden></div>
+      <label class="cam" title="Adjuntar fotos" for="pic">${ico('cam')}<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Mandar una foto</span></label>
+      <input type="file" id="pic" accept="image/*" multiple hidden></div>
       <button class="actbtn" id="actBtn" data-a="compose" aria-label="Grabar audio">${ico('mic').replace('<svg', '<svg class="i-mic"')}${ico('send').replace('<svg', '<svg class="i-send"')}</button></div>
       <div class="recbar" id="recbar" hidden><button class="iconbtn" data-a="recCancel" aria-label="Cancelar audio">${ico('trash')}</button>
       <div class="t"><span class="recdot"></span><span id="recT">0:00</span><span class="wave" aria-hidden="true">${'<i></i>'.repeat(18)}</span></div>
@@ -1727,21 +1734,34 @@ async function addCredits(n, msg, kind) {
   render(); toast((msg ? msg + ' · ' : '') + `sumaste ${n} consultas`);
 }
 
-function onPic(e) {
-  const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
-  const r = new FileReader();
-  r.onload = () => { const img = new Image(); img.onload = () => {
+// Fotos para Handy: se pueden adjuntar varias (hasta 4), sacarlas una por una y escribir antes de mandar
+function achicarFoto(f) {
+  return new Promise((ok, mal) => { const r = new FileReader(); r.onerror = mal;
+    r.onload = () => { const img = new Image(); img.onerror = mal; img.onload = () => {
       const max = 1024, k = Math.min(1, max / Math.max(img.width, img.height));
       const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-      pendingImg = c.toDataURL('image/jpeg', .8);
-      const at = chatEl.querySelector('#att'); at.hidden = false; at.innerHTML = `<img src="${safeImg(pendingImg)}" alt="Foto adjunta"><span>Foto lista para enviar</span><button data-a="clearPic">Quitar</button>`; syncSend();
-    }; img.src = r.result; };
-  r.readAsDataURL(f);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', .78)); }; img.src = r.result; };
+    r.readAsDataURL(f); });
 }
-function clearPic() { pendingImg = null; const at = chatEl && chatEl.querySelector('#att'); if (at) { at.hidden = true; at.innerHTML = ''; } syncSend(); }
+async function onPic(e) {
+  const files = [...(e.target.files || [])].filter(f => /^image\//.test(f.type)); e.target.value = ''; if (!files.length) return;
+  const lugar = MAX_FOTOS - pendingImgs.length;
+  if (lugar <= 0) { toast(`Podés mandar hasta ${MAX_FOTOS} fotos por mensaje`); return; }
+  if (files.length > lugar) toast(`Podés mandar hasta ${MAX_FOTOS} fotos por mensaje: agregué ${lugar === 1 ? 'la primera' : 'las primeras ' + lugar}`);
+  for (const f of files.slice(0, lugar)) { try { pendingImgs.push(await achicarFoto(f)); } catch (err) { toast('No se pudo cargar una de las fotos'); } }
+  renderAtt(); chatEl.querySelector('#inp').focus();
+}
+function renderAtt() {
+  const at = chatEl && chatEl.querySelector('#att'); if (!at) return;
+  const n = pendingImgs.length; at.hidden = !n;
+  at.innerHTML = n ? `<div class="thumbs">${pendingImgs.map((x, i) => `<span class="th"><img src="${safeImg(x)}" alt="Foto ${i + 1}"><button type="button" class="thx" data-a="rmPic" data-v="${i}" aria-label="Quitar foto ${i + 1}">×</button></span>`).join('')}${n < MAX_FOTOS ? `<label class="thadd" for="pic" aria-label="Agregar otra foto">+</label>` : ''}</div>
+    <span>${n === 1 ? '1 foto lista' : n + ' fotos listas'} · podés escribir algo antes de mandar</span>` : '';
+  syncSend();
+}
+function clearPic() { pendingImgs = []; renderAtt(); }
+ACT.rmPic = i => { pendingImgs.splice(+i, 1); renderAtt(); };
 function syncSend() {
-  if (!chatEl) return; const has = !!(chatEl.querySelector('#inp').value.trim() || pendingImg), b = chatEl.querySelector('#actBtn');
+  if (!chatEl) return; const has = !!(chatEl.querySelector('#inp').value.trim() || pendingImgs.length), b = chatEl.querySelector('#actBtn');
   b.classList.toggle('send', has); b.setAttribute('aria-label', has ? 'Enviar' : 'Grabar audio');
 }
 ACT.compose = () => { if (chatEl && chatEl.querySelector('#actBtn').classList.contains('send')) ACT.send(); else ACT.mic(); };
@@ -1802,7 +1822,7 @@ function sendAudio(blob, audio, dur) {
   ai('', null, '', audio, bub);
 }
 ACT.clearPic = clearPic;
-ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImg) return; i.value = ''; i.style.height = 'auto'; go(t, false); syncSend(); };
+ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImgs.length) return; i.value = ''; i.style.height = 'auto'; go(t, false); syncSend(); };
 
 // La consulta se cobra recién cuando es un problema de la casa (las preguntas sobre la app no gastan)
 function startConsulta() {
@@ -1810,9 +1830,9 @@ function startConsulta() {
   CH.started = true; CH.trans = CH.trans.filter(x => x.r !== 'b' || x.t.indexOf('Hola, ') !== 0); return true;
 }
 function go(txt, isReply) {
-  const img = isReply ? null : pendingImg; clearPic();
+  const imgs = isReply ? [] : pendingImgs.slice(), img = imgs[0] || null; clearPic();
   LOG().querySelectorAll('.chips').forEach(c => c.remove());
-  say((img ? `<img src="${safeImg(img)}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
+  say((imgs.length > 1 ? `<div class="mimgs">${imgs.map((x, i) => `<img src="${safeImg(x)}" alt="Foto ${i + 1}">`).join('')}</div>` : img ? `<img src="${safeImg(img)}" alt="Foto enviada">` : '') + esc(txt || ''), 'u');
   const t = (txt || '').toLowerCase();
   if (!img && !isReply) { const a = appHelp(t); if (a) return answerApp(a.r, a.to); }
   const h = HARD.find(x => x.re.test(t));
@@ -1823,7 +1843,7 @@ function go(txt, isReply) {
   if (img) CH.img = img;
   CH.resp.push(txt || '(foto)');
   if (h) return hardStop(h);
-  ai(txt, img, t);
+  ai(txt, imgs, t);
 }
 
 /* ---------- Handy responde sobre la app (sin gastar consultas) ---------- */
@@ -1867,8 +1887,9 @@ function answerApp(r, to) {
 }
 
 /* ---------- IA ---------- */
-async function ai(txt, img, t, audio, bub) {
-  CH.h.push({role:'user', text:txt || (audio ? '(audio)' : 'Te mando una foto del problema.'), image:img ? {mime:'image/jpeg', data:img.split(',')[1]} : null, audio:audio || null});
+async function ai(txt, imgs, t, audio, bub) {
+  imgs = imgs || []; const img = imgs[0] || null;
+  CH.h.push({role:'user', text:txt || (audio ? '(audio)' : imgs.length > 1 ? `Te mando ${imgs.length} fotos del problema.` : 'Te mando una foto del problema.'), images:imgs.map(x => ({mime:'image/jpeg', data:x.split(',')[1]})), audio:audio || null});
   CH.bub = bub || null;
   const th = say('<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>', '', false);
   try {
@@ -1918,7 +1939,7 @@ function handleAI(r, t) {
   if (r.tema_nuevo && CH.caso) {
     const last = CH.h[CH.h.length - 1];
     if (!useCredit(true)) { CH.h.pop(); CH.resp.pop(); return; }
-    resetTopic(); CH.h = [last]; CH.resp = [last.text]; if (last.image && last.image.data) CH.img = 'data:image/jpeg;base64,' + last.image.data;
+    resetTopic(); CH.h = [last]; CH.resp = [last.text]; if (last.images && last.images[0]) CH.img = 'data:image/jpeg;base64,' + last.images[0].data;
   }
   const msg = esc(r.mensaje || '¿Me contás un poco más?');
   CH.h.push({role:'assistant', text:r.mensaje || ''});
@@ -2137,7 +2158,8 @@ const CAT_ICO = {plomeria:'drop', bano:'shower', cocina:'drop', agua:'valve', el
 const CAT_N = {plomeria:'Plomería y caños', bano:'Baño', cocina:'Cocina', agua:'Agua, tanque y termotanque', electro:'Electrodomésticos', gas:'Gas', elec:'Electricidad', clima:'Aire y calefacción', puertas:'Puertas y cerraduras', ventanas:'Ventanas, persianas y cortinas', muebles:'Muebles', pared:'Paredes, pintura y albañilería', pisos:'Pisos', exterior:'Techo, patio y jardín', herramientas:'Herramientas', insumos:'Insumos y limpieza', seguridad:'Seguridad'};
 const pzIco = t => { const k = (((t && t.id) || '') + ' ' + ((t && t.n) || '')).toLowerCase(); const m = PZ_ICO.find(([re]) => re.test(k)); return ico(m ? m[1] : (t && CAT_ICO[t.c]) || 'tool'); };
 const FOTOS = new Set('llave_paso bacha rejilla manija sifon junta sopapa aireador zapatilla_canilla flexible tapon vastago arandela canilla_doble monocomando canilla_cocina canilla_servicio pico_canilla llave_esferica llave_paso_valvula llave_escuadra valvula_desague cano_pvc codo cupla union_doble te_cano niple buje_reduccion tapon_rosca abrazadera camara_inspeccion pileta_patio ventilacion_cloacal cisterna flor_ducha pulsador barral mezcladora_ducha transferencia brazo_ducha ducha_telefono manguera_ducha desague_banera inodoro cadena_inodoro palanca_mochila tapa_inodoro bisagra_tapa bulones_inodoro bidet ducha_bidet lavatorio banera mampara plato_ducha botiquin toallero portarrollos extractor_bano cortina_bano espejo asiento_inodoro jabonera barral_ducha agarradera filtro_campana sifon_cocina pileta_cocina bajo_mesada mesada canilla_extensible campana_cocina extractor_cocina filtro_carbon alacena rejilla_cocina horno_cocina bandeja_horno grifo_filtro dispenser_agua filtro_agua flotante_tanque tanque_agua colector bomba_presurizadora bomba_elevadora valvula_retencion filtro_sedimentos termotanque termotanque_electrico valvula_seguridad medidor_agua ablandador filtro_aspiradora fuelle_lav bomba_lav manguera_lav patas_niveladoras serpentina_heladera lavavajillas lavarropas tambor_lav cajon_jabon secarropas heladera lampara_heladera perilla_termostato freezer microondas horno_electrico aspiradora plancha pava_electrica cafetera tostadora licuadora secador_pelo televisor soporte_tv router control_tv calefon llave_gas flexible_gas regulador_garrafa garrafa piloto quemador perilla_cocina anafe cocina_gas estufa_tiro conducto_evacuacion sombrerete medidor_gas termica buscapolo frente_enchufe portalamparas zapatilla_elec interruptor disyuntor ficha cinta_aisladora lamparita tablero fusible toma_corriente toma_20a toma_doble tecla_combinada modulo_electrico bastidor caja_electrica plafon aplique lampara_e14 dicroica tubo_led cable_unipolar cable_taller adaptador conector_empalme timbre pulsador_timbre portero sensor_movimiento fotocelula reflector ventilador_techo toma_usb prolongador rosca filtro_aire unidad_interior unidad_exterior aletas_aire serpentina_aire control_remoto rejilla_vent estufa_electrica caloventor radiador purgador llave_radiador termostato_ambiente ventilador_pie soporte_aire canos_cobre deshumidificador estufa_halogena panel_calefactor bisagra burlete grafito pestillo manija_puerta cilindro marco cerradura cerradura_embutir cerrojo pasador cerradero llave_puerta tope_puerta cierrapuertas mirilla cadena_seguridad bisagra_municion puerta_corrediza bocallave roseta contramarco hoja_puerta cerradura_electrica manijon rodillo manija_ventana rueda_ventana riel_corrediza riel_cortina marco_ventana felpa ventana_corrediza ventana_batiente banderola persiana cajon_persiana manivela topes_persiana vidrio mosquitero tela_mosquitero cortina_roller cadena_roller soporte_barral deslizador policarbonato toldo cortina_tela rueditas eje guias regaton escuadra tablillas manija_mueble bisagra_mueble tarugo_madera guias_telescopicas perilla_mueble tornillo_madera base_estrella soporte_estante repisa patas_mueble placard puerta_mueble cajon piston_mueble cerradura_mueble silla mesa cama sommier colchon biblioteca escritorio sillon espejo_pared perchero barral_placard lija tarugo cinta_papel enduido espatula junta_ceramica rodillo_pintura pincel bandeja_pintura latex fijador zocalo tornillo clavo tarugo_durlock gancho_cuadro durlock cinta_durlock masilla esmalte pintura_antihongo revoque cemento arena ladrillo ceramico pegamento_ceramico yeso sellador_fisuras malla_fibra membrana_pintura removedor convertidor moldura cielorraso azulejo perfil_durlock tornillo_durlock piso_flotante parquet piso_vinilico porcelanato zocalo_flotante manta_piso alfombra plastificador cera_pisos umbral baldosa canilla_jardin porton membrana_liquida membrana canaleta bajada_pluvial embudo_pluvial rejilla_balcon teja chapa manguera_jardin acople_rapido aspersor_jardin pileta_natacion reja buzon pala rastrillo tijera_podar cortadora_cesped bordeadora maceta parrilla llave_francesa trincheta allen nivel mecha taladro pistola destornillador sargento pinza pico_loro martillo cinta_metrica escalera destapador_inodoro multimetro llana cuchara_albanil fratacho plomada destornillador_plano destornillador_phillips atornillador llave_tubo llave_stillson llave_combinada alicate serrucho sierra_metal caladora amoladora mecha_madera mecha_metal cepillo_alambre aceitera pistola_calor cuter escuadra_carpintero lapiz_carpintero detector_cables pelacables tenaza formon cincel maza prensa lijadora sierra_copa soldador balde lavandina tuerca cola lubricante silicona_aer vinagre bicarbonato sellador_roscas cinta_autosoldable pegamento_pvc lustramuebles aguarras espuma_poliuretano sellador_acrilico detergente desengrasante destapacanerias antisarro alcohol esponja rociador trapo bolsa_residuos pegamento_contacto adhesivo_epoxi cinta_doble_faz precintos pilas tornillo_autoperforante bulon taco_quimico sellador_poliuretanico cinta_teflon_gas grasa removedor_sarro cepillo_limpieza secador_piso lampazo guantes detector_monoxido antiparras barbijo matafuego detector_humo botiquin_primeros linterna_emergencia alarma camara_seguridad cerradura_digital llave_corte_general'.split(' '));
-const termSrc = t => t && FOTOS.has(t.id) ? `/p/${t.id}.webp` : '';
+// Si no hay foto real libre, la IA la genera una sola vez (queda guardada para siempre y después carga al instante)
+const termSrc = t => !t ? '' : FOTOS.has(t.id) ? `/p/${t.id}.webp` : GLOS_ID[t.id] ? `/api/img?t=${encodeURIComponent(t.id)}&v=7` : '';
 function linkTerms(tx, tut) {
   const seen = tut._seen || (tut._seen = new Set());
   let out = '', last = 0; GLOS_RE.re.lastIndex = 0; let m; const ctx = tutCtx(tut);
@@ -2154,15 +2176,22 @@ function piezasHTML(tut) {
   return `<div class="pzs"><span class="eyebrow">Antes de empezar · conocé las piezas</span><p>Tocá cada una para ver qué es y dónde la encontrás.</p>
     <div class="pzrow">${ids.map(id => { const t = termInfo(id); return `<button type="button" class="pz" data-a="term" data-v="${esc(id)}"><span class="ph" data-src="${esc(termSrc(t))}">${pzIco(t)}</span><b>${esc(t.n)}</b><span>${esc(t.q)}</span></button>`; }).join('')}</div></div>`;
 }
-// Carga las fotos de las piezas (son archivos de la app: cargan al instante y quedan guardadas)
-const IMG_Q = []; let IMG_ON = 0;
+// Carga las fotos de las piezas. Las de la app cargan al instante; las que arma la IA van de a 2 para no saturar el servicio
+const IMG_Q = []; let IMG_ON = 0, IA_ON = 0;
 function pumpImgs() {
-  while (IMG_ON < 6 && IMG_Q.length) {
-    const [el, src] = IMG_Q.shift(); if (!el.isConnected) continue;
-    IMG_ON++; const img = new Image(); img.alt = ''; img.decoding = 'async';
-    const done = () => { IMG_ON--; pumpImgs(); };
+  for (let i = 0; i < IMG_Q.length && IMG_ON < 8;) {
+    const [el, src] = IMG_Q[i], ia = src.startsWith('/api/');
+    if (!el.isConnected) { IMG_Q.splice(i, 1); continue; }
+    if (ia && IA_ON >= 2) { i++; continue; }
+    IMG_Q.splice(i, 1); IMG_ON++; if (ia) IA_ON++;
+    const img = new Image(); img.alt = ''; img.decoding = 'async';
+    const done = () => { IMG_ON--; if (ia) IA_ON--; pumpImgs(); };
     img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } done(); };
-    img.onerror = done;
+    img.onerror = () => {
+      // Un reintento a los pocos segundos (el servicio gratis a veces pide esperar); si tampoco, queda el ícono
+      if (ia && !el.dataset.try) { el.dataset.try = 1; setTimeout(() => { IMG_Q.push([el, src]); pumpImgs(); }, 8000); }
+      done();
+    };
     img.src = src;
   }
 }
@@ -2176,10 +2205,10 @@ function vGaleria() {
   const ids = GLOS.map(g => g.id), cats = [...new Set(GLOS.map(g => g.c))];
   const item = g => `<div class="galitem"><span class="ph" data-src="${esc(termSrc(g))}">${pzIco(g)}</span><b>${esc(g.n)}</b><code>${esc(g.id)}</code></div>`;
   view(`<h2 style="margin:8px 0 4px">Fotos de las piezas</h2>
-    <p class="mut small" style="margin:0">Fotos reales libres de uso (Pixabay, Unsplash y Pexels), guardadas dentro de la app. <b id="galN">0</b> de ${ids.length} con foto.</p>
+    <p class="mut small" style="margin:0">Fotos reales libres de uso (Pixabay, Unsplash y Pexels), guardadas dentro de la app. Las que no tienen foto real las arma la IA la primera vez que se ven. <b id="galN">0</b> de ${ids.length} listas.</p>
     ${cats.map(c => { const gs = GLOS.filter(g => g.c === c); return `<h3 class="galcat">${esc(CAT_N[c] || c)} <span class="mut small">· ${gs.length}</span></h3><div class="galgrid">${gs.map(item).join('')}</div>`; }).join('')}`);
   const box = $('#view'); loadTermImgs(box);
-  const tick = setInterval(() => { const n = box.querySelectorAll('.ph img').length; const el = $('#galN'); if (!el) return clearInterval(tick); el.textContent = n; if (n >= FOTOS.size) clearInterval(tick); }, 1000);
+  const tick = setInterval(() => { const n = box.querySelectorAll('.ph img').length; const el = $('#galN'); if (!el) return clearInterval(tick); el.textContent = n; if (n >= ids.length) clearInterval(tick); }, 1000);
 }
 ACT.term = id => {
   const t = termInfo(id); if (!t) return;
