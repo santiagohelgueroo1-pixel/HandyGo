@@ -1,5 +1,5 @@
 // HandyGo · service worker: guarda la app para que abra rápido y sin señal.
-const CACHE = 'handygo-v39';
+const CACHE = 'handygo-v41';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 // Las ilustraciones fijas se guardan la primera vez que se ven (después cargan al instante, aun sin señal)
 // Librerías externas con versión fija: se descargan una sola vez y quedan guardadas
@@ -23,6 +23,12 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (url.origin !== location.origin) return;
+
+  // Fotos de piezas: una vez bajadas se usan las guardadas
+  if (url.pathname.startsWith('/p/')) {
+    e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; })));
+    return;
+  }
 
   // La app: se pide la versión nueva, pero si la red tarda más de 2,5 s se abre la guardada
   const net = fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; });

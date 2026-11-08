@@ -590,6 +590,11 @@ button.term{border:0;background:none;padding:0;font:inherit;color:var(--pri);fon
 .termimg{aspect-ratio:16/10;max-width:100%;border-radius:14px;overflow:hidden;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;margin:4px 0 16px}
 .termimg img{width:100%;height:100%;object-fit:cover;display:block}
 .termimg svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.75}
+.galitem .ph:has(img),.pz .ph:has(img),.termimg:has(img){background:#fff}
+.galitem .ph img,.pz .ph img,.termimg img{object-fit:contain}
+.galitem .ph img,.pz .ph img,.termimg img{object-fit:contain!important;padding:6%}
+.galotra{margin-top:2px;border:1px solid var(--line);background:none;border-radius:8px;padding:4px 6px;font:inherit;font-size:11px;color:var(--ink);cursor:pointer}
+.galotra:disabled{opacity:.5}
 .tdef{display:grid;gap:12px}
 .tdef .card{display:grid;gap:4px}
 #offline{position:absolute;left:0;right:0;z-index:35;background:var(--acc);color:var(--accInk);font:600 14px/1.3 var(--f-body);text-align:center;padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
@@ -2131,7 +2136,8 @@ const PZ_ICO = [[/aire(?!ador)|split|unidad|aletas|serpentina|heladera|control r
 const CAT_ICO = {plomeria:'drop', bano:'shower', cocina:'drop', agua:'valve', electro:'plug', gas:'alert', elec:'power', clima:'snow', puertas:'hinge', ventanas:'blind', muebles:'screw', pared:'brush', pisos:'brush', exterior:'leaf', herramientas:'tool', insumos:'spray', seguridad:'shield'};
 const CAT_N = {plomeria:'Plomería y caños', bano:'Baño', cocina:'Cocina', agua:'Agua, tanque y termotanque', electro:'Electrodomésticos', gas:'Gas', elec:'Electricidad', clima:'Aire y calefacción', puertas:'Puertas y cerraduras', ventanas:'Ventanas, persianas y cortinas', muebles:'Muebles', pared:'Paredes, pintura y albañilería', pisos:'Pisos', exterior:'Techo, patio y jardín', herramientas:'Herramientas', insumos:'Insumos y limpieza', seguridad:'Seguridad'};
 const pzIco = t => { const k = (((t && t.id) || '') + ' ' + ((t && t.n) || '')).toLowerCase(); const m = PZ_ICO.find(([re]) => re.test(k)); return ico(m ? m[1] : (t && CAT_ICO[t.c]) || 'tool'); };
-const termSrc = t => t && GLOS_ID[t.id] ? `/api/img?t=${encodeURIComponent(t.id)}&v=5` : '';
+const FOTOS = new Set('llave_paso bacha rejilla manija sifon junta sopapa aireador zapatilla_canilla flexible tapon vastago arandela canilla_doble monocomando canilla_cocina canilla_servicio pico_canilla llave_esferica llave_paso_valvula llave_escuadra valvula_desague cano_pvc codo cupla union_doble te_cano niple buje_reduccion tapon_rosca abrazadera camara_inspeccion pileta_patio ventilacion_cloacal cisterna flor_ducha pulsador barral mezcladora_ducha transferencia brazo_ducha ducha_telefono manguera_ducha desague_banera inodoro cadena_inodoro palanca_mochila tapa_inodoro bisagra_tapa bulones_inodoro bidet ducha_bidet lavatorio banera mampara plato_ducha botiquin toallero portarrollos extractor_bano cortina_bano espejo asiento_inodoro jabonera barral_ducha agarradera filtro_campana sifon_cocina pileta_cocina bajo_mesada mesada canilla_extensible campana_cocina extractor_cocina filtro_carbon alacena rejilla_cocina horno_cocina bandeja_horno grifo_filtro dispenser_agua filtro_agua flotante_tanque tanque_agua colector bomba_presurizadora bomba_elevadora valvula_retencion filtro_sedimentos termotanque termotanque_electrico valvula_seguridad medidor_agua ablandador filtro_aspiradora fuelle_lav bomba_lav manguera_lav patas_niveladoras serpentina_heladera lavavajillas lavarropas tambor_lav cajon_jabon secarropas heladera lampara_heladera perilla_termostato freezer microondas horno_electrico aspiradora plancha pava_electrica cafetera tostadora licuadora secador_pelo televisor soporte_tv router control_tv calefon llave_gas flexible_gas regulador_garrafa garrafa piloto quemador perilla_cocina anafe cocina_gas estufa_tiro conducto_evacuacion sombrerete medidor_gas termica buscapolo frente_enchufe portalamparas zapatilla_elec interruptor disyuntor ficha cinta_aisladora lamparita tablero fusible toma_corriente toma_20a toma_doble tecla_combinada modulo_electrico bastidor caja_electrica plafon aplique lampara_e14 dicroica tubo_led cable_unipolar cable_taller adaptador conector_empalme timbre pulsador_timbre portero sensor_movimiento fotocelula reflector ventilador_techo toma_usb prolongador rosca filtro_aire unidad_interior unidad_exterior aletas_aire serpentina_aire control_remoto rejilla_vent estufa_electrica caloventor radiador purgador llave_radiador termostato_ambiente ventilador_pie soporte_aire canos_cobre deshumidificador estufa_halogena panel_calefactor bisagra burlete grafito pestillo manija_puerta cilindro marco cerradura cerradura_embutir cerrojo pasador cerradero llave_puerta tope_puerta cierrapuertas mirilla cadena_seguridad bisagra_municion puerta_corrediza bocallave roseta contramarco hoja_puerta cerradura_electrica manijon rodillo manija_ventana rueda_ventana riel_corrediza riel_cortina marco_ventana felpa ventana_corrediza ventana_batiente banderola persiana cajon_persiana manivela topes_persiana vidrio mosquitero tela_mosquitero cortina_roller cadena_roller soporte_barral deslizador policarbonato toldo cortina_tela rueditas eje guias regaton escuadra tablillas manija_mueble bisagra_mueble tarugo_madera guias_telescopicas perilla_mueble tornillo_madera base_estrella soporte_estante repisa patas_mueble placard puerta_mueble cajon piston_mueble cerradura_mueble silla mesa cama sommier colchon biblioteca escritorio sillon espejo_pared perchero barral_placard lija tarugo cinta_papel enduido espatula junta_ceramica rodillo_pintura pincel bandeja_pintura latex fijador zocalo tornillo clavo tarugo_durlock gancho_cuadro durlock cinta_durlock masilla esmalte pintura_antihongo revoque cemento arena ladrillo ceramico pegamento_ceramico yeso sellador_fisuras malla_fibra membrana_pintura removedor convertidor moldura cielorraso azulejo perfil_durlock tornillo_durlock piso_flotante parquet piso_vinilico porcelanato zocalo_flotante manta_piso alfombra plastificador cera_pisos umbral baldosa canilla_jardin porton membrana_liquida membrana canaleta bajada_pluvial embudo_pluvial rejilla_balcon teja chapa manguera_jardin acople_rapido aspersor_jardin pileta_natacion reja buzon pala rastrillo tijera_podar cortadora_cesped bordeadora maceta parrilla llave_francesa trincheta allen nivel mecha taladro pistola destornillador sargento pinza pico_loro martillo cinta_metrica escalera destapador_inodoro multimetro llana cuchara_albanil fratacho plomada destornillador_plano destornillador_phillips atornillador llave_tubo llave_stillson llave_combinada alicate serrucho sierra_metal caladora amoladora mecha_madera mecha_metal cepillo_alambre aceitera pistola_calor cuter escuadra_carpintero lapiz_carpintero detector_cables pelacables tenaza formon cincel maza prensa lijadora sierra_copa soldador balde lavandina tuerca cola lubricante silicona_aer vinagre bicarbonato sellador_roscas cinta_autosoldable pegamento_pvc lustramuebles aguarras espuma_poliuretano sellador_acrilico detergente desengrasante destapacanerias antisarro alcohol esponja rociador trapo bolsa_residuos pegamento_contacto adhesivo_epoxi cinta_doble_faz precintos pilas tornillo_autoperforante bulon taco_quimico sellador_poliuretanico cinta_teflon_gas grasa removedor_sarro cepillo_limpieza secador_piso lampazo guantes detector_monoxido antiparras barbijo matafuego detector_humo botiquin_primeros linterna_emergencia alarma camara_seguridad cerradura_digital llave_corte_general'.split(' '));
+const termSrc = t => t && FOTOS.has(t.id) ? `/p/${t.id}.webp` : '';
 function linkTerms(tx, tut) {
   const seen = tut._seen || (tut._seen = new Set());
   let out = '', last = 0; GLOS_RE.re.lastIndex = 0; let m; const ctx = tutCtx(tut);
@@ -2148,22 +2154,15 @@ function piezasHTML(tut) {
   return `<div class="pzs"><span class="eyebrow">Antes de empezar · conocé las piezas</span><p>Tocá cada una para ver qué es y dónde la encontrás.</p>
     <div class="pzrow">${ids.map(id => { const t = termInfo(id); return `<button type="button" class="pz" data-a="term" data-v="${esc(id)}"><span class="ph" data-src="${esc(termSrc(t))}">${pzIco(t)}</span><b>${esc(t.n)}</b><span>${esc(t.q)}</span></button>`; }).join('')}</div></div>`;
 }
-// Carga las fotos de las piezas de a 4 a la vez (las ya guardadas aparecen al instante)
+// Carga las fotos de las piezas (son archivos de la app: cargan al instante y quedan guardadas)
 const IMG_Q = []; let IMG_ON = 0;
 function pumpImgs() {
-  const gal = location.hash === '#imagenes';
-  while (IMG_ON < (gal ? 1 : 2) && IMG_Q.length) {
+  while (IMG_ON < 6 && IMG_Q.length) {
     const [el, src] = IMG_Q.shift(); if (!el.isConnected) continue;
-    IMG_ON++; const img = new Image(), t0 = Date.now(); img.alt = ''; img.decoding = 'async';
+    IMG_ON++; const img = new Image(); img.alt = ''; img.decoding = 'async';
     const done = () => { IMG_ON--; pumpImgs(); };
-    img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } if (gal && Date.now() - t0 > 2000) setTimeout(done, 2500); else done(); };
-    img.onerror = () => {
-      const n = (+el.dataset.try || 0) + 1; el.dataset.try = n;
-      // En la galería se reintenta varias veces con pausa (el servicio gratis limita los pedidos por minuto)
-      const tope = gal ? 6 : 1, espera = gal ? 15000 : 6000;
-      if (n <= tope && el.isConnected) { if (gal) IMG_ON++; setTimeout(() => { if (gal) IMG_ON--; IMG_Q.push([el, src.replace(/&r=1$/, '') + '&r=1']); pumpImgs(); }, espera); }
-      done();
-    };
+    img.onload = () => { if (el.isConnected) { el.innerHTML = ''; el.appendChild(img); } done(); };
+    img.onerror = done;
     img.src = src;
   }
 }
@@ -2177,10 +2176,10 @@ function vGaleria() {
   const ids = GLOS.map(g => g.id), cats = [...new Set(GLOS.map(g => g.c))];
   const item = g => `<div class="galitem"><span class="ph" data-src="${esc(termSrc(g))}">${pzIco(g)}</span><b>${esc(g.n)}</b><code>${esc(g.id)}</code></div>`;
   view(`<h2 style="margin:8px 0 4px">Fotos de las piezas</h2>
-    <p class="mut small" style="margin:0">Se preparan una sola vez y quedan guardadas. Dejá esta pantalla abierta hasta que termine. <b id="galN">0</b> de ${ids.length} listas.</p>
+    <p class="mut small" style="margin:0">Fotos reales libres de uso (Pixabay, Unsplash y Pexels), guardadas dentro de la app. <b id="galN">0</b> de ${ids.length} con foto.</p>
     ${cats.map(c => { const gs = GLOS.filter(g => g.c === c); return `<h3 class="galcat">${esc(CAT_N[c] || c)} <span class="mut small">· ${gs.length}</span></h3><div class="galgrid">${gs.map(item).join('')}</div>`; }).join('')}`);
   const box = $('#view'); loadTermImgs(box);
-  const tick = setInterval(() => { const n = box.querySelectorAll('.ph img').length; const el = $('#galN'); if (!el) return clearInterval(tick); el.textContent = n; if (n >= ids.length) clearInterval(tick); }, 1000);
+  const tick = setInterval(() => { const n = box.querySelectorAll('.ph img').length; const el = $('#galN'); if (!el) return clearInterval(tick); el.textContent = n; if (n >= FOTOS.size) clearInterval(tick); }, 1000);
 }
 ACT.term = id => {
   const t = termInfo(id); if (!t) return;
