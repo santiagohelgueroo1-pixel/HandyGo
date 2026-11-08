@@ -91,7 +91,7 @@ module.exports = async (req, res) => {
   const messages = (Array.isArray(body && body.messages) ? body.messages.slice(-12) : []).filter(m => m && typeof m === 'object').map(m => ({
     role: m.role === 'assistant' ? 'assistant' : 'user',
     text: String(m.text || '').slice(0, 2000),
-    image: m.image && typeof m.image.data === 'string' && m.image.data.length < 2.8e6 && /^image\/(jpeg|png|webp)$/.test(m.image.mime) ? { mime: m.image.mime, data: m.image.data } : null,
+    images: (Array.isArray(m.images) ? m.images : m.image ? [m.image] : []).filter(x => x && typeof x.data === 'string' && x.data.length < 1.4e6 && /^image\/(jpeg|png|webp)$/.test(x.mime)).slice(0, 4).map(x => ({ mime: x.mime, data: x.data })),
     audio: m.audio && typeof m.audio.data === 'string' && m.audio.data.length < 3.5e6 && /^audio\//.test(String(m.audio.mime || '')) ? { mime: String(m.audio.mime), data: m.audio.data } : null
   }));
   const catalog = Array.isArray(body && body.catalog) ? body.catalog.slice(0, 40) : [];
@@ -147,7 +147,8 @@ function thinking(model) { return /2\.5/.test(model) ? { thinkingBudget: 0 } : {
 async function gemini(model, system, messages, ms = 12000) {
   const contents = messages.map(m => {
     const parts = [];
-    if (m.image && m.image.data) parts.push({ inlineData: { mimeType: m.image.mime || 'image/jpeg', data: String(m.image.data) } });
+    (m.images || []).forEach(x => parts.push({ inlineData: { mimeType: x.mime || 'image/jpeg', data: String(x.data) } }));
+    if ((m.images || []).length > 1 && !(m.audio && m.audio.data)) parts.push({ text: `(El usuario mandó ${m.images.length} fotos del mismo problema: miralas todas juntas.)` });
     if (m.audio && m.audio.data) parts.push({ inlineData: { mimeType: m.audio.mime || 'audio/wav', data: String(m.audio.data) } });
     parts.push({ text: m.audio && m.audio.data ? 'El usuario mandó este audio. Escuchalo y transcribilo en "transcripcion".' : String(m.text || '(foto)').slice(0, 2000) });
     return { role: m.role === 'assistant' ? 'model' : 'user', parts };
@@ -185,7 +186,7 @@ async function groq(system, messages, ms = 12000) {
       temperature: 0.4,
       response_format: { type: 'json_object' },
       messages: [{ role: 'system', content: system },
-        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: (m.audio ? '(el usuario mandó un audio que no se puede escuchar: pedile que lo escriba)' : String(m.text || '(el usuario mandó una foto)')) + (m.image ? ' [adjuntó una foto]' : '') }))]
+        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: (m.audio ? '(el usuario mandó un audio que no se puede escuchar: pedile que lo escriba)' : String(m.text || '(el usuario mandó una foto)')) + ((m.images || []).length ? ` [adjuntó ${m.images.length > 1 ? m.images.length + ' fotos' : 'una foto'}]` : '') }))]
     })
   });
   const d = await r.json().catch(() => ({})); t.done();
@@ -202,7 +203,7 @@ async function cloudflare(system, messages, ms = 15000) {
       method: 'POST', signal: t.signal,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.CF_API_TOKEN}` },
       body: JSON.stringify({ max_tokens: 1500, temperature: 0.4, messages: [{ role: 'system', content: system + '\n\nIMPORTANTE: respondé únicamente el objeto JSON.' },
-        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.text || '(el usuario mandó una foto)') + (m.image ? ' [adjuntó una foto que no podés ver]' : '') }))] })
+        ...messages.map(m => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.text || '(el usuario mandó una foto)') + ((m.images || []).length ? ' [adjuntó fotos que no podés ver]' : '') }))] })
     });
     const d = await r.json().catch(() => ({}));
     const out = d && d.result && (typeof d.result.response === 'string' ? d.result.response : JSON.stringify(d.result.response || ''));

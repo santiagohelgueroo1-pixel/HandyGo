@@ -6,6 +6,28 @@
 // Variables: CF_ACCOUNT_ID, CF_API_TOKEN (obligatorias) · GEMINI_API_KEY (para guías nuevas)
 
 // Las piezas se muestran como una foto de catálogo: es lo que más ayuda a reconocerlas en la casa o en la ferretería
+// v7: piezas que no tienen foto real libre. Se genera una sola vez con IA, con el mismo estilo que las fotos de la app
+const STYLE7 = 'Realistic close-up product photograph of a single household hardware part, as in a hardware store catalog. ' +
+  'The object is centered, fully visible and fills most of the frame, sharp focus, true-to-life colors and materials, soft even studio lighting, ' +
+  'plain pure white background. No text, no letters, no numbers, no labels, no logos, no watermark, no people, no hands.';
+const T7 = {
+  filtro_lavavajillas: 'the cylindrical metal mesh filter of a dishwasher, removed and shown on its own',
+  filtro_lav: 'the round plastic drain pump filter of a front-loading washing machine, removed and shown on its own',
+  desagote_heladera: 'the small round drain hole with a short plastic channel on the inside back wall of a white refrigerator, close-up',
+  brazo_aspersor: 'the grey plastic rotating spray arm of a dishwasher, removed and shown on its own',
+  masilla_vidrio: 'a small open tin of grey glazing putty with a putty knife resting on it',
+  masilla_madera: 'a small open tub of light brown wood filler putty with a small putty knife beside it',
+  film_ventana: 'a partly unrolled roll of frosted white window privacy film',
+  sarro: 'a chrome tap spout and aerator covered in white limescale deposits, close-up',
+  junta_bano: 'the corner of a white bathtub against white tiles, with a clean line of white silicone sealant along the joint, close-up',
+  desagote_aire: 'a short piece of thin flexible white corrugated air conditioner drain hose with a few water drops at its end',
+  rebalse: 'a white plastic toilet cistern overflow tube, shown on its own',
+  flotante: 'a white plastic toilet cistern float valve with its round float, shown on its own',
+  valvula_descarga: 'a white plastic toilet cistern flush valve with its rubber seal, shown on its own',
+  hidrofugo: 'a white plastic jug of liquid waterproofing additive for mortar',
+  sellador_pared: 'a white plastic bucket of wall primer sealer with its lid',
+  motor_porton: 'a grey sliding gate motor unit with a gear rack, shown on its own'
+};
 const STYLE = 'Realistic studio product photograph, as in a hardware store catalog. One single object, centered and fully visible, ' +
   'sharp focus, natural true-to-life colors and materials, soft even lighting, plain light grey seamless background. ' +
   'No text, no letters, no numbers, no labels, no logos, no watermark, no people, no hands.';
@@ -674,7 +696,7 @@ const T = {
 };
 
 const { proteger, firmaValida } = require('./_seguridad');
-const PERMITIDOS = new Set(['t', 'g', 'i', 'p', 's', 'v', 'r', 'k']);
+const PERMITIDOS = new Set(['t', 'g', 'i', 'p', 's', 'v', 'r', 'k', 'alt']);
 
 // ---------- Catálogo fijo de la app (rubros, Mi casa, herramientas, arreglos de temporada) ----------
 // Cada imagen tiene una descripción y una semilla fijas: siempre sale la misma y queda guardada en la CDN.
@@ -739,11 +761,14 @@ module.exports = async (req, res) => {
   const no = msg => { res.setHeader('Cache-Control', 'no-store'); return res.status(400).json({ ok: false, error: msg }); };
   // Solo se aceptan las direcciones que arma la app: así nadie puede saltear la caché con parámetros inventados
   if (Object.keys(q).some(k => !PERMITIDOS.has(k) || Array.isArray(q[k]))) return no('Parámetro inválido');
-  if (q.v !== undefined && !['3', '4', '5'].includes(q.v)) return no('Versión inválida');
+  if (q.v !== undefined && !['3', '4', '5', '6', '7'].includes(q.v)) return no('Versión inválida');
+  if (q.alt !== undefined && !/^\d{1,2}$/.test(String(q.alt))) return no('Parámetro inválido');
   if (q.r !== undefined && q.r !== '1') return no('Parámetro inválido');
   if (q.g !== undefined && !/^\d{1,2}$/.test(String(q.i || ''))) return no('Paso inválido');
   if (q.p !== undefined && (String(q.p).length > 400 || !firmaValida(String(q.p), q.s))) return no('Imagen no autorizada');
   if (!(require('./_seguridad').origenValido(req))) return no('Origen no permitido');
+  // Fotos de las piezas (v6): fotos libres de Pixabay, sin IA. Se busca una vez, se guarda en Supabase y queda fija.
+  if (q.t && q.v === '6') return fotoPieza(req, res, String(q.t), q.alt !== undefined ? parseInt(q.alt, 10) : -1);
   let subject = '';
   if (q.k) subject = K[String(q.k)] || '';
   else if (q.t) subject = T[String(q.t)] ? 'Identification picture of ' + T[String(q.t)] + ', shown clearly so a beginner can recognize it' : '';
@@ -751,7 +776,7 @@ module.exports = async (req, res) => {
   else if (q.p) subject = 'Identification picture of ' + String(q.p).slice(0, 400) + ', shown clearly so a beginner can recognize it';
   if (!subject) { res.setHeader('Cache-Control', 'no-store'); return res.status(404).json({ ok: false, error: 'Paso desconocido' }); }
 
-  const prompt = `${subject}. ${q.k ? KSTYLE : STYLE}`;
+  const prompt = q.t && q.v === '7' ? `${T7[String(q.t)] || T[String(q.t)]}. ${STYLE7}` : `${subject}. ${q.k ? KSTYLE : STYLE}`;
   // Guardado permanente (Supabase Storage): cada imagen se genera una sola vez en la vida de la app.
   // Si ya existe, se redirige al archivo guardado, que carga al instante.
   const sbUrl = process.env.SUPABASE_URL, sbKey = process.env.SUPABASE_SERVICE_KEY;
@@ -766,15 +791,9 @@ module.exports = async (req, res) => {
   try {
     // El catálogo usa el modelo de mejor calidad (FLUX.2 dev); si no está disponible, el habitual
     // Siempre el modelo económico: el de más calidad gasta el cupo gratis del día en unas pocas fotos
-    // Orden: Cloudflare (klein) → si Cloudflare no tiene cupo, Pollinations (gratis, sin clave) → si no, Cloudflare (schnell)
-    const t0 = Date.now(), resto = () => Math.max(4000, 27500 - (Date.now() - t0));
+    const first = klein(acct, token, prompt, 512, 512);
     let kErr = '';
-    const img = await klein(acct, token, prompt, 512, 512, 14000).catch(async e => {
-      kErr = String(e.message); console.error('klein:', kErr);
-      const sinCupo = /neuron|allocation|quota|429|4006/i.test(kErr);
-      if (sinCupo) return polli(prompt, resto()).catch(e2 => { throw new Error(kErr + ' | pollinations: ' + e2.message); });
-      return schnell(acct, token, prompt).catch(e2 => polli(prompt, resto()).catch(e3 => { throw new Error(kErr + ' | ' + e2.message + ' | pollinations: ' + e3.message); }));
-    });
+    const img = await first.catch(e => { kErr = String(e.message); console.error('klein:', kErr); return schnell(acct, token, prompt).catch(e2 => { throw new Error(kErr + ' | ' + e2.message); }); });
     const isPng = img[0] === 0x89 && img[1] === 0x50;
     res.setHeader('Content-Type', isPng ? 'image/png' : 'image/jpeg');
     if (pub) {
@@ -790,7 +809,7 @@ module.exports = async (req, res) => {
     console.error('Imagen:', e.message);
     res.setHeader('Cache-Control', 'no-store');
     const cupo = /neuron|allocation|quota|429|4006/i.test(String(e.message));
-    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Cloudflare y Pollinations no dejaron generar más imágenes por ahora (cupo o demasiados pedidos juntos)' : 'No se pudo generar la imagen', detalle: String(e.message).replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g, '').slice(0, 300) });
+    return res.status(cupo ? 429 : 502).json({ ok: false, error: cupo ? 'Cloudflare no dejó generar más imágenes por ahora (cupo o demasiados pedidos juntos)' : 'No se pudo generar la imagen', detalle: String(e.message).replace(/[0-9a-f]{8}-[0-9a-f-]{27}/g, '').slice(0, 300) });
   }
 };
 
@@ -825,21 +844,6 @@ async function klein(acct, token, prompt, w = 768, h = 480, ms = 25000) {
     });
     return await readImage(r);
   } finally { clearTimeout(t); }
-}
-
-// Pollinations: servicio gratis de imágenes con FLUX, sin cuenta ni clave (tiene un límite de pedidos por minuto)
-async function polli(prompt, ms = 25000) {
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt.slice(0, 900))}?width=512&height=512&model=flux&nologo=true&private=true&seed=${seedOf(prompt) % 1000000}&referrer=handygo`;
-  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms);
-  try {
-    const r = await fetch(url, { signal: ctl.signal });
-    const type = r.headers.get('content-type') || '';
-    if (!r.ok || !type.startsWith('image/')) throw new Error(String(r.status) + ' ' + (await r.text().catch(() => '')).slice(0, 120));
-    const buf = Buffer.from(await r.arrayBuffer());
-    if (buf.length < 6000) throw new Error('imagen vacía');
-    return buf;
-  } catch (e) { throw new Error(e.name === 'AbortError' ? 'tardó demasiado' : e.message); }
-  finally { clearTimeout(t); }
 }
 
 async function schnell(acct, token, prompt) {
@@ -890,3 +894,50 @@ Answer ONLY JSON: {"prompts":["...", "..."]} with exactly ${pasos.length} items 
 }
 
 module.exports.PROMPTS = P;
+
+const FOTOS = require('./_fotos');
+async function buscarPixabay(key, q) {
+  const r = await fetch(`https://pixabay.com/api/?key=${encodeURIComponent(key)}&q=${encodeURIComponent(q)}&image_type=photo&safesearch=true&per_page=30`, { signal: AbortSignal.timeout(8000) });
+  if (r.status === 429) throw new Error('pixabay 429');
+  if (!r.ok) throw new Error('pixabay ' + r.status);
+  const d = await r.json();
+  return (d.hits || []).map(h => h.webformatURL).filter(Boolean);
+}
+async function fotoPieza(req, res, id, alt) {
+  const sbUrl = process.env.SUPABASE_URL, sbKey = process.env.SUPABASE_SERVICE_KEY, key = process.env.PIXABAY_KEY;
+  const nada = (c, msg) => { res.setHeader('Cache-Control', 'no-store'); return res.status(c).json({ ok: false, error: msg }); };
+  const q = FOTOS[id];
+  if (!q) return nada(404, 'Pieza desconocida');
+  const path = `t/${id.replace(/[^\w-]/g, '_')}-v6.jpg`;
+  const pub = sbUrl && sbKey ? `${sbUrl}/storage/v1/object/public/piezas/${path}` : '';
+  // Ya guardada: se redirige (salvo que se pida "otra")
+  if (pub && alt < 0) {
+    try {
+      const h = await fetch(pub, { method: 'HEAD', signal: AbortSignal.timeout(2500) });
+      if (h.ok) { res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=600'); res.setHeader('Location', pub + '?u=' + encodeURIComponent(h.headers.get('etag') || '').replace(/%22/g, '')); return res.status(302).end(); }
+    } catch (e) { /* sigue */ }
+  }
+  if (!key) return nada(501, 'Falta PIXABAY_KEY en Vercel');
+  try {
+    // Primero fotos de la pieza sola sobre fondo liso (todas parecidas); si no hay, cualquier foto de la pieza
+    const lista = [];
+    for (const qq of [q + ' isolated', q]) { for (const u of await buscarPixabay(key, qq)) if (!lista.includes(u)) lista.push(u); if (lista.length > Math.max(alt, 0) + 2) break; }
+    if (!lista.length) return nada(404, 'No hay fotos para esta pieza');
+    const url = lista[Math.max(alt, 0) % lista.length];
+    const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error('descarga ' + r.status);
+    const img = Buffer.from(await r.arrayBuffer());
+    if (pub) {
+      try {
+        await fetch(`${sbUrl}/storage/v1/object/piezas/${path}`, { method: 'POST', signal: AbortSignal.timeout(5000),
+          headers: { apikey: sbKey, Authorization: 'Bearer ' + sbKey, 'content-type': 'image/jpeg', 'x-upsert': 'true', 'cache-control': '600' }, body: img });
+      } catch (e) { console.error('guardar:', e.message); }
+    }
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', alt >= 0 ? 'no-store' : 'public, max-age=3600, s-maxage=600');
+    return res.status(200).send(img);
+  } catch (e) {
+    console.error('foto:', e.message);
+    return nada(/429/.test(e.message) ? 429 : 502, /429/.test(e.message) ? 'Pixabay pidió esperar un minuto' : 'No se pudo traer la foto');
+  }
+}
