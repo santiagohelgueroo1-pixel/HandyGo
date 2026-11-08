@@ -594,12 +594,12 @@ table.cmp .best::after{content:" ★";color:var(--acc)}
 .pz span{display:block;font-size:12px;line-height:1.35;color:var(--mut);padding:0 8px 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 button.term{border:0;background:none;padding:0;font:inherit;color:var(--pri);font-weight:600;text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:3px;cursor:pointer}
 .steps li.done button.term{color:var(--mut)}
-.termimg{aspect-ratio:16/10;max-width:100%;border-radius:14px;overflow:hidden;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;margin:4px 0 16px}
-.termimg img{width:100%;height:100%;object-fit:cover;display:block}
+.termimg{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:14px;overflow:hidden;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;margin:4px 0 16px}
+.termimg img{position:absolute;inset:3%;width:94%;height:94%;object-fit:contain;display:block}
 .termimg svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.75}
 .galitem .ph:has(img),.pz .ph:has(img),.termimg:has(img){background:#fff}
 .galitem .ph img,.pz .ph img,.termimg img{object-fit:contain}
-.galitem .ph img,.pz .ph img,.termimg img{object-fit:contain!important;padding:6%}
+.galitem .ph img,.pz .ph img{object-fit:contain!important;padding:6%}
 .galotra{margin-top:2px;border:1px solid var(--line);background:none;border-radius:8px;padding:4px 6px;font:inherit;font-size:11px;color:var(--ink);cursor:pointer}
 .galotra:disabled{opacity:.5}
 .tdef{display:grid;gap:12px}
