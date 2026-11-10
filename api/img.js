@@ -895,7 +895,8 @@ Answer ONLY JSON: {"prompts":["...", "..."]} with exactly ${pasos.length} items 
 
 module.exports.PROMPTS = P;
 
-const FOTOS = require('./_fotos');
+let FOTOS_ = null;
+const fotosLista = () => { if (FOTOS_) return FOTOS_; try { FOTOS_ = require('./_fotos'); } catch (e) { FOTOS_ = {}; } return FOTOS_; };
 async function buscarPixabay(key, q) {
   const r = await fetch(`https://pixabay.com/api/?key=${encodeURIComponent(key)}&q=${encodeURIComponent(q)}&image_type=photo&safesearch=true&per_page=30`, { signal: AbortSignal.timeout(8000) });
   if (r.status === 429) throw new Error('pixabay 429');
@@ -906,7 +907,7 @@ async function buscarPixabay(key, q) {
 async function fotoPieza(req, res, id, alt) {
   const sbUrl = process.env.SUPABASE_URL, sbKey = process.env.SUPABASE_SERVICE_KEY, key = process.env.PIXABAY_KEY;
   const nada = (c, msg) => { res.setHeader('Cache-Control', 'no-store'); return res.status(c).json({ ok: false, error: msg }); };
-  const q = FOTOS[id];
+  const q = fotosLista()[id];
   if (!q) return nada(404, 'Pieza desconocida');
   const path = `t/${id.replace(/[^\w-]/g, '_')}-v6.jpg`;
   const pub = sbUrl && sbKey ? `${sbUrl}/storage/v1/object/public/piezas/${path}` : '';
