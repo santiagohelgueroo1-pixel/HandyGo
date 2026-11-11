@@ -804,6 +804,10 @@ button.textlink{border:0;background:none;padding:0;cursor:pointer;font:600 14px/
 /* Con el teclado abierto se esconde el menú de abajo */
 body.kb #nav{display:none}
 body.kb .composer{padding-bottom:8px}
+
+.cimg.kitph{background:#fff;border:1px solid var(--line)}
+.cimg.kitph img{inset:6%;width:88%;height:88%;background:#fff}
+.stat.one{grid-template-columns:1fr}
 </style>
 </head>
 <body>
@@ -1099,14 +1103,16 @@ const TUT_ORDER = ['inodoro_tapado', 'aireador', 'silicona', 'hongos', 'lavarrop
 const findTut = t => TUT_ORDER.map(k => TUT[k]).find(x => x && x.re.test(t));
 
 const KIT = [
-  {k:'k_destornilladores', ic:'screw', n:'Destornilladores', para:'Para ajustar o sacar tornillos de manijas, bisagras, tapas y muebles. Con uno plano y uno Phillips (punta en cruz) cubrís casi todo.', pedir:'“Un destornillador plano y uno Phillips medianos”'},
-  {k:'k_llave', ic:'wrench', n:'Llave francesa', para:'Para aflojar y apretar tuercas de canillas, flexibles y sifones. Se abre y se cierra para adaptarse a cada medida.', pedir:'“Una llave francesa de 8 pulgadas”'},
-  {k:'k_martillo', ic:'hammer', n:'Martillo', para:'Para clavar clavos y golpear suave cuando una pieza tiene que encastrar. El de carpintero tiene uña para sacar clavos.', pedir:'“Un martillo de carpintero mediano”'},
-  {k:'k_teflon', ic:'tape', n:'Cinta de teflón', para:'Se enrolla en las roscas de agua antes de enroscar, para que no pierdan.', pedir:'“Cinta de teflón de 1/2 pulgada”'},
-  {k:'k_buscapolo', ic:'probe', n:'Buscapolo', para:'Un destornillador con una lucecita: si se prende al tocar un enchufe o un cable, hay corriente. Sirve para chequear antes de tocar.', pedir:'“Un buscapolo”'},
-  {k:'k_metro', ic:'level', n:'Cinta métrica', para:'Para medir antes de comprar un repuesto o de hacer un agujero.', pedir:'“Una cinta métrica de 5 metros”'},
-  {k:'k_linterna', ic:'bulb', n:'Linterna', para:'Para ver bien debajo de la bacha, adentro de un mueble o si se corta la luz.', pedir:'“Una linterna LED chica”'},
-  {k:'k_balde', ic:'bucket', n:'Balde y trapos', para:'Para juntar el agua que cae en cualquier arreglo de plomería y no mojar todo.', pedir:'Cualquier balde que tengas en casa'}];
+  {k:'k_destornilladores', foto:'kit_destornillador', ic:'screw', n:'Destornilladores', para:'Para ajustar o sacar tornillos de manijas, bisagras, tapas y muebles. Con uno plano y uno Phillips (punta en cruz) cubrís casi todo.', pedir:'“Un destornillador plano y uno Phillips medianos”'},
+  {k:'k_llave', foto:'kit_llave', ic:'wrench', n:'Llave francesa', para:'Para aflojar y apretar tuercas de canillas, flexibles y sifones. Se abre y se cierra para adaptarse a cada medida.', pedir:'“Una llave francesa de 8 pulgadas”'},
+  {k:'k_martillo', foto:'kit_martillo', ic:'hammer', n:'Martillo', para:'Para clavar clavos y golpear suave cuando una pieza tiene que encastrar. El de carpintero tiene uña para sacar clavos.', pedir:'“Un martillo de carpintero mediano”'},
+  {k:'k_teflon', foto:'teflon', ic:'tape', n:'Cinta de teflón', para:'Se enrolla en las roscas de agua antes de enroscar, para que no pierdan.', pedir:'“Cinta de teflón de 1/2 pulgada”'},
+  {k:'k_buscapolo', foto:'buscapolo', ic:'probe', n:'Buscapolo', para:'Un destornillador con una lucecita: si se prende al tocar un enchufe o un cable, hay corriente. Sirve para chequear antes de tocar.', pedir:'“Un buscapolo”'},
+  {k:'k_metro', foto:'kit_metro', ic:'level', n:'Cinta métrica', para:'Para medir antes de comprar un repuesto o de hacer un agujero.', pedir:'“Una cinta métrica de 5 metros”'},
+  {k:'k_linterna', foto:'linterna', ic:'bulb', n:'Linterna', para:'Para ver bien debajo de la bacha, adentro de un mueble o si se corta la luz.', pedir:'“Una linterna LED chica”'},
+  {k:'k_balde', foto:'kit_balde', ic:'bucket', n:'Balde y trapos', para:'Para juntar el agua que cae en cualquier arreglo de plomería y no mojar todo.', pedir:'Cualquier balde que tengas en casa'}];
+// Herramientas básicas: foto real de la herramienta
+const kitImg = (x, cls) => x.foto ? `<span class="cimg kitph ${cls}"><img src="/p/${x.foto}.webp" alt="" decoding="async"></span>` : catImg(x.k, x.ic, cls);
 // Imágenes fijas del catálogo de la app (se generan una sola vez y siempre son las mismas)
 const catImg = (k, fb = 'tool', cls = '') => `<span class="cimg ${cls}">${ico(fb)}<img src="hg-${k}.webp" alt="" decoding="async" onerror="this.remove()"></span>`;
 const RUBRO_IMG = {Plomería:'r_plomeria', Gas:'r_gas', Electricidad:'r_electricidad', Carpintería:'r_carpinteria', Albañilería:'r_albanileria'};
@@ -1791,7 +1797,7 @@ async function greet() {
   const msgs = firstTime ? [
     `Bueno, ${nom}, ya nos conocimos. Acá me vas a encontrar siempre.`,
     'Contame qué pasa en tu casa.'
-  ] : [`Hola de nuevo, ${nom}. Soy Handy. ¿Qué pasa hoy en casa? Contámelo, o mandame una foto o un audio.`];
+  ] : [`Hola de nuevo, ${nom}. Soy Handy. ¿Qué pasa hoy en casa?`];
   const ok = await sayTyped(msgs, token);
   if (!ok) return;
   if (firstTime) { u.conoceHandy = true; save(); }
@@ -2574,7 +2580,7 @@ function vPedU() {
     const fin = all.filter(j => ['finalizado', 'cancelado'].includes(j.estado));
     const items = [...(u.hist || []).map(h => ({...h})), ...fin.map(j => ({t:j.estado === 'cancelado' ? 'cancel' : 'pro', caso:j.caso, rubro:j.rubro, ts:j.fin || j.ts, precio:j.precio, prov:j.prov ? provInfo(j.prov).n : '', jid:j.id}))].sort((a, b) => b.ts - a.ts);
     const ahorro = (u.hist || []).filter(h => h.t === 'vos').reduce((a, h) => a + (h.ahorro || 0), 0), gastado = fin.filter(j => j.estado === 'finalizado').reduce((a, j) => a + (j.precio || 0), 0);
-    body = items.length ? `<div class="stat"><button class="card statbtn" data-a="ahorroInfo"><b class="num">${money(ahorro)}</b><span>Ahorrado ${ico('eye')}</span></button><div class="card"><b class="num">${money(gastado)}</b><span>En profesionales</span></div></div>
+    body = items.length ? `<div class="stat one"><button class="card statbtn" data-a="ahorroInfo"><b class="num">${money(ahorro)}</b><span>Ahorrado en arreglos propios ${ico('eye')}</span></button></div>
       <div class="card" style="margin-top:12px"><ul class="hist">${items.map(x => `<li ${x.jid ? `data-a="job" data-v="${x.jid}" style="cursor:pointer"` : ''}>
       ${catImg(x.t === 'mant' ? 'r_mant' : RUBRO_IMG[x.rubro] || 'r_mant', x.t === 'pro' ? 'tool' : 'check', 'sm')}
       <h3 style="font-size:16px;margin:0">${esc(x.caso)}</h3>
@@ -3175,12 +3181,12 @@ function vHerr() {
   view(`${casaBackBtn()}
    <h2 style="margin:12px 0 12px">Herramientas básicas</h2>
    ${handySays('Con estas resolvés casi todos los arreglos chicos. Tocá cada una y te cuento para qué sirve y cómo pedirla.')}
-   <div class="kitgrid" style="margin-top:16px">${KIT.map((x, i) => `<button class="card kititem" data-a="kitInfo" data-v="${i}">${catImg(x.k, x.ic, 'lg')}<b>${esc(x.n)}</b></button>`).join('')}</div>
+   <div class="kitgrid" style="margin-top:16px">${KIT.map((x, i) => `<button class="card kititem" data-a="kitInfo" data-v="${i}">${kitImg(x, 'lg')}<b>${esc(x.n)}</b></button>`).join('')}</div>
    <button class="btn w" style="margin-top:16px" data-a="ferre" data-v="casa">${ico('pin')} Ver ferreterías cerca</button>`);
 }
 ACT.kitInfo = i => {
   const x = KIT[+i]; if (!x) return;
-  sheet(`${catImg(x.k, x.ic, 'xl')}
+  sheet(`${kitImg(x, 'xl')}
     <h2 style="margin:16px 0 8px">${esc(x.n)}</h2>
     <p style="margin:0">${esc(x.para)}</p>
     <div class="card mat" style="margin-top:16px;box-shadow:none;background:var(--sunk)"><div style="min-width:0"><span class="small mut">Cómo pedirla en la ferretería</span><div style="font-weight:600;margin-top:4px">${esc(x.pedir)}</div></div></div>
