@@ -772,6 +772,26 @@ button.textlink{border:0;background:none;padding:0;cursor:pointer;font:600 14px/
 .jcancel{margin-top:24px;text-align:center}
 .chatcard .m.sysl{border-radius:12px;font-size:13px;text-wrap:balance}
 .jhead .tag{font-size:13px;padding:6px 10px}
+
+/* ---------- chat con el prestador ---------- */
+.chatentry{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:var(--ink);padding:16px}
+.chatentry .ce{flex:1;min-width:0;display:grid;gap:2px}
+.chatentry .ce b{font:600 16px/1.25 var(--f-display)}
+.chatentry .ce .small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatentry .go{width:18px;height:18px;transform:rotate(180deg);fill:none;stroke:var(--mut);stroke-width:2;flex:none}
+.jfin{display:grid;gap:4px;text-align:center}
+.pchead{flex:none;display:flex;align-items:center;gap:10px;padding:10px max(12px,env(safe-area-inset-right,0px)) 10px max(8px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line)}
+.pchead .pt{flex:1;min-width:0;display:grid;gap:1px}
+.pchead .pt b{font:600 16px/1.2 var(--f-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pchead .pt .small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pchead .av{width:40px;height:40px;font-size:14px}
+#plog{flex:1;min-height:0;overflow-y:auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:6px}
+#plog .m.bot:has(+ .m.bot){border-bottom-left-radius:6px}
+#plog .m.bot + .m.bot{border-top-left-radius:6px}
+#plog .m.sys{border-radius:12px;background:var(--sunk);padding:6px 12px;font-size:13px;text-wrap:balance;text-align:center;margin:6px 0}
+#plog .chint{display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0 0}
+#plog .chint svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.75;flex:none}
+.pcclosed{text-align:center;padding:16px}
 </style>
 </head>
 <body>
@@ -1220,7 +1240,11 @@ function toast(t) { const d = $('#toast'); const k = /presupuesto/i.test(t) ? 'c
   const top = $('#top'); d.style.top = (top && !top.hidden ? top.offsetHeight + 10 : 16) + 'px';
   d.innerHTML = `<span class="ti">${ico(k)}</span><span>${esc(t)}</span>`; d.hidden = true; void d.offsetWidth; d.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => d.hidden = true, 2600); }
 let NEXT_ANIM = '';
-function view(html, flush) { const v = $('#view'); v.className = (flush ? 'flush' : '') + (NEXT_ANIM ? ' a-' + NEXT_ANIM : ''); NEXT_ANIM = ''; v.innerHTML = html; v.scrollTop = 0; }
+// Si se vuelve a dibujar la misma pantalla (por ejemplo después de tocar un botón), se mantiene donde estaba el usuario
+let VKEY = '';
+function view(html, flush) { const v = $('#view'); const k = [DB.cur && DB.cur.id, V.tab, V.job, V.pchat, V.guia, V.casa, V.neg, V.edit, V.arr, V.trabSeg].join('|');
+  const keep = !NEXT_ANIM && k === VKEY && !flush, top = v.scrollTop; VKEY = k;
+  v.className = (flush ? 'flush' : '') + (NEXT_ANIM ? ' a-' + NEXT_ANIM : ''); NEXT_ANIM = ''; v.innerHTML = html; v.scrollTop = keep ? top : 0; }
 // Celular argentino → 10 dígitos (código de área + número, sin 0 ni 15)
 function normTel(s) {
   let d = String(s || '').replace(/\D/g, '');
@@ -2547,12 +2571,14 @@ ACT.ahorroInfo = () => {
     <button class="btn g w" style="margin-top:12px" data-a="close">Entendido</button>`);
 };
 ACT.job = id => { NEXT_ANIM = 'right'; V.job = id; render(); };
-ACT.backJob = () => { NEXT_ANIM = 'left'; V.job = null; render(); };
+ACT.backJob = () => { NEXT_ANIM = 'left'; V.job = null; V.pchat = false; render(); };
 function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
   if (clearUnseen(j)) { save(); renderNav(); }
   if (!isU && V.tab === 'cli' && j.prov === DB.cur.id && j.estado !== 'nuevo') return vConv(j);
+  if (V.pchat && j.estado !== 'nuevo' && j.estado !== 'cancelado') return vPChat(j);
+  V.pchat = false;
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Arreglos' : 'Volver'}</button>
     <div class="row jhead"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
@@ -2560,9 +2586,8 @@ function vJob() {
     ${ticketHTML({...j, zona:j.zona})}`;
   if (isU && j.estado === 'nuevo') {
     const B = bestOf(j);
-    h += `<div class="sec"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h3 class="sh">Presupuestos recibidos</h3>
-      ${j.offers.length > 1 ? `<div class="seg" role="tablist"><button class="${V.cmp ? '' : 'on'}" data-a="cmp" data-v="0">Lista</button><button class="${V.cmp ? 'on' : ''}" data-a="cmp" data-v="1">Comparar</button></div>` : ''}</div>`
-      + (j.offers.length > 1 && V.cmp ? compareHTML(j, B) : j.offers.length ? `<div class="list offers">${j.offers.map((o, i) => { const p = provInfo(o.pid); const best = j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i); return `<div class="card offer2">
+    h += `<div class="sec"><h3 class="sh">Presupuestos recibidos</h3>`
+      + (j.offers.length ? `<div class="list offers">${j.offers.map((o, i) => { const p = provInfo(o.pid); const best = j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i); return `<div class="card offer2">
        ${best ? `<span class="tag obest ${B.precio === i ? 'y' : 'b'}">${B.precio === i ? 'Mejor precio' : B.cal === i ? 'Mejor calificado' : 'Puede antes'}</span>` : ''}
        <div class="oh">${avatar(p.n, p.foto)}<div class="on"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas</span></div><div class="small mut">${p.y} años de experiencia</div></div>
          <div class="op"><span>Presupuesto</span><b class="price">${money(o.precio)}</b></div></div>
@@ -2581,12 +2606,10 @@ function vJob() {
     h += `<div class="sec"><h3 class="sh">${isU ? 'Tu prestador' : 'Tu cliente'}</h3><div class="card pcard"><div class="oh">
       ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div class="on"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><div class="op"><span>Precio acordado</span><b class="price">${money(j.precio)}</b></div></div>
       ${isU ? `<button class="textlink pver" data-a="prof" data-v="${j.prov}">Ver perfil ${ico('back').replace('<svg', '<svg class="go"')}</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div></div>
-    <div class="sec"><h3 class="sh">Mensajes</h3><div class="card chatcard"><div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
-      ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
-      <p class="hint chint">${ico('shield')} Toda la comunicación queda dentro de HandyGo.</p></div></div>`;
+    <div class="sec"><h3 class="sh">Mensajes</h3>${(() => { const last = [...j.msgs].reverse().find(m => m.f !== 's'), other = isU ? p.n : j.un; return `<button class="card chatentry" data-a="pchat">${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<span class="ce"><b>Chat con ${esc(first(other))}</b><span class="small mut">${last ? (last.f === DB.cur.t ? 'Vos: ' : '') + esc(last.t) : 'Escribile para coordinar día y horario.'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; })()}</div>`;
+    if (j.estado === 'aceptado') h += `<div class="sec jfin"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
     if (isU && j.uid === DB.cur.id && ['nuevo', 'aceptado'].includes(j.estado))
       h += `<div class="jcancel"><button class="dangerlink" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito, cancelar el pedido' : 'Cancelar el trabajo'}</button></div>`;
-    if (j.estado === 'aceptado') h += `<div class="stickbar"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
     if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec"><h3 class="sh">Tu reseña</h3><div class="card revcard"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
       <div class="ratebtns" style="margin:12px 0">${[1, 2, 3, 4, 5].map(n => `<button data-a="rate" data-v="${n}" aria-label="${n} estrellas">${n}★</button>`).join('')}</div>
       <label class="f" for="rc">Comentario (opcional)<textarea id="rc" rows="2" placeholder="Ej: llegó a horario y explicó todo"></textarea></label>
@@ -2597,6 +2620,28 @@ function vJob() {
     h += mine ? `<div class="sec card"><h3>Presupuesto enviado · <span class="num">${money(mine.precio)}</span></h3><p class="mut small" style="margin:4px 0 0">Turnos ofrecidos: ${esc((mine.slots || []).map(slotLabel).join(' · ') || mine.when)} · esperando la respuesta del cliente.</p></div>` : offerForm(j); }
   view(h);
   const mi = $('#mi'); if (mi) mi.addEventListener('keydown', e => { if (e.key === 'Enter') ACT.msg(); });
+}
+// Chat con el prestador: pantalla completa, como el chat con Handy
+function pchatMsgs(j) { return j.msgs.map(m => m.f === 's' ? `<div class="m sys">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : 'bot'}">${esc(m.t)}</div>`).join(''); }
+function vPChat(j) {
+  const isU = DB.cur.t === 'u', p = provInfo(j.prov), name = isU ? p.n : j.un;
+  const foto = isU ? p.foto : (DB.users.find(x => x.id === j.uid) || {}).foto;
+  view(`<div class="pchead"><button class="iconbtn" data-a="pchatBack" aria-label="Volver al arreglo">${ico('back')}</button>${avatar(name, foto)}
+    <div class="pt"><b>${esc(name)}</b><span class="small mut">${esc(j.caso)}</span></div>${isU ? `<button class="textlink" data-a="prof" data-v="${j.prov}">Perfil</button>` : ''}</div>
+    <div id="plog">${pchatMsgs(j) || '<div class="m sys">Escribí para coordinar día y horario.</div>'}<p class="hint chint">${ico('shield')} Toda la comunicación queda dentro de HandyGo.</p></div>
+    ${j.estado === 'aceptado' ? `<div class="composer"><div class="bar"><div class="pillin"><textarea id="mi" rows="1" placeholder="Escribile a ${esc(first(name))}…" aria-label="Mensaje"></textarea></div>
+    <button class="actbtn send" data-a="msg" aria-label="Enviar">${ico('send').replace('<svg', '<svg class="i-send"')}</button></div></div>` : `<div class="composer pcclosed small mut">Este trabajo está ${esc(stageName(j).toLowerCase())}. El chat queda guardado.</div>`}`, true);
+  $('#ht').textContent = 'Chat';
+  const l = $('#plog'); if (l) l.scrollTop = l.scrollHeight;
+  const mi = $('#mi'); if (mi) { mi.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ACT.msg(); } });
+    mi.addEventListener('input', () => { mi.style.height = 'auto'; mi.style.height = Math.min(mi.scrollHeight, 110) + 'px'; }); }
+}
+ACT.pchat = () => { NEXT_ANIM = 'right'; V.pchat = true; render(); };
+ACT.pchatBack = () => { NEXT_ANIM = 'left'; V.pchat = false; render(); };
+function pchatAdd(j, m) {
+  const l = $('#plog'); if (!V.pchat || V.job !== j.id || !l) return false;
+  const d = document.createElement('div'); d.className = 'm ' + (m.f === DB.cur.t ? 'u' : 'bot'); d.textContent = m.t;
+  l.insertBefore(d, l.querySelector('.chint')); requestAnimationFrame(() => l.scrollTop = l.scrollHeight); return true;
 }
 let RATE = 0;
 ACT.rate = (n, b) => { RATE = +n; b.parentNode.querySelectorAll('button').forEach((x, i) => x.classList.toggle('on', i < RATE)); };
@@ -2718,9 +2763,10 @@ function compareHTML(j, B) {
 }
 ACT.msg = () => {
   const j = DB.jobs.find(x => x.id === V.job), i = $('#mi'), t = i.value.trim(); if (!t) return;
-  j.msgs.push({f:DB.cur.t, t}); markUnseen(j, DB.cur.t === 'u' ? j.prov : j.uid); save(); render();
+  const m = {f:DB.cur.t, t}; j.msgs.push(m); markUnseen(j, DB.cur.t === 'u' ? j.prov : j.uid); save();
+  if (pchatAdd(j, m)) { i.value = ''; i.style.height = 'auto'; i.focus(); } else render();
   const auto = DB.cur.t === 'u' ? PROVS.some(p => p.id === j.prov) : j.uid === 'demo';
-  if (auto) setTimeout(() => { j.msgs.push({f:DB.cur.t === 'u' ? 'p' : 'u', t:DB.cur.t === 'u' ? 'Perfecto, te confirmo. Cualquier cosa me escribís por acá.' : 'Dale, te espero. Gracias.'}); save(); if (V.job === j.id) render(); }, 1400);
+  if (auto) setTimeout(() => { const r = {f:DB.cur.t === 'u' ? 'p' : 'u', t:DB.cur.t === 'u' ? 'Perfecto, te confirmo. Cualquier cosa me escribís por acá.' : 'Dale, te espero. Gracias.'}; j.msgs.push(r); save(); if (V.job === j.id && !pchatAdd(j, r)) render(); }, 1400);
 };
 ACT.fin = () => { const j = DB.jobs.find(x => x.id === V.job); if (DB.cur.t === 'p') return ACT.stage(3); advance(j.id, 3); render(); };
 
