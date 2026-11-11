@@ -1545,7 +1545,7 @@ ACT.demoAs = v => {
   if (CLOUD) return cloudDemo(v);
   if (v === 'u') {
     let u = DB.users.find(x => x.mail === 'sofia@demo.com');
-    if (!u) { u = {id:uid(), nombre:'Sofía Martínez', mail:'sofia@demo.com', pass:'demo123', zona:'Almagro, CABA', cr:5, resueltos:2}; DB.users.push(u); }
+    if (!u) { u = {id:uid(), nombre:'Sofía Martínez', mail:'sofia@demo.com', pass:'demo123', zona:'Almagro, CABA', cr:3, resueltos:2}; DB.users.push(u); }
     if (!u.seeded) seedSofia(u);
     DB.cur = {t:'u', id:u.id};
   } else {
@@ -1685,8 +1685,8 @@ function resetTopic() { const lu = (CH.trans || []).filter(x => x.r === 'u').sli
 function useCredit(nuevo) {
   const u = me();
   if (u.cr <= 0) {
-    say(nuevo ? '<b>Eso es un problema nuevo</b> y te quedaste sin consultas. Mirá un anuncio para sumar 2 o elegí un paquete.' : '<b>Te quedaste sin consultas.</b> Mirá un anuncio para sumar 2 o elegí un paquete.');
-    chips([['Ver anuncio · +2', () => ACT.watchAd(), 'p'], ['Ver opciones', () => ACT.credits()]]);
+    say(nuevo ? '<b>Eso es un problema nuevo</b> y te quedaste sin consultas. Mirá un anuncio para sumar 1 o elegí un paquete.' : '<b>Te quedaste sin consultas.</b> Mirá un anuncio para sumar 1 o elegí un paquete.');
+    chips([['Ver anuncio · +1', () => ACT.watchAd(), 'p'], ['Ver opciones', () => ACT.credits()]]);
     return false;
   }
   u.cr--; if (CLOUD) { SNAP.me = JSON.stringify(u); SB.rpc('use_credit').then(r => { if (!r.error && typeof r.data === 'number') { u.cr = r.data; SNAP.me = JSON.stringify(u); refreshHeader(); } }); } else save();
@@ -1809,9 +1809,9 @@ ACT.credits = () => {
   sheet(`<span class="eyebrow">Plan gratuito</span><h2><span class="num">${u.cr}</span> consultas disponibles</h2>
    <p class="mut">Cada problema distinto que le contás al asistente usa una consulta. Podés hablar todo lo que necesites sobre el mismo problema sin gastar más: cuando cambiás de tema, se usa una nueva.</p>
    <div class="stack" style="margin-top:16px">
-    <button class="btn y w" data-a="watchAd">Ver un anuncio · +2 consultas</button>
-    <button class="btn w" data-a="buy" data-v="10">Comprar 10 consultas · $1.500</button>
-    <button class="btn w" data-a="buy" data-v="30">Comprar 30 consultas · $3.500</button>
+    <button class="btn y w" data-a="watchAd">Ver un anuncio · +1 consulta</button>
+    <button class="btn w" data-a="buy" data-v="5">Comprar 5 consultas · $1.000</button>
+    <button class="btn w" data-a="buy" data-v="10">Comprar 10 consultas · $1.800</button>
     </div>`);
 };
 ACT.watchAd = () => {
@@ -1821,7 +1821,7 @@ ACT.watchAd = () => {
    <div class="big">Ferretería<br>El Tornillo</div><p style="max-width:28ch;opacity:.9;margin:0">10% de descuento en cueritos, flotantes y teflón mostrando HandyGo en el mostrador.</p>
    <p style="font:700 14px/1 var(--f-mono);opacity:.7;margin:0">Av. Medrano 845 · Almagro</p>`;
   $('#device').appendChild(a);
-  let n = 5; const t = setInterval(() => { n--; a.querySelector('#cd').textContent = 'Anuncio · ' + n; if (n <= 0) { clearInterval(t); a.remove(); addCredits(2, '', 'ad'); } }, 1000);
+  let n = 5; const t = setInterval(() => { n--; a.querySelector('#cd').textContent = 'Anuncio · ' + n; if (n <= 0) { clearInterval(t); a.remove(); addCredits(1, '', 'ad'); } }, 1000);
 };
 ACT.buy = n => { closeSheet(); addCredits(+n, 'Compra realizada', 'buy'); };
 async function addCredits(n, msg, kind) {
@@ -1831,7 +1831,7 @@ async function addCredits(n, msg, kind) {
     if (r.error) { const m = String(r.error.message || ''); toast(/limite_diario/.test(m) ? 'Ya viste el máximo de anuncios por hoy. Volvé mañana.' : /muy_seguido/.test(m) ? 'Esperá unos segundos antes de ver otro anuncio.' : 'No se pudieron sumar las consultas. Revisá tu conexión.'); return; }
     u.cr = r.data; SNAP.me = JSON.stringify(u);
   } else { u.cr += n; save(); }
-  render(); toast((msg ? msg + ' · ' : '') + `sumaste ${n} consultas`);
+  render(); toast((msg ? msg + ' · ' : '') + `sumaste ${n} ${n === 1 ? 'consulta' : 'consultas'}`);
 }
 
 // Fotos para Handy: se pueden adjuntar varias (hasta 4), sacarlas una por una y escribir antes de mandar
@@ -3502,7 +3502,7 @@ async function cloudRegister(d, btn) {
   const done = busy(btn, 'Creando cuenta…');
   try { await SB_P; } catch (e) { done(); $('#err').textContent = 'No hay conexión. Probá de nuevo en un momento.'; return; }
   const meta = {...d}; ['id', 'mail', 'pass', 'foto'].forEach(k => delete meta[k]); meta.t = REG.t;
-  if (REG.t === 'u') Object.assign(meta, {cr:5, resueltos:0}); else Object.assign(meta, {rev:[], on:true, desc:[]});
+  if (REG.t === 'u') Object.assign(meta, {cr:3, resueltos:0}); else Object.assign(meta, {rev:[], on:true, desc:[]});
   const { data, error } = await SB.auth.signUp({email:d.mail, password:d.pass, options:{data:meta, emailRedirectTo:location.origin}});
   done();
   if (error) { $('#err').textContent = authError(error); return; }
@@ -3537,7 +3537,7 @@ async function cloudLogin(mail, pass, btn) {
   enter();
 }
 const DEMO_ACC = {
-  u:{mail:'sofia.demo@handygo.app', meta:{t:'u', nombre:'Sofía Martínez', zona:'Almagro, CABA', cr:5, resueltos:2}},
+  u:{mail:'sofia.demo@handygo.app', meta:{t:'u', nombre:'Sofía Martínez', zona:'Almagro, CABA', cr:3, resueltos:2}},
   'Plomería':{mail:'daniel.demo@handygo.app', meta:{t:'p', nombre:'Daniel Ortiz', zona:'Almagro y alrededores', rubro:'Plomería', mat:'', anios:9, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[], hor:'Lunes a sábado, 8 a 19 h'}},
   'Gas':{mail:'graciela.demo@handygo.app', meta:{t:'p', nombre:'Graciela Paz', zona:'Almagro y alrededores', rubro:'Gas', mat:'ENARGAS 7731', anios:16, rev:[{s:5, from:'Inés', c:'Muy responsable.'}, {s:5, from:'Marcos', c:'Llegó con todo lo necesario.'}], on:true, desc:[], hor:'Lunes a sábado, 8 a 19 h'}}
 };
