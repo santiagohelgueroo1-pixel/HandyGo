@@ -808,6 +808,33 @@ body.kb .composer{padding-bottom:8px}
 .cimg.kitph{background:#fff;border:1px solid var(--line)}
 .cimg.kitph img{inset:6%;width:88%;height:88%;background:#fff}
 .stat.one{grid-template-columns:1fr}
+
+/* ---------- detalle del arreglo: turno y resumen plegado ---------- */
+.pturno{display:flex;align-items:center;gap:12px;background:var(--priSoft);border-radius:12px;padding:12px 14px}
+.pturno svg{width:22px;height:22px;flex:none;fill:none;stroke:var(--pri);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.pturno>span{display:grid;gap:2px}.pturno .small{color:var(--pri);font-weight:600}.pturno b{font:600 16px/1.25 var(--f-display)}
+.tkfold summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;font:600 15px/1.2 var(--f-body);color:var(--pri);padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.tkfold summary::-webkit-details-marker{display:none}
+.tkfold summary svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tkfold[open] summary{margin-bottom:12px}
+/* ---------- encabezado del chat ---------- */
+.hbtn.hnew{width:auto;border-radius:99px;padding:0 12px 0 8px;display:flex;gap:4px;font:600 14px/1 var(--f-body)}
+.hbtn.hnew svg{width:20px;height:20px}
+/* aviso de consulta usada */
+.m.sys.credit{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:6px 14px;margin:8px 0;color:var(--ink);font-size:13px}
+.m.sys.credit svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--pri);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+/* ---------- ficha de Mi casa ---------- */
+.casaficha{display:grid;gap:10px;padding:16px;margin-bottom:12px}
+.casaficha .cfh{display:flex;gap:12px;align-items:flex-start}
+.casaficha>svg,.casaficha .cfh>svg{width:24px;height:24px;flex:none;fill:none;stroke:var(--pri);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.casaficha .ct{display:grid;gap:6px;justify-items:start}.casaficha .ct b{font:600 16px/1.25 var(--f-display)}
+.casaficha p{margin:0}
+.casaficha.ok{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:var(--ink)}
+.casaficha.ok .ct{flex:1;min-width:0;gap:2px}
+.cfq{margin-top:18px}.cfq>b{display:block;font:600 15px/1.3 var(--f-display);margin-bottom:8px}
+.cfo{display:flex;flex-wrap:wrap;gap:8px}
+.cfo button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:9px 16px;font:600 14px/1.15 var(--f-body);cursor:pointer}
+.cfo button.on{background:var(--pri);border-color:var(--pri);color:var(--priInk)}
 </style>
 </head>
 <body>
@@ -1248,7 +1275,27 @@ const TASK_INFO = {
 const lvlTag = l => `<span class="tag ${l === 'Fácil' ? 'v' : l === 'Media' ? 'y' : 'r'}">${l === 'Profesional' ? 'Con profesional' : l}</span>`;
 function seasonNow(d = new Date()) { const m = d.getMonth(); return m === 11 || m < 2 ? 'verano' : m < 5 ? 'otono' : m < 8 ? 'invierno' : 'primavera'; }
 function seasonKey() { const d = new Date(); const y = d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear(); return seasonNow() + '-' + y; }
-function pendingTasks(u) { const k = seasonKey(); return SEASONS[seasonNow()].tasks.filter(t => !(u.mant || {})[k + '-' + t.id]); }
+// Ficha de Mi casa (opcional): con esto Handy responde pensando en la casa de la persona y la temporada muestra solo lo que aplica
+const CASA_Q = [
+  {k:'tipo', q:'¿Dónde vivís?', o:[['casa', 'Casa'], ['depto', 'Departamento'], ['ph', 'PH']]},
+  {k:'gas', q:'¿Qué gas tenés?', o:[['red', 'Gas natural'], ['garrafa', 'Garrafa'], ['no', 'No tengo gas']]},
+  {k:'agua', q:'¿Cómo calentás el agua?', o:[['calefon', 'Calefón'], ['termo', 'Termotanque a gas'], ['elec', 'Termotanque eléctrico']]},
+  {k:'tanque', q:'¿Tenés tanque de agua propio?', o:[['si', 'Sí'], ['no', 'No o no sé']]},
+  {k:'aa', q:'¿Tenés aire acondicionado?', o:[['si', 'Sí'], ['no', 'No']]}
+];
+const casaLbl = (k, v) => ((CASA_Q.find(q => q.k === k) || {o:[]}).o.find(o => o[0] === v) || [])[1] || '';
+function casaTxt(u) {
+  const c = (u && u.casa) || {}; const t = [];
+  if (c.tipo) t.push(casaLbl('tipo', c.tipo)); if (c.gas) t.push(c.gas === 'no' ? 'sin gas' : casaLbl('gas', c.gas).toLowerCase());
+  if (c.agua) t.push('agua caliente con ' + casaLbl('agua', c.agua).toLowerCase()); if (c.tanque) t.push(c.tanque === 'si' ? 'tiene tanque de agua propio' : 'sin tanque propio');
+  if (c.aa) t.push(c.aa === 'si' ? 'tiene aire acondicionado' : 'sin aire acondicionado');
+  return t.join(' · ');
+}
+function tasksFor(S, u) {
+  const c = (u && u.casa) || {};
+  return S.tasks.filter(t => !((t.id === 'tanque' && c.tanque === 'no') || (t.id === 'aa' && c.aa === 'no') || ((t.id === 'gas' || t.id === 'vent') && c.gas === 'no') || (t.id === 'hojas' && c.tipo === 'depto')));
+}
+function pendingTasks(u) { const k = seasonKey(); return tasksFor(SEASONS[seasonNow()], u).filter(t => !(u.mant || {})[k + '-' + t.id]); }
 const avg = p => p.rev && p.rev.length ? +(p.rev.reduce((a, r) => a + r.s, 0) / p.rev.length).toFixed(1) : 'Nuevo';
 
 /* ---------- utilidades de interfaz ---------- */
@@ -1565,9 +1612,9 @@ ACT.doReset = () => { try { localStorage.removeItem(KEY); } catch (e) {} if (CLO
    ESTRUCTURA DE LA APP
    ============================================================ */
 const TABS = {u:[['chat', 'Handy', 'chat'], ['ped', 'Arreglos', 'clip'], ['casa', 'Mi casa', 'home'], ['per', 'Perfil', 'user']],
-              p:[['cli', 'Clientes', 'chat'], ['trab', 'Trabajos', 'clip'], ['neg', 'Mi negocio', 'tool'], ['per', 'Perfil', 'user']]};
+              p:[['trab', 'Pedidos', 'inbox'], ['cli', 'Clientes', 'chat'], ['neg', 'Mi negocio', 'tool'], ['per', 'Perfil', 'user']]};
 function enter() {
-  V = {tab:DB.cur.t === 'u' ? 'chat' : 'cli', job:null}; CH = null; chatEl = null;
+  V = {tab:DB.cur.t === 'u' ? 'chat' : 'trab', job:null}; CH = null; chatEl = null;
   const needTour = !me().tour; if (needTour) TOUR_ON = true;
   render();
   if (needTour) setTimeout(startTour, LAUNCH_ON ? Math.max(500, 1600 - (performance.now() - T0)) : 450);
@@ -1586,9 +1633,9 @@ const TOURS = {
     {t:'Listo, te espero acá', d:'Cuando quieras, contame qué pasa en tu casa.', tab:'chat', last:'Empezar'}
   ],
   p:[
-    {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Charlo con los clientes para entender el problema y te lo paso ordenado, así no arrancás de cero. Te muestro cómo funciona.', tab:'cli'},
+    {t:'¡Hola! Soy Handy', d:'Soy el asistente de HandyGo. Charlo con los clientes para entender el problema y te lo paso ordenado, así no arrancás de cero. Te muestro cómo funciona.', tab:'trab'},
+    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'inbox', lbl:'Pedidos', t:'Pedidos', d:'Los pedidos nuevos de tu zona, con el resumen que armo yo, los presupuestos que mandaste y los trabajos terminados.'},
     {sel:'#nav [data-v="cli"]', tab:'cli', ic:'chat', lbl:'Clientes', t:'Tus clientes', d:'Cuando un cliente acepta tu presupuesto, se abre acá la conversación con esa persona, junto con su pedido y el turno.'},
-    {sel:'#nav [data-v="trab"]', tab:'trab', ic:'clip', lbl:'Trabajos', t:'Pedidos y trabajos', d:'Los pedidos nuevos de tu zona, con el resumen que armo yo, los presupuestos que mandaste y los trabajos terminados.'},
     {sel:'#nav [data-v="neg"]', tab:'neg', ic:'tool', lbl:'Mi negocio', t:'Tu negocio', d:'Tu agenda, tus precios y condiciones, tus reseñas y HandyGo+. Cada cosa en su lugar.'},
     {sel:'#hpill', ic:'check', lbl:'Disponible', t:'Pausar pedidos', d:'Tocá acá cuando no puedas tomar trabajos nuevos.'},
     {sel:'#nav [data-v="per"]', tab:'per', ic:'user', lbl:'Perfil', t:'Tu perfil', d:'Armalo por partes: foto, presentación, tu oficio y fotos de trabajos. Te marco qué te falta para que quede completo.'},
@@ -1636,7 +1683,7 @@ ACT.tourEnd = () => {
   const u = me(); if (u && !u.tour) { u.tour = true; save(); }
   if (GREET_PENDING && chatEl) { GREET_PENDING = false; greet(); }
 };
-ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'cli'; V.job = null; render(); setTimeout(startTour, 200); };
+ACT.tourAgain = () => { V.tab = DB.cur.t === 'u' ? 'chat' : 'trab'; V.job = null; render(); setTimeout(startTour, 200); };
 window.addEventListener('resize', () => { if ($('#tour')) tourStep(); });
 ACT.tab = t => { if (String(t).startsWith('neg:')) return ACT.neg(t.slice(4)); if (String(t).startsWith('trab:')) { V.trabSeg = t.slice(5); t = 'trab'; } if (V.tab !== t || V.job || V.edit || V.casa || V.neg || V.guia) NEXT_ANIM = t === 'mat' ? 'right' : (V.tab === 'mat' ? 'left' : 'fade'); V.tab = t; V.job = null; V.edit = false; V.casa = null; V.neg = null; V.guia = null; render(); };
 function badge(t) {
@@ -1652,14 +1699,14 @@ function render() {
   const u = me(); if (!u) { DB.cur = null; return welcome(); }
   document.body.className = c.t === 'p' ? 'prov' : '';
   $('#top').hidden = false;
-  const TT = {chat:'Handy', mat:'Materiales', ped:'Arreglos', casa:'Mi casa', per:'Perfil', trab:'Trabajos', neg:'Mi negocio', cli:'Clientes'};
+  const TT = {chat:'Handy', mat:'Materiales', ped:'Arreglos', casa:'Mi casa', per:'Perfil', trab:'Pedidos', neg:'Mi negocio', cli:'Clientes'};
   $('#ht').textContent = V.guia && V.tab === 'ped' ? 'Tu guía' : V.job ? (c.t === 'u' ? 'Mi arreglo' : V.tab === 'cli' ? (DB.jobs.find(x => x.id === V.job) || {un:'Cliente'}).un : 'Pedido') : V.edit ? (c.t === 'p' ? ({datos:'Foto y datos', present:'Presentación', galeria:'Galería', oficio:'Tu oficio'})[V.edit] || 'Editar perfil' : 'Editar perfil') : (TT[V.tab] || 'HandyGo');
   const inChat = V.tab === 'chat' && !V.job && c.t === 'u';
   const hs = $('#hs'); hs.className = ''; hs.textContent = '';
   const ha = $('#hacts'); ha.hidden = !inChat;
-  ha.innerHTML = inChat ? `<button class="hbtn" data-a="history" aria-label="Historial de consultas" title="Historial">${ico('clock')}</button><button class="hbtn" data-a="newCase" aria-label="Nueva consulta" title="Nueva consulta">${ico('plus')}</button>` : '';
+  ha.innerHTML = inChat ? `<button class="hbtn" data-a="history" aria-label="Historial de consultas" title="Historial">${ico('clock')}</button><button class="hbtn hnew" data-a="newCase" aria-label="Nuevo problema" title="Nuevo problema">${ico('plus')}<span>Nuevo</span></button>` : '';
   if (inChat) setMode();
-  const hp = $('#hpill'); hp.hidden = false;
+  const hp = $('#hpill'); hp.hidden = c.t === 'u' && !((V.tab === 'chat' && !V.job) || (V.tab === 'per' && !V.edit));
   if (c.t === 'u') { hp.className = 'pill'; hp.dataset.a = 'credits'; hp.innerHTML = `<span class="num">${u.cr}</span> consultas`; }
   else { hp.className = 'pill' + (u.on ? '' : ' off'); hp.dataset.a = 'tog'; hp.textContent = u.on ? '● Disponible' : '○ No disponible'; }
   renderNav();
@@ -1691,7 +1738,7 @@ function useCredit(nuevo) {
   }
   u.cr--; if (CLOUD) { SNAP.me = JSON.stringify(u); SB.rpc('use_credit').then(r => { if (!r.error && typeof r.data === 'number') { u.cr = r.data; SNAP.me = JSON.stringify(u); refreshHeader(); } }); } else save();
   refreshHeader();
-  say(nuevo ? `Nuevo problema · se usó 1 consulta (te quedan ${u.cr})` : `Consulta iniciada · te quedan ${u.cr}`, 'sys', false);
+  say(`${ico('chat')}<span>${nuevo ? 'Problema nuevo' : 'Consulta nueva'} · usaste 1 consulta · te ${u.cr === 1 ? 'queda' : 'quedan'} <b>${u.cr}</b></span>`, 'sys credit', false);
   return true;
 }
 function code() { return 'HG-' + Math.random().toString(36).slice(2, 6).toUpperCase(); }
@@ -1995,7 +2042,7 @@ async function ai(txt, imgs, t, audio, bub) {
   CH.bub = bub || null;
   const th = say('<span class="typing" aria-label="Escribiendo"><i></i><i></i><i></i></span>', '', false);
   try {
-    const body = JSON.stringify({tema_actual:CH.caso || '', messages:CH.h.slice(-12).map((m, i, a) => i < a.length - 1 ? {role:m.role, text:m.text} : m), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))});
+    const body = JSON.stringify({tema_actual:CH.caso || '', casa:DB.cur && DB.cur.t === 'u' ? casaTxt(me()) : '', messages:CH.h.slice(-12).map((m, i, a) => i < a.length - 1 ? {role:m.role, text:m.text} : m), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))});
     let d = null, lastErr = null;
     for (let intento = 0; intento < 2 && !d; intento++) {
       if (intento) await new Promise(r => setTimeout(r, 1500));
@@ -2616,14 +2663,13 @@ function vJob() {
   const j = DB.jobs.find(x => x.id === V.job); if (!j) { V.job = null; return render(); }
   const isU = DB.cur.t === 'u';
   if (clearUnseen(j)) { save(); renderNav(); }
-  if (!isU && V.tab === 'cli' && j.prov === DB.cur.id && j.estado !== 'nuevo') return vConv(j);
   if (V.pchat && j.estado !== 'nuevo' && j.estado !== 'cancelado') return vPChat(j);
+  if (!isU && V.tab === 'cli' && j.prov === DB.cur.id && j.estado !== 'nuevo') return vConv(j);
   V.pchat = false;
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Arreglos' : 'Volver'}</button>
     <div class="row jhead"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
-    ${j.estado === 'aceptado' && j.turno ? `<div class="card" style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('cal').replace('<svg', '<svg style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"')}</span><div><span class="small mut">Tu turno</span><h3>${esc(slotLabel(j.turno))}</h3></div></div>` : ''}
-    ${ticketHTML({...j, zona:j.zona})}`;
+    ${['nuevo', 'cancelado'].includes(j.estado) ? ticketHTML({...j, zona:j.zona}) : ''}`;
   if (isU && j.estado === 'nuevo') {
     const B = bestOf(j);
     h += `<div class="sec"><h3 class="sh">Presupuestos recibidos</h3>`
@@ -2645,8 +2691,10 @@ function vJob() {
     const p = provInfo(j.prov);
     h += `<div class="sec"><h3 class="sh">${isU ? 'Tu prestador' : 'Tu cliente'}</h3><div class="card pcard"><div class="oh">
       ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div class="on"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><div class="op"><span>Precio acordado</span><b class="price">${money(j.precio)}</b></div></div>
+      ${j.turno && j.estado === 'aceptado' ? `<div class="pturno">${ico('cal')}<span><span class="small">Turno</span><b>${esc(slotLabel(j.turno))}</b></span></div>` : ''}
       ${isU ? `<button class="textlink pver" data-a="prof" data-v="${j.prov}">Ver perfil ${ico('back').replace('<svg', '<svg class="go"')}</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div></div>
     <div class="sec"><h3 class="sh">Mensajes</h3>${(() => { const last = [...j.msgs].reverse().find(m => m.f !== 's'), other = isU ? p.n : j.un; return `<button class="card chatentry" data-a="pchat">${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<span class="ce"><b>Chat con ${esc(first(other))}</b><span class="small mut">${last ? (last.f === DB.cur.t ? 'Vos: ' : '') + esc(last.t) : 'Escribile para coordinar día y horario.'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; })()}</div>`;
+    h += `<details class="sec tkfold"><summary>${ico('clip')} Ver resumen del caso</summary>${ticketHTML({...j, zona:j.zona})}</details>`;
     if (j.estado === 'aceptado') h += `<div class="sec jfin"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
     if (isU && j.uid === DB.cur.id && ['nuevo', 'aceptado'].includes(j.estado))
       h += `<div class="jcancel"><button class="dangerlink" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito, cancelar el pedido' : 'Cancelar el trabajo'}</button></div>`;
@@ -2857,13 +2905,10 @@ function vConv(j) {
      ${cu.dir || cu.tel ? `<div class="cdata">${cu.dir ? `<span>${ico('pin')} ${esc(cu.dir)}</span>` : ''}${cu.tel ? `<span>${ico('phone')} ${esc(cu.tel)}</span>` : ''}</div>` : ''}</div>
    <button class="card convjob" data-a="convPedido">${catImg(RUBRO_IMG[j.rubro] || 'r_mant', 'tool', 'sm')}<span class="ct"><b>${esc(j.caso)}</b>
      <span class="small mut">${j.turno && j.estado === 'aceptado' ? esc(slotLabel(j.turno)) + ' · ' : ''}${money(j.precio || 0)} · ${stageName(j)}</span></span><span class="textlink">Ver pedido</span></button>
-   <div class="thread conv">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
-   ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribile a ${esc(first(j.un))}" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
-   <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Toda la comunicación queda dentro de HandyGo.</p>`;
-  if (j.estado === 'aceptado') h += `<div class="stickbar"><button class="btn p w" data-a="fin">Marcar como terminado</button></div>`;
+   <div class="sec"><h3 class="sh">Mensajes</h3>${(() => { const last = [...j.msgs].reverse().find(m => m.f !== 's');
+     return `<button class="card chatentry" data-a="pchat">${avatar(j.un, cu.foto)}<span class="ce"><b>Chat con ${esc(first(j.un))}</b><span class="small mut">${last ? (last.f === DB.cur.t ? 'Vos: ' : '') + esc(last.t) : 'Escribile para coordinar día y horario.'}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; })()}</div>`;
+  if (j.estado === 'aceptado') h += `<div class="sec jfin"><button class="btn p w" data-a="fin">Marcar como terminado</button></div>`;
   view(h);
-  const th = document.querySelector('.thread.conv'); if (th) th.scrollTop = th.scrollHeight;
-  const mi = $('#mi'); if (mi) mi.addEventListener('keydown', e => { if (e.key === 'Enter') ACT.msg(); });
 }
 ACT.convPedido = () => { const j = DB.jobs.find(x => x.id === V.job); if (!j) return;
   sheet(`${ticketHTML({...j, zona:j.zona})}${j.f ? '' : ''}<button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`); };
@@ -2877,7 +2922,7 @@ function vTrab() {
      <span class="ct"><b>${esc(j.caso)}</b><span class="small mut">${esc(j.un)} · ${esc(j.zona.split(',')[0])}</span>
      <span class="stagetxt ${cls}">${st}</span></span>
      ${j.prov === p.id && j.precio ? `<span class="price" style="font-size:16px">${money(j.precio)}</span>` : ''}</button>`;
-  const seg = `<div class="seg segw" role="tablist">${[['nuevos', 'Pedidos', nq], ['presu', 'Presupuestados', presu.length], ['term', 'Terminados', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="trabSeg" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
+  const seg = `<div class="seg segw" role="tablist">${[['nuevos', 'Nuevos', nq], ['presu', 'Presupuestados', presu.length], ['term', 'Terminados', 0]].map(([k, l, n]) => `<button role="tab" aria-selected="${tab === k}" class="${tab === k ? 'on' : ''}" data-a="trabSeg" data-v="${k}">${l}${n ? ` <span class="num">${n}</span>` : ''}</button>`).join('')}</div>`;
   let body = '';
   if (tab === 'nuevos') body = pedidosHTML();
   else if (tab === 'presu') body = presu.length ? `<div class="list">${presu.map(j => { const o = j.offers.find(x => x.pid === p.id); return card(j, `Presupuesto enviado · ${money(o ? o.precio : 0)}`, 'n'); }).join('')}</div>`
@@ -3141,14 +3186,30 @@ function vCasa() {
   if (V.casa === 'herramientas') return vHerr();
   if (V.casa === 'ferreterias') return vFerre();
   const u = me(), sk = seasonNow(), S = SEASONS[sk], key = seasonKey(), done = u.mant || {};
-  const pend = S.tasks.filter(t => !done[key + '-' + t.id]).length;
+  const pend = tasksFor(S, u).filter(t => !done[key + '-' + t.id]).length;
   const item = (to, img, fb, t, d, badge = '') => `<button class="card casaitem big" data-a="casa" data-v="${to}">${catImg(img, fb, 'md')}<span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${badge}${ico('back').replace('<svg', '<svg class="go"')}</button>`;
-  view(`<div class="list">
+  const ct = casaTxt(u);
+  view(`${ct ? `<button class="card casaficha ok" data-a="casaFicha">${ico('home')}<span class="ct"><b>Tu casa</b><span class="small mut">${esc(ct)}</span></span><span class="textlink">Editar</span></button>`
+    : `<div class="card casaficha"><div class="cfh">${ico('home')}<span class="ct"><b>Contale a Handy cómo es tu casa</b><span class="tag y">Recomendado</span></span></div>
+       <p class="small mut">Es opcional y lleva menos de un minuto. Con esto Handy te responde pensando en tu casa, y en los arreglos de temporada te mostramos solo los que te sirven.</p>
+       <button class="btn p w" data-a="casaFicha">Completar</button></div>`}
+   <div class="list">
     ${item('temporada', 'c_temporada', S.ico, 'Arreglos de temporada', `Lo que conviene hacer en ${S.n.toLowerCase()}`, pend ? `<span class="cnt num">${pend}</span>` : '')}
     ${item('herramientas', 'c_herramientas', 'box', 'Herramientas básicas', 'Lo que conviene tener en casa')}
     ${item('ferreterias', 'c_ferreterias', 'pin', 'Ferreterías cerca', 'Los comercios de tu zona')}
    </div>`);
 }
+let CF = {};
+ACT.casaFicha = () => {
+  CF = {...(me().casa || {})};
+  sheet(`<span class="eyebrow">Mi casa · opcional</span><h2>¿Cómo es tu casa?</h2><p class="mut small" style="margin-top:4px">Respondé lo que sepas. Lo podés cambiar cuando quieras.</p>
+    ${CASA_Q.map(q => `<div class="cfq"><b>${q.q}</b><div class="cfo">${q.o.map(([v, l]) => `<button class="${CF[q.k] === v ? 'on' : ''}" data-a="cfSel" data-v="${q.k}|${v}" aria-pressed="${CF[q.k] === v}">${esc(l)}</button>`).join('')}</div></div>`).join('')}
+    <div class="stack" style="margin-top:20px"><button class="btn p w" data-a="cfSave">Guardar</button><button class="btn g w" data-a="close">Ahora no</button></div>`);
+};
+ACT.cfSel = v => { const [k, val] = String(v).split('|'); CF[k] = CF[k] === val ? undefined : val;
+  document.querySelectorAll(`[data-a="cfSel"][data-v^="${k}|"]`).forEach(b => { const on = b.dataset.v === k + '|' + CF[k]; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); };
+ACT.cfSave = () => { const u = me(), c = {}; for (const q of CASA_Q) if (CF[q.k]) c[q.k] = CF[q.k]; u.casa = c; save(); closeSheet(); render(); renderNav();
+  toast(Object.keys(c).length ? 'Listo: Handy ya sabe cómo es tu casa' : 'Guardado'); };
 ACT.casa = v => { NEXT_ANIM = 'right'; V.tab = 'casa'; V.casa = v; V.casaBack = null; render(); };
 ACT.casaBack = () => { NEXT_ANIM = 'left'; const b = V.casaBack; V.casa = null; V.casaBack = null;
   if (b === 'guia') { V.tab = 'ped'; V.guia = V.guiaBack; V.guiaBack = null; } else if (b) V.tab = b; render(); };
@@ -3159,7 +3220,7 @@ function vTemporada() {
   view(`${casaBackBtn()}
    <h2 style="margin:12px 0 12px">${S.n}</h2>
    ${handySays(`Estos son los arreglos que te recomiendo para ${S.n.toLowerCase()}. Tocá cada uno y te cuento por qué.`)}
-   <div class="list" style="margin-top:16px">${S.tasks.map(t => { const ok = done[key + '-' + t.id]; return `<button class="card casaitem ${ok ? 'done' : ''}" data-a="taskInfo" data-v="${t.id}">${catImg('s_' + t.id, S.ico, 'md')}
+   <div class="list" style="margin-top:16px">${tasksFor(S, u).map(t => { const ok = done[key + '-' + t.id]; return `<button class="card casaitem ${ok ? 'done' : ''}" data-a="taskInfo" data-v="${t.id}">${catImg('s_' + t.id, S.ico, 'md')}
      <span class="ct"><b>${esc(t.n)}</b>${ok ? '<span class="small okt">✓ Hecho</span>' : `<span class="tmeta">${lvlTag((TASK_INFO[t.id] || {}).lvl || (t.quien === 'pro' ? 'Profesional' : 'Fácil'))}<span class="small mut">${ico('clock')} ${esc((TASK_INFO[t.id] || {}).min || '')}</span></span>`}</span>${ico('back').replace('<svg', '<svg class="go"')}</button>`; }).join('')}</div>`);
 }
 ACT.taskInfo = id => {
