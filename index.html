@@ -743,6 +743,35 @@ button.textlink{border:0;background:none;padding:0;cursor:pointer;font:600 14px/
 .review{border-top:1px solid var(--line);padding-top:12px}
 .legal ul.cred{padding-left:18px;font-size:13px;line-height:1.45}.legal ul.cred li{margin-bottom:6px}.legal ul.cred a{color:var(--pri)}
 .review:first-child{border-top:0;padding-top:0}
+/* ---------- detalle del arreglo ---------- */
+.jhead{margin:4px 0 16px}
+.offers{gap:16px}
+.offer2{display:grid;gap:14px;padding:18px}
+.offer2 .obest{justify-self:start}
+.oh{display:flex;gap:12px;align-items:center}
+.oh .on{flex:1;min-width:0;display:grid;gap:2px}
+.oh .on h3{margin:0;font-size:17px;line-height:1.2}
+.oh .op{flex:none;display:grid;justify-items:end;gap:4px;text-align:right}
+.oh .op span{font-size:12px;color:var(--mut)}
+.odet{list-style:none;margin:0;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:10px}
+.odet li{display:grid;grid-template-columns:20px 84px 1fr;gap:8px;align-items:start;font-size:14px}
+.odet li svg{width:18px;height:18px;fill:none;stroke:var(--mut);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;margin-top:1px}
+.odet li>span{color:var(--mut)}
+.odet li b{font-weight:600}
+.odet .oinc div{display:flex;flex-wrap:wrap;gap:6px}
+.oact{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pcard{display:grid;gap:12px;padding:18px}
+.pcard .pver{justify-self:start}
+.pcard .pver .go{width:16px;height:16px;transform:rotate(180deg);fill:none;stroke:currentColor;stroke-width:2}
+.chatcard{padding:16px}
+.chatcard .thread{margin:0 0 16px;gap:10px}
+.chatcard .chint{display:flex;align-items:center;gap:6px;margin:12px 0 0}
+.chatcard .chint svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.75;flex:none}
+.revcard{padding:18px}
+.revcard h3{margin:0 0 4px}
+.jcancel{margin-top:24px;text-align:center}
+.chatcard .m.sysl{border-radius:12px;font-size:13px;text-wrap:balance}
+.jhead .tag{font-size:13px;padding:6px 10px}
 </style>
 </head>
 <body>
@@ -2525,7 +2554,7 @@ function vJob() {
   if (clearUnseen(j)) { save(); renderNav(); }
   if (!isU && V.tab === 'cli' && j.prov === DB.cur.id && j.estado !== 'nuevo') return vConv(j);
   let h = `<button class="back" data-a="backJob">${ico('back')} ${isU ? 'Arreglos' : 'Volver'}</button>
-    <div class="row" style="margin-bottom:12px"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
+    <div class="row jhead"><span class="tag ${j.estado === 'finalizado' ? 'v' : j.estado === 'aceptado' ? 'y' : ''}">${stageName(j)}</span>${!isU ? `<span class="tag">${esc(j.un)}</span>` : ''}</div>
     ${j.estado === 'cancelado' ? `<div class="card" style="margin-bottom:12px"><b>Pedido cancelado</b><div class="small mut">${j.canceladoPor === 'p' ? 'El prestador canceló el trabajo.' : 'Cancelaste este pedido.'}</div></div>` : ''}
     ${j.estado === 'aceptado' && j.turno ? `<div class="card" style="margin-bottom:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:12px;background:var(--priSoft);color:var(--pri);display:grid;place-items:center;flex:none">${ico('cal').replace('<svg', '<svg style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round"')}</span><div><span class="small mut">Tu turno</span><h3>${esc(slotLabel(j.turno))}</h3></div></div>` : ''}
     ${ticketHTML({...j, zona:j.zona})}`;
@@ -2533,33 +2562,36 @@ function vJob() {
     const B = bestOf(j);
     h += `<div class="sec"><div class="row" style="justify-content:space-between;margin-bottom:12px"><h3 class="sh">Presupuestos recibidos</h3>
       ${j.offers.length > 1 ? `<div class="seg" role="tablist"><button class="${V.cmp ? '' : 'on'}" data-a="cmp" data-v="0">Lista</button><button class="${V.cmp ? 'on' : ''}" data-a="cmp" data-v="1">Comparar</button></div>` : ''}</div>`
-      + (j.offers.length > 1 && V.cmp ? compareHTML(j, B) : j.offers.length ? `<div class="list">${j.offers.map((o, i) => { const p = provInfo(o.pid); return `<div class="card offer">
-       ${j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i) ? `<div><span class="tag ${B.precio === i ? 'y' : 'b'}">${B.precio === i ? 'Mejor precio' : B.cal === i ? 'Mejor calificado' : 'Puede antes'}</span></div>` : ''}
-       <div class="top2">${avatar(p.n, p.foto)}<div style="flex:1;min-width:0"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas · ${p.y} años</span></div></div><span class="price">${money(o.precio)}</span></div>
+      + (j.offers.length > 1 && V.cmp ? compareHTML(j, B) : j.offers.length ? `<div class="list offers">${j.offers.map((o, i) => { const p = provInfo(o.pid); const best = j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i); return `<div class="card offer2">
+       ${best ? `<span class="tag obest ${B.precio === i ? 'y' : 'b'}">${B.precio === i ? 'Mejor precio' : B.cal === i ? 'Mejor calificado' : 'Puede antes'}</span>` : ''}
+       <div class="oh">${avatar(p.n, p.foto)}<div class="on"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas</span></div><div class="small mut">${p.y} años de experiencia</div></div>
+         <div class="op"><span>Presupuesto</span><b class="price">${money(o.precio)}</b></div></div>
        <div class="meta">${plusBadge(p)}${matBadge(p)}<span class="tag v">${ico('shield')} Identidad verificada</span></div>
-       <div class="sub"><span>${ico('cal')} ${esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when)}</span>${p.vis ? `<span class="sep">Visita ${money(p.vis)}${p.visDesc ? ' (se descuenta)' : ''}</span>` : ''}</div>
-       ${(o.inc || []).length ? `<div class="inc"><span class="small mut">Incluye:</span> ${o.inc.map(x => `<span class="tag v">${esc(x)}</span>`).join('')}</div>` : ''}
+       <ul class="odet"><li>${ico('cal')}<span>Primer turno</span><b>${esc(o.slots && o.slots.length ? slotLabel(o.slots[0]) : o.when)}</b></li>
+         ${p.vis ? `<li>${ico('home')}<span>Visita</span><b>${money(p.vis)}${p.visDesc ? ' · se descuenta' : ''}</b></li>` : ''}
+         ${(o.inc || []).length ? `<li class="oinc">${ico('check')}<span>Incluye</span><div>${o.inc.map(x => `<span class="tag v">${esc(x)}</span>`).join('')}</div></li>` : ''}</ul>
        <div class="quote">“${esc(o.msg)}”</div>
        <button class="textlink whyb" data-a="whyPrice" data-v="${i}">${ico('chat')} ¿Por qué sale esto?</button>
-       <div class="row" style="flex-wrap:nowrap"><button class="btn g sm" style="flex:1" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p sm" style="flex:1" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
+       <div class="oact"><button class="btn g" data-a="prof" data-v="${o.pid}">Ver perfil</button><button class="btn p" data-a="acc" data-v="${i}">Aceptar</button></div></div>`; }).join('')}</div>`
       : `<div class="list" aria-hidden="true">${[1, 2].map(() => `<div class="card skcard"><div class="skrow"><div class="skel" style="width:46px;height:46px;border-radius:50%"></div><div style="flex:1;display:grid;gap:8px"><div class="skel" style="height:15px;width:55%"></div><div class="skel" style="height:12px;width:75%"></div></div><div class="skel" style="height:22px;width:70px"></div></div><div class="skel" style="height:34px;border-radius:12px"></div></div>`).join('')}</div><p class="hint" style="text-align:center">Los prestadores están viendo tu caso…</p>`) + `</div>`;
   }
-  if (isU && j.uid === DB.cur.id && ['nuevo', 'aceptado'].includes(j.estado))
-    h += `<div class="sec"><button class="btn g w" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito · cancelar pedido' : 'Cancelar el trabajo'}</button></div>`;
+  if (isU && j.uid === DB.cur.id && j.estado === 'nuevo') h += `<div class="jcancel"><button class="dangerlink" data-a="cancelJob">Ya no lo necesito, cancelar el pedido</button></div>`;
   if (!['nuevo', 'cancelado'].includes(j.estado)) {
     const p = provInfo(j.prov);
-    h += `<div class="sec"><h3 class="sh">${isU ? 'Tu prestador' : 'Tu cliente'}</h3><div class="card offer"><div class="top2">
-      ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div style="flex:1;min-width:0"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><span class="price">${money(j.precio)}</span></div>
-      ${isU ? `<button class="btn g sm" data-a="prof" data-v="${j.prov}">Ver perfil</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div>
-      <div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
+    h += `<div class="sec"><h3 class="sh">${isU ? 'Tu prestador' : 'Tu cliente'}</h3><div class="card pcard"><div class="oh">
+      ${isU ? avatar(p.n, p.foto) : avatar(j.un, (DB.users.find(x => x.id === j.uid) || {}).foto)}<div class="on"><h3>${esc(isU ? p.n : j.un)}</h3><span class="small mut">${isU ? esc(p.r) + (p.m ? ' · ' + esc(p.m) : '') : esc(j.zona)}</span></div><div class="op"><span>Precio acordado</span><b class="price">${money(j.precio)}</b></div></div>
+      ${isU ? `<button class="textlink pver" data-a="prof" data-v="${j.prov}">Ver perfil ${ico('back').replace('<svg', '<svg class="go"')}</button>` : (() => { const cu = DB.users.find(x => x.id === j.uid); return cu && (cu.dir || cu.tel) ? `<div class="small"><span class="mut">Datos de contacto:</span> ${esc([cu.dir, cu.tel].filter(Boolean).join(' · '))}</div>` : ''; })()}</div></div>
+    <div class="sec"><h3 class="sh">Mensajes</h3><div class="card chatcard"><div class="thread">${j.msgs.map(m => m.f === 's' ? `<div class="m sysl">${esc(m.t)}</div>` : `<div class="m ${m.f === DB.cur.t ? 'u' : ''}">${esc(m.t)}</div>`).join('') || '<p class="mut small">Escribí para coordinar día y horario.</p>'}</div>
       ${j.estado === 'aceptado' ? `<div class="sendrow"><input id="mi" placeholder="Escribí un mensaje" autocomplete="off" aria-label="Mensaje"><button class="iconbtn p" data-a="msg" aria-label="Enviar">${ico('send')}</button></div>` : ''}
-      <p class="hint" style="margin-top:8px">${ico('shield').replace('<svg', '<svg style="width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.75"')} Toda la comunicación queda dentro de HandyGo.</p></div>`;
+      <p class="hint chint">${ico('shield')} Toda la comunicación queda dentro de HandyGo.</p></div></div>`;
+    if (isU && j.uid === DB.cur.id && ['nuevo', 'aceptado'].includes(j.estado))
+      h += `<div class="jcancel"><button class="dangerlink" data-a="cancelJob">${j.estado === 'nuevo' ? 'Ya no lo necesito, cancelar el pedido' : 'Cancelar el trabajo'}</button></div>`;
     if (j.estado === 'aceptado') h += `<div class="stickbar"><button class="btn p w" data-a="fin">${isU ? 'El trabajo está terminado' : 'Marcar como terminado'}</button><p class="hint">Así deja de aparecer como pendiente${isU ? ' y podés dejar tu reseña' : ''}.</p></div>`;
-    if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec card"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
+    if (isU && j.estado === 'finalizado' && !j.review) h += `<div class="sec"><h3 class="sh">Tu reseña</h3><div class="card revcard"><h3>¿Cómo te fue con ${esc(first(p.n))}?</h3><p class="mut small">Tu reseña ayuda a otros vecinos a elegir.</p>
       <div class="ratebtns" style="margin:12px 0">${[1, 2, 3, 4, 5].map(n => `<button data-a="rate" data-v="${n}" aria-label="${n} estrellas">${n}★</button>`).join('')}</div>
       <label class="f" for="rc">Comentario (opcional)<textarea id="rc" rows="2" placeholder="Ej: llegó a horario y explicó todo"></textarea></label>
-      <button class="btn p w" style="margin-top:12px" data-a="sendRev">Publicar reseña</button></div>`;
-    if (j.review) h += `<div class="sec card"><b>Calificaste ${'★'.repeat(j.review.s)}</b>${j.review.c ? `<p class="mut small" style="margin:8px 0 0">“${esc(j.review.c)}”</p>` : ''}</div>`;
+      <button class="btn p w" style="margin-top:16px" data-a="sendRev">Publicar reseña</button></div></div>`;
+    if (j.review) h += `<div class="sec"><h3 class="sh">Tu reseña</h3><div class="card"><b>Calificaste ${'★'.repeat(j.review.s)}</b>${j.review.c ? `<p class="mut small" style="margin:8px 0 0">“${esc(j.review.c)}”</p>` : ''}</div></div>`;
   }
   if (!isU && j.estado === 'nuevo') { const mine = j.offers.find(o => o.pid === DB.cur.id);
     h += mine ? `<div class="sec card"><h3>Presupuesto enviado · <span class="num">${money(mine.precio)}</span></h3><p class="mut small" style="margin:4px 0 0">Turnos ofrecidos: ${esc((mine.slots || []).map(slotLabel).join(' · ') || mine.when)} · esperando la respuesta del cliente.</p></div>` : offerForm(j); }
