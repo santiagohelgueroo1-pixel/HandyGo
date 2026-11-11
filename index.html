@@ -831,6 +831,8 @@ body.kb .composer{padding-bottom:8px}
 .casaficha p{margin:0}
 .casaficha.ok{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:var(--ink)}
 .casaficha.ok .ct{flex:1;min-width:0;gap:2px}
+.casaficha.mini{display:flex;align-items:center;gap:12px;width:100%;text-align:left;color:var(--ink);padding:12px 14px;cursor:pointer}
+.casaficha.mini .ct{flex:1;min-width:0;gap:2px}.casaficha.mini .ct b{font:600 15px/1.25 var(--f-display)}.casaficha.mini>svg{margin-top:0}
 .cfq{margin-top:18px}.cfq>b{display:block;font:600 15px/1.3 var(--f-display);margin-bottom:8px}
 .cfo{display:flex;flex-wrap:wrap;gap:8px}
 .cfo button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:9px 16px;font:600 14px/1.15 var(--f-body);cursor:pointer}
@@ -1768,11 +1770,17 @@ function vChat() {
 }
 function setMode() { const hs = $('#hs'); if (!hs || !DB.cur || V.tab !== 'chat' || V.job || DB.cur.t !== 'u') return; hs.className = 'on' + (AI_OK === false ? ' off' : ''); hs.innerHTML = '<i></i>' + (AI_OK === false ? 'Sin conexión · guías revisadas' : 'En línea'); }
 const LOG = () => chatEl.querySelector('#log');
-function scrollLog() { const l = chatEl && chatEl.querySelector('#log'); if (l) requestAnimationFrame(() => l.scrollTop = l.scrollHeight); }
+// Cuando contesta Handy, el chat queda en el comienzo de su respuesta (el resto se lee bajando)
+let ANCH = null;
+function scrollLog(el) {
+  const l = chatEl && chatEl.querySelector('#log'); if (!l) return;
+  if (el) { const bot = el.classList.contains('bot') || el.classList.contains('who'); if (el.classList.contains('u')) ANCH = null; else if (!bot) {} else if (!ANCH || !ANCH.isConnected || el.querySelector('.typing')) ANCH = el.querySelector('.typing') ? null : el; }
+  requestAnimationFrame(() => { if (ANCH && ANCH.isConnected) l.scrollTop = Math.min(l.scrollHeight, l.scrollTop + ANCH.getBoundingClientRect().top - l.getBoundingClientRect().top - 8); else l.scrollTop = l.scrollHeight; });
+}
 function say(html, cls = '', who = true) {
   const l = LOG();
-  if (who && !/\bu\b/.test(cls) && !cls.includes('sys')) { const last = l.lastElementChild; if (!last || !last.classList.contains('bot')) { const w = document.createElement('div'); w.className = 'who bot'; w.innerHTML = MARK + 'Handy'; l.appendChild(w); } }
-  const d = document.createElement('div'); d.className = 'm ' + cls + (/\bu\b/.test(cls) || cls.includes('sys') ? '' : ' bot'); d.innerHTML = html; l.appendChild(d); scrollLog();
+  if (who && !/\bu\b/.test(cls) && !cls.includes('sys')) { const last = l.lastElementChild; if (!last || !last.classList.contains('bot')) { const w = document.createElement('div'); w.className = 'who bot'; w.innerHTML = MARK + 'Handy'; l.appendChild(w); if (!ANCH || !ANCH.isConnected) ANCH = w; } }
+  const d = document.createElement('div'); d.className = 'm ' + cls + (/\bu\b/.test(cls) || cls.includes('sys') ? '' : ' bot'); d.innerHTML = html; l.appendChild(d); scrollLog(d);
   if (!cls.includes('sys') && !/class="typing"/.test(html)) { const t = (d.textContent || '').trim() || (d.querySelector('audio') ? '(audio)' : d.querySelector('img') ? '(foto)' : ''); if (t) logTrans(/\bu\b/.test(cls) ? 'u' : 'b', t); }
   return d;
 }
@@ -1797,8 +1805,8 @@ ACT.histOpen = id => {
    <div class="tr">${c.msgs.map(m => m.r === 'u' ? `<div class="m u">${esc(m.t)}</div>` : m.r === 'b' ? `<div class="m">${esc(m.t)}</div>` : `<div class="mk">${esc(m.t)}</div>`).join('')}</div>
    <button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
 };
-function block(html) { const l = LOG(); const d = document.createElement('div'); d.className = 'bot'; d.style.cssText = 'align-self:stretch;display:flex'; d.innerHTML = html; l.appendChild(d); scrollLog(); return d; }
-function chips(list) { const d = document.createElement('div'); d.className = 'chips bot'; list.forEach(([t, f, c]) => { const b = document.createElement('button'); b.textContent = t; if (c) b.className = c; b.onclick = () => { d.remove(); f(); }; d.appendChild(b); }); LOG().appendChild(d); scrollLog(); }
+function block(html) { const l = LOG(); const d = document.createElement('div'); d.className = 'bot'; d.style.cssText = 'align-self:stretch;display:flex'; d.innerHTML = html; l.appendChild(d); scrollLog(d); return d; }
+function chips(list) { const d = document.createElement('div'); d.className = 'chips bot'; list.forEach(([t, f, c]) => { const b = document.createElement('button'); b.textContent = t; if (c) b.className = c; b.onclick = () => { d.remove(); f(); }; d.appendChild(b); }); LOG().appendChild(d); scrollLog(d); }
 const CATS = [
   {id:'agua', n:'Agua y plomería', ic:'drop', items:['canilla', 'inodoro', 'inodoro_tapado', 'pileta', 'ducha', 'aireador', 'rejilla', 'lavarropas']},
   {id:'luz', n:'Electricidad', ic:'bulb', items:['enchufe', 'lampara'], extra:['Salta la térmica', 'Hay olor a quemado en un enchufe']},
@@ -1971,6 +1979,13 @@ function sendAudio(blob, audio, dur) {
 ACT.clearPic = clearPic;
 ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.trim(); if (!t && !pendingImgs.length) return; i.value = ''; i.style.height = 'auto'; go(t, false); syncSend(); };
 
+// Antes de gastar una consulta, Handy pregunta
+function askCredit(nuevo, yes, no) {
+  const u = me();
+  if (u.cr <= 0) { useCredit(nuevo); if (no) no(true); return; }
+  say(`${nuevo ? 'Esto es un problema nuevo. ' : ''}¿Usamos 1 consulta? Te ${u.cr === 1 ? 'queda' : 'quedan'} <b>${u.cr}</b>.`);
+  chips([['Sí, usar 1 consulta', () => { say('Sí, usar 1 consulta', 'u'); yes(); }, 'p'], ['No', () => { say('No', 'u'); if (no) no(); say('Dale, no gasté nada.'); }]]);
+}
 // La consulta se cobra recién cuando es un problema de la casa (las preguntas sobre la app no gastan)
 function startConsulta() {
   if (!useCredit(false)) return false;
@@ -2045,7 +2060,7 @@ async function ai(txt, imgs, t, audio, bub) {
     const body = JSON.stringify({tema_actual:CH.caso || '', casa:DB.cur && DB.cur.t === 'u' ? casaTxt(me()) : '', messages:CH.h.slice(-12).map((m, i, a) => i < a.length - 1 ? {role:m.role, text:m.text} : m), catalog:Object.values(TUT).map(x => ({id:x.id, titulo:x.n, rubro:x.rubro, cuando:x.syn}))});
     let d = null, lastErr = null;
     for (let intento = 0; intento < 2 && !d; intento++) {
-      if (intento) await new Promise(r => setTimeout(r, 1500));
+      if (intento) await new Promise(r => setTimeout(r, 500));
       const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 32000);
       try {
         const res = await apiFetch(API_URL, {method:'POST', headers:{'content-type':'application/json'}, signal:ctl.signal, body});
@@ -2065,11 +2080,12 @@ async function ai(txt, imgs, t, audio, bub) {
     AI_OK = false; setMode(); CH.h.pop();
     clearTimeout(AI_RETRY); AI_RETRY = setTimeout(() => { AI_OK = null; setMode(); }, 60000);
     if (audio) { say('Ahora no me puedo conectar para escuchar audios. Escribime con palabras qué pasa y te ayudo igual.'); return; }
-    if (!CH.started && !startConsulta()) return;
-    say('Ahora no me puedo conectar con la IA, así que te ayudo con mis guías revisadas.', 'sys', false);
-    rules(t, img);
+    const off = () => { say('Ahora no me puedo conectar con la IA, así que te ayudo con mis guías revisadas.', 'sys', false); rules(t, img); };
+    if (!CH.started) return askCredit(false, () => { if (startConsulta()) off(); }, () => CH.resp.pop());
+    off();
   }
 }
+let CREDIT_OK = false;
 function handleAI(r, t) {
   const lastU = CH.h[CH.h.length - 1];
   if (lastU && lastU.audio) {
@@ -2082,10 +2098,15 @@ function handleAI(r, t) {
   }
   if (r.estado === 'app') { CH.h.pop(); CH.resp.pop(); return answerApp(r.mensaje || 'Eso lo encontrás en tu Perfil.', r.ir_a); }
   if (r.estado === 'fuera_de_tema' && !CH.started) { CH.h.pop(); CH.resp.pop(); return say(esc(r.mensaje || 'Puedo ayudarte con problemas de tu casa o con dudas sobre la app.')); }
-  if (!CH.started && !startConsulta()) { CH.h.pop(); CH.resp.pop(); return; }
+  if (!CH.started) {
+    if (!CREDIT_OK) return askCredit(false, () => { CREDIT_OK = true; handleAI(r, t); }, () => { CH.h.pop(); CH.resp.pop(); });
+    CREDIT_OK = false; if (!startConsulta()) { CH.h.pop(); CH.resp.pop(); return; }
+  }
   // Si ya hubo un freno de seguridad en este tema, nunca se pasa a dar pasos
   if (CH.hard && !r.tema_nuevo && r.estado === 'guiar') { CH.h.push({role:'assistant', text:'(mantengo el freno de seguridad)'}); return insist(CH.hardH); }
   if (r.tema_nuevo && CH.caso) {
+    if (!CREDIT_OK) return askCredit(true, () => { CREDIT_OK = true; handleAI(r, t); }, () => { CH.h.pop(); CH.resp.pop(); });
+    CREDIT_OK = false;
     const last = CH.h[CH.h.length - 1];
     if (!useCredit(true)) { CH.h.pop(); CH.resp.pop(); return; }
     resetTopic(); CH.h = [last]; CH.resp = [last.text]; if (last.images && last.images[0]) CH.img = 'data:image/jpeg;base64,' + last.images[0].data;
@@ -2200,7 +2221,6 @@ function showTut(tut) {
   CH.guia = g.id;
   block(`<button class="card guiacard" data-a="openGuia" data-v="${g.id}">${catImg(RUBRO_IMG[tut.rubro] || 'r_mant', 'tool', 'md')}
     <span class="ct"><span class="eyebrow">Tu guía paso a paso</span><b>${esc(tut.n)}</b><span class="small mut">${tut.steps.length} pasos · ≈ ${tut.min} min · ${esc(tut.lvl)}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>`);
-  say(`Te armé la guía y la dejé en <b>Arreglos → En curso</b>, así la tenés a mano mientras trabajás. Ahí están las piezas que vas a usar, los pasos${tut.mat && tut.mat.length ? ', la lista de materiales para pedir en la ferretería' : ''} y las ferreterías cerca.`);
   chips([['Abrir la guía', () => ACT.openGuia(g.id), 'p'], ['Lo resolví', () => resolved()], ['No pude, quiero un profesional', () => { CH.intentos = 'Siguió la guía de HandyGo y no pudo resolverlo'; say('No pude, quiero un profesional', 'u'); derivar(); }]]);
 }
 const guiaOf = id => (me().guias || []).find(x => x.id === id);
@@ -2392,7 +2412,7 @@ const FQ_RUBRO = {
   Electricidad:[{k:'salto', q:'¿Saltó la térmica o el disyuntor?', o:['Sí', 'No', 'No sé']}, {k:'quem', q:'¿Hay olor a quemado o chispas?', o:['Sí', 'No']}],
   Plomería:[{k:'paso', q:'¿La llave de paso funciona?', o:['Sí', 'No', 'No sé']}]};
 const FQ_LBL = {viv:'Vivienda', ant:'Antigüedad', urg:'Urgencia', art:'Artefacto', olor:'Olor a gas', llave:'Llave de paso cerrada', salto:'Saltó la térmica', quem:'Olor a quemado o chispas', paso:'Llave de paso funciona'};
-function fichaQs() { return [...FQ_BASE, ...(FQ_RUBRO[CH.rubro] || [])]; }
+function fichaQs() { const tipo = (me().casa || {}).tipo; return [...FQ_BASE.filter(q => q.k === 'urg' || (q.k === 'viv' && !tipo)), ...(FQ_RUBRO[CH.rubro] || [])]; }
 function fichaRows(f) {
   if (!f) return '';
   const qs = [...FQ_BASE, ...Object.values(FQ_RUBRO).flat()];
@@ -2404,10 +2424,10 @@ function fichaRows(f) {
 }
 function fichaForm() {
   CH.ficha = CH.ficha || {};
+  const tipo = (me().casa || {}).tipo; if (tipo && !CH.ficha.viv) CH.ficha.viv = {casa:'Casa', depto:'Departamento', ph:'PH'}[tipo];
   const f = CH.ficha, toco = CH.intentos && !/^Ninguno/.test(CH.intentos);
   return `<div class="card ficha" id="ficha">${fichaQs().map(q => `<div class="fq"><b>${q.q}</b><div class="fopts">${q.o.map(o => `<button class="${f[q.k] === o ? 'on' : ''}" data-a="fq" data-v="${q.k}|${esc(o)}" aria-pressed="${f[q.k] === o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
-    <label class="f" for="fToco">¿Tocaste o cambiaste algo?<textarea id="fToco" rows="2" placeholder="Ej: cambié el cuerito, ajusté la tuerca">${esc(f.toco || (toco ? CH.intentos : ''))}</textarea><span class="hint">A los profesionales les sirve muchísimo saberlo antes de llegar.</span></label>
-    <label class="f" for="fCerca">Cerca de (opcional)<input id="fCerca" value="${esc(f.cerca || '')}" placeholder="Calle o esquina, sin la altura exacta"></label>
+    <label class="f" for="fToco">¿Tocaste algo? (opcional)<textarea id="fToco" rows="1" placeholder="Ej: cambié el cuerito">${esc(f.toco || (toco ? CH.intentos : ''))}</textarea></label>
     <button class="btn p w" data-a="fichaOk">Listo, ver el resumen</button>
     <button class="btn g w" data-a="fichaAuto">Prefiero que lo armes vos</button></div>`;
 }
@@ -2420,7 +2440,7 @@ ACT.fichaOk = () => {
   const box = $('#ficha'); if (box) box.closest('.blk, .m, div').querySelectorAll('button, textarea, input').forEach(x => x.disabled = true);
   if (f.toco) CH.intentos = f.toco;
   logTrans('k', 'Completó la ficha del caso');
-  say('Te armé el resumen del caso. El prestador lo recibe antes de presupuestar, así no empieza de cero.');
+  say('Este es el resumen que le llega al profesional.');
   const s = summary(); s.zona = me().zona + (f.cerca ? ' · cerca de ' + f.cerca : '');
   block(`<div style="width:100%">${ticketHTML(s)}</div>`);
   chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p']]);
@@ -2439,7 +2459,7 @@ ACT.fichaAuto = () => {
   const box = $('#ficha'); if (box) box.querySelectorAll('button, textarea, input').forEach(x => x.disabled = true);
   CH.ficha = {...guessFicha(), auto:true};
   logTrans('k', 'Pidió que Handy arme la ficha');
-  say('Listo, lo armé con lo que me contaste. Te recomiendo completarlo vos: con esos datos el profesional llega mejor preparado y te cotiza más preciso.');
+  say('Listo, lo armé con lo que me contaste.');
   const s = summary(); s.zona = me().zona;
   block(`<div style="width:100%">${ticketHTML(s)}</div>`);
   chips([[`Enviar a prestadores de ${CH.rubro.toLowerCase()}`, () => pedir(), 'p'], ['Mejor lo completo yo', () => { say('Mejor lo completo yo', 'u'); CH.ficha = {}; block(`<div style="width:100%">${fichaForm()}</div>`); }]]);
@@ -2460,7 +2480,7 @@ function ticketHTML(s, extra = '') {
 function derivar() {
   if (!CH.rubro) CH.rubro = 'Plomería';
   if (!CH.hard && (CH.meanwhile || []).length) block(`<div class="card meanwhile"><b>${ico('clock')} Mientras tanto</b><ul>${liList(CH.meanwhile)}</ul></div>`);
-  say('Antes de mandarlo, unas preguntas rápidas para que el profesional llegue sabiendo qué pasa. Tocá lo que corresponda; si no sabés algo, dejalo.');
+  say('Unas preguntas rápidas para el profesional. Si no sabés algo, salteala.');
   block(`<div style="width:100%">${fichaForm()}</div>`);
 }
 function pedir() {
@@ -3189,14 +3209,12 @@ function vCasa() {
   const pend = tasksFor(S, u).filter(t => !done[key + '-' + t.id]).length;
   const item = (to, img, fb, t, d, badge = '') => `<button class="card casaitem big" data-a="casa" data-v="${to}">${catImg(img, fb, 'md')}<span class="ct"><b>${t}</b><span class="small mut">${d}</span></span>${badge}${ico('back').replace('<svg', '<svg class="go"')}</button>`;
   const ct = casaTxt(u);
-  view(`${ct ? `<button class="card casaficha ok" data-a="casaFicha">${ico('home')}<span class="ct"><b>Tu casa</b><span class="small mut">${esc(ct)}</span></span><span class="textlink">Editar</span></button>`
-    : `<div class="card casaficha"><div class="cfh">${ico('home')}<span class="ct"><b>Contale a Handy cómo es tu casa</b><span class="tag y">Recomendado</span></span></div>
-       <p class="small mut">Es opcional y lleva menos de un minuto. Con esto Handy te responde pensando en tu casa, y en los arreglos de temporada te mostramos solo los que te sirven.</p>
-       <button class="btn p w" data-a="casaFicha">Completar</button></div>`}
+  view(`${ct ? '' : `<button class="card casaficha mini" data-a="casaFicha">${ico('home')}<span class="ct"><b>Contale a Handy cómo es tu casa</b><span class="small mut">Opcional · respuestas más a tu medida</span></span><span class="textlink">Completar</span></button>`}
    <div class="list">
     ${item('temporada', 'c_temporada', S.ico, 'Arreglos de temporada', `Lo que conviene hacer en ${S.n.toLowerCase()}`, pend ? `<span class="cnt num">${pend}</span>` : '')}
     ${item('herramientas', 'c_herramientas', 'box', 'Herramientas básicas', 'Lo que conviene tener en casa')}
     ${item('ferreterias', 'c_ferreterias', 'pin', 'Ferreterías cerca', 'Los comercios de tu zona')}
+    ${ct ? `<button class="card casaitem big" data-a="casaFicha"><span class="ci">${ico('home')}</span><span class="ct"><b>Tu casa</b><span class="small mut">${esc(ct)}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>` : ''}
    </div>`);
 }
 let CF = {};
