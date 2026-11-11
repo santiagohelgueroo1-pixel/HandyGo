@@ -1282,15 +1282,22 @@ ACT.close = closeSheet;
 // Teclado del celular: la app se ajusta al espacio que queda visible (sin huecos ni encabezado escondido)
 if (window.visualViewport) {
   const vv = window.visualViewport;
+  let FULLH = vv.height;
+  const typing = () => { const a = document.activeElement; return !!(a && a.matches && a.matches('input:not([type=checkbox]):not([type=radio]):not([type=file]),textarea,select')); };
   const fitKb = () => {
     const d = $('#device'); if (!d || innerWidth >= 760) return;
-    const kb = innerHeight - vv.height > 120;
+    const t = typing();
+    if (!t) FULLH = vv.height; else FULLH = Math.max(FULLH, document.documentElement.clientHeight);
+    // En el iPhone, al abrir el teclado se achica la parte visible (visualViewport); la app se ajusta a esa parte
+    const kb = t && FULLH - vv.height > 120;
     document.body.classList.toggle('kb', kb);
     if (kb) { if (window.scrollY) window.scrollTo(0, 0); d.style.top = vv.offsetTop + 'px'; d.style.height = vv.height + 'px'; d.style.bottom = 'auto'; }
     else { d.style.top = ''; d.style.height = ''; d.style.bottom = ''; }
     const l = document.querySelector('#log, #plog'); if (kb && l) l.scrollTop = l.scrollHeight;
   };
   vv.addEventListener('resize', fitKb); vv.addEventListener('scroll', fitKb);
+  document.addEventListener('focusin', () => { [0, 120, 350, 700].forEach(ms => setTimeout(fitKb, ms)); });
+  document.addEventListener('focusout', () => { [80, 350].forEach(ms => setTimeout(fitKb, ms)); });
 }
 document.addEventListener('focusout', e => { if (e.target.matches && e.target.matches('input,textarea,select')) setTimeout(() => { if (!document.activeElement || !document.activeElement.matches('input,textarea,select')) window.scrollTo(0, 0); }, 120); });
 (() => {
