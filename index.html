@@ -60,6 +60,13 @@ button{cursor:pointer}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 
 .device{position:relative;height:100%;max-width:480px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+/* En el celular la app ocupa toda la pantalla, también la franja de abajo (la de la barrita de inicio del iPhone) */
+@media (max-width:759px){
+  html,body{height:100%;min-height:100vh;min-height:100lvh;overflow:hidden}
+  .device{position:fixed;top:0;left:0;right:0;bottom:0;height:auto}
+  body{background:var(--surface)}
+  body:has(.splash){background:var(--head)}
+}
 @media (min-width:760px){
   body{display:grid;place-items:center;padding-block:20px}
   .device{width:400px;height:min(860px,100%);border:10px solid var(--frame);border-radius:44px;box-shadow:0 30px 80px -30px rgba(20,40,30,.55)}
