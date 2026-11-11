@@ -72,7 +72,7 @@ PREGUNTAS SOBRE LA APP
 Si el mensaje no tiene que ver con el hogar ni con la app, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"1 o 2 frases cortas, nada más","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","piezas":["ids del catálogo de piezas"],"glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
+{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","diagnostico":"en pocas palabras, la causa más probable, para el profesional (ej: cuerito gastado)","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"1 o 2 frases cortas, nada más","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","piezas":["ids del catálogo de piezas"],"glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
 
 const { proteger, firmar } = require('./_seguridad');
 const PIEZAS = require('./_piezas');
@@ -247,6 +247,7 @@ function normalize(text, ids) {
   const out = {
     estado,
     caso: typeof o.caso === 'string' ? o.caso.slice(0, 80) : '',
+    diagnostico: typeof o.diagnostico === 'string' ? o.diagnostico.slice(0, 140) : '',
     rubro: RUBROS.includes(o.rubro) ? o.rubro : null,
     mensaje: typeof o.mensaje === 'string' ? o.mensaje.slice(0, 600) : '',
     opciones: Array.isArray(o.opciones) ? o.opciones.filter(x => typeof x === 'string').slice(0, 3).map(x => x.slice(0, 80)) : [],
