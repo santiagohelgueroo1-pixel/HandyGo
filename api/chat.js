@@ -7,7 +7,8 @@
 //   GROQ_MODEL      (opcional)
 
 const SYSTEM = `Sos Handy, el asistente de HandyGo (si te preguntan quién sos, decí que sos Handy), una app argentina (Ciudad de Buenos Aires) que acompaña a las personas ante problemas cotidianos del hogar.
-Hablás en español rioplatense con voseo, cálido, breve y sin tecnicismos. Nunca hacés sentir a la persona que no sabe.
+Hablás en español rioplatense con voseo, cálido y sin tecnicismos. Nunca hacés sentir a la persona que no sabe.
+SOS MUY BREVE: el "mensaje" tiene 1 o 2 frases cortas. No repetís lo que dijo la persona, no explicás lo que hace la app ni dónde queda la guía, no agregás cierres ni ofrecimientos.
 
 TU TRABAJO
 1. Entender el problema con preguntas cortas, de a UNA por vez, con 2 o 3 opciones de respuesta.
@@ -71,7 +72,7 @@ PREGUNTAS SOBRE LA APP
 Si el mensaje no tiene que ver con el hogar ni con la app, estado "fuera_de_tema" y explicá en una frase en qué podés ayudar.
 
 RESPONDÉ SOLO con un objeto JSON válido, sin texto extra:
-{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"máximo 3 frases para el usuario","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","piezas":["ids del catálogo de piezas"],"glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
+{"estado":"preguntar|guiar|derivar|app|fuera_de_tema","caso":"nombre corto del problema","rubro":"Plomería|Gas|Electricidad|Carpintería|Albañilería","mensaje":"1 o 2 frases cortas, nada más","opciones":["solo si estado es preguntar: 2 o 3 respuestas cortas"],"tutorial":"id del catálogo o null","pasos":["solo si guiás sin catálogo"],"materiales":[["nombre","cómo pedirlo"]],"nivel":"Fácil","minutos":20,"alerta":"","piezas":["ids del catálogo de piezas"],"glosario":[{"termino":"","que_es":"","donde":"","imagen":""}],"riesgo":false,"mientras_tanto":["solo si derivás"],"ir_a":null,"tema_nuevo":false,"transcripcion":""}`;
 
 const { proteger, firmar } = require('./_seguridad');
 const PIEZAS = require('./_piezas');
@@ -142,10 +143,10 @@ module.exports = async (req, res) => {
 
 const SKIP = {};
 function geminiModels() {
-  return [...new Set([process.env.GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3-flash-preview', 'gemini-3.8-flash'].filter(Boolean))];
+  return [...new Set(['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', process.env.GEMINI_MODEL, 'gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.8-flash'].filter(Boolean))];
 }
 function timeout(ms) { const c = new AbortController(); const t = setTimeout(() => c.abort(), ms); return { signal: c.signal, done: () => clearTimeout(t) }; }
-function thinking(model) { return /2\.5/.test(model) ? { thinkingBudget: 0 } : { thinkingLevel: 'low' }; }
+function thinking(model, lvl) { return /2\.5/.test(model) ? { thinkingBudget: 0 } : { thinkingLevel: lvl || 'minimal' }; }
 async function gemini(model, system, messages, ms = 12000) {
   const contents = messages.map(m => {
     const parts = [];
@@ -158,8 +159,8 @@ async function gemini(model, system, messages, ms = 12000) {
   const call = async withThinking => {
     const t = timeout(ms);
     try {
-      const generationConfig = { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens: 4096 };
-      if (withThinking) generationConfig.thinkingConfig = thinking(model);
+      const generationConfig = { responseMimeType: 'application/json', temperature: 0.4, maxOutputTokens: 2048 };
+      if (withThinking) generationConfig.thinkingConfig = thinking(model, withThinking === true ? '' : withThinking);
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
         method: 'POST', signal: t.signal,
         headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
@@ -175,7 +176,7 @@ async function gemini(model, system, messages, ms = 12000) {
     finally { t.done(); }
   };
   try { return await call(true); }
-  catch (e) { if (e.status === 400 && /thinking/i.test(e.message)) return call(false); throw e; }
+  catch (e) { if (e.status === 400 && /thinking/i.test(e.message)) { try { return await call('low'); } catch (e2) { if (e2.status === 400) return call(false); throw e2; } } throw e; }
 }
 
 async function groq(system, messages, ms = 12000) {
