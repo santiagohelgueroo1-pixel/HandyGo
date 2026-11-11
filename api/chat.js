@@ -96,12 +96,14 @@ module.exports = async (req, res) => {
   }));
   const catalog = Array.isArray(body && body.catalog) ? body.catalog.slice(0, 40) : [];
   const tema = typeof (body && body.tema_actual) === 'string' ? body.tema_actual.slice(0, 120) : '';
+  const casa = typeof (body && body.casa) === 'string' ? body.casa.replace(/[\r\n]+/g, ' ').slice(0, 300) : '';
   if (!messages.length) return res.status(400).json({ ok: false, error: 'Faltan mensajes' });
 
   const system = SYSTEM + '\n\nCATÁLOGO DE GUÍAS REVISADAS (id: título · rubro · cuándo usarla):\n' +
     catalog.map(c => `- ${String(c && c.id).slice(0, 40)}: ${String(c && c.titulo).slice(0, 100)} · ${String(c && c.rubro).slice(0, 20)} · ${String(c && c.cuando).slice(0, 300)}`).join('\n') +
     '\n\nCATÁLOGO DE PIEZAS (categoría: ids):\n' + PIEZAS.LISTA +
-    '\n\nTEMA ACTUAL: ' + (tema || '(ninguno, es el primer mensaje)');
+    '\n\nTEMA ACTUAL: ' + (tema || '(ninguno, es el primer mensaje)') +
+    (casa ? '\n\nCÓMO ES LA CASA DE LA PERSONA (lo completó ella; usalo para que la respuesta sea para su casa, sin repetírselo): ' + casa : '');
   const ids = catalog.map(c => String(c && c.id).slice(0, 40));
 
   const errors = [], t0 = Date.now(), left = () => 26000 - (Date.now() - t0);
