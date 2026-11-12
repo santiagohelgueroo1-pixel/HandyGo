@@ -1747,7 +1747,7 @@ function render() {
   ha.innerHTML = inChat ? `<button class="hbtn" data-a="history" aria-label="Historial de consultas" title="Historial">${ico('clock')}</button><button class="hbtn hnew" data-a="newCase" aria-label="Nuevo problema" title="Nuevo problema">${ico('plus')}<span>Nuevo</span></button>` : '';
   if (inChat) setMode();
   const hp = $('#hpill'); hp.hidden = c.t === 'u' && !(V.tab === 'chat' && !V.job);
-  if (c.t === 'u') { hp.className = 'pill'; hp.dataset.a = 'credits'; hp.innerHTML = `<span class="num">${u.cr}</span> consultas`; }
+  if (c.t === 'u') { hp.className = 'pill'; hp.dataset.a = 'credits'; hp.innerHTML = u.plus ? `${MARK} HandyGo+` : `<span class="num">${u.cr}</span> consultas`; }
   else { hp.className = 'pill' + (u.on ? '' : ' off'); hp.dataset.a = 'tog'; hp.textContent = u.on ? '● Disponible' : '○ No disponible'; }
   renderNav();
   if (V.job) return vJob();
@@ -1769,11 +1769,13 @@ function refreshHeader() { if (DB.cur && DB.cur.t === 'u') $('#hpill').innerHTML
 function newCase() { CH = {trans:[], ts:Date.now(), h:[], started:false, caso:null, rubro:null, hard:false, tut:null, resp:[], intentos:'', img:null, pend:null, topic:null, code:code()}; }
 // Las consultas se cobran por tema: hablar del mismo problema es gratis; un problema distinto usa 1 consulta.
 function resetTopic() { const lu = (CH.trans || []).filter(x => x.r === 'u').slice(-1); Object.assign(CH, {trans:lu, cid:null, ts:Date.now(), caso:null, rubro:null, hard:false, tut:null, tutObj:null, resp:[], intentos:'', img:null, pend:null, topic:null, hardH:null, insist:0, meanwhile:[], ficha:null, diag:'', code:code()}); }
+const UPLUS = () => DB.cur && DB.cur.t === 'u' && !!me().plus;
 function useCredit(nuevo) {
   const u = me();
+  if (UPLUS()) { refreshHeader(); say(`${ico('chat')}<span>${nuevo ? 'Problema nuevo' : 'Consulta nueva'} · HandyGo+ · consultas ilimitadas</span>`, 'sys credit', false); return true; }
   if (u.cr <= 0) {
-    say(nuevo ? '<b>Eso es un problema nuevo</b> y te quedaste sin consultas. Mirá un anuncio para sumar 1 o elegí un paquete.' : '<b>Te quedaste sin consultas.</b> Mirá un anuncio para sumar 1 o elegí un paquete.');
-    chips([['Ver anuncio · +1', () => ACT.watchAd(), 'p'], ['Ver opciones', () => ACT.credits()]]);
+    say(nuevo ? '<b>Eso es un problema nuevo</b> y te quedaste sin consultas. Mirá un anuncio para sumar 1 o pasate a HandyGo+ para tener consultas ilimitadas.' : '<b>Te quedaste sin consultas.</b> Mirá un anuncio para sumar 1 o pasate a HandyGo+ para tener consultas ilimitadas.');
+    chips([['Ver anuncio · +1', () => ACT.watchAd(), 'p'], ['Conocer HandyGo+', () => ACT.credits()]]);
     return false;
   }
   u.cr--; if (CLOUD) { SNAP.me = JSON.stringify(u); SB.rpc('use_credit').then(r => { if (!r.error && typeof r.data === 'number') { u.cr = r.data; SNAP.me = JSON.stringify(u); refreshHeader(); } }); } else save();
@@ -1899,14 +1901,25 @@ async function greet() {
 ACT.newCase = () => { GREET_TOKEN++; LOG().innerHTML = ''; newCase(); clearPic(); if (AI_OK === false) { AI_OK = null; setMode(); } greet(); };
 ACT.credits = () => {
   const u = me();
+  const li = (ic, t, d) => `<li><span class="wi">${ico(ic)}</span><div><b>${t}</b><span class="small mut">${d}</span></div></li>`;
+  if (u.plus) return sheet(`<span class="eyebrow">Tu plan</span><h2>HandyGo+</h2>
+   <p class="mut">Tu suscripción está activa.</p>
+   <ul class="whylist" style="margin-top:12px">${li('chat', 'Consultas ilimitadas', 'Contale a Handy todos los problemas que quieras.')}${li('eye', 'Sin publicidad', 'No ves anuncios en ninguna parte de la app.')}</ul>
+   <div class="stack" style="margin-top:16px"><button class="btn g w" data-a="uPlusOff">Dar de baja</button></div>`);
   sheet(`<span class="eyebrow">Plan gratuito</span><h2><span class="num">${u.cr}</span> consultas disponibles</h2>
    <p class="mut">Cada problema distinto que le contás al asistente usa una consulta. Podés hablar todo lo que necesites sobre el mismo problema sin gastar más: cuando cambiás de tema, se usa una nueva.</p>
    <div class="stack" style="margin-top:16px">
     <button class="btn y w" data-a="watchAd">Ver un anuncio · +1 consulta</button>
-    <button class="btn w" data-a="buy" data-v="5">Comprar 5 consultas · $1.000</button>
-    <button class="btn w" data-a="buy" data-v="10">Comprar 10 consultas · $1.800</button>
-    </div>`);
+   </div>
+   <div class="card" style="margin-top:16px;box-shadow:none;background:var(--priSoft)">
+    <div style="display:flex;gap:8px;align-items:center"><span class="tag plus">${MARK} HandyGo+</span><span class="small mut">Suscripción mensual</span></div>
+    <ul class="whylist" style="margin-top:12px">${li('chat', 'Consultas ilimitadas', 'Contale a Handy todos los problemas que quieras.')}${li('eye', 'Sin publicidad', 'No ves anuncios en ninguna parte de la app.')}</ul>
+    <button class="btn p w" style="margin-top:12px" data-a="uPlusOn">Probar 30 días gratis</button>
+    <p class="hint" style="text-align:center">Podés darte de baja cuando quieras.</p>
+   </div>`);
 };
+ACT.uPlusOn = () => { const u = me(); u.plus = true; u.plusDesde = Date.now(); save(); closeSheet(); toast('¡Listo! Ya tenés HandyGo+'); render(); };
+ACT.uPlusOff = () => { const u = me(); u.plus = false; save(); closeSheet(); toast('Diste de baja HandyGo+'); render(); };
 ACT.watchAd = () => {
   closeSheet();
   const a = document.createElement('div'); a.className = 'adfull';
@@ -1916,7 +1929,6 @@ ACT.watchAd = () => {
   $('#device').appendChild(a);
   let n = 5; const t = setInterval(() => { n--; a.querySelector('#cd').textContent = 'Anuncio · ' + n; if (n <= 0) { clearInterval(t); a.remove(); addCredits(1, '', 'ad'); } }, 1000);
 };
-ACT.buy = n => { closeSheet(); addCredits(+n, 'Compra realizada', 'buy'); };
 async function addCredits(n, msg, kind) {
   const u = me();
   if (CLOUD) {
@@ -2020,6 +2032,7 @@ ACT.send = () => { const i = chatEl.querySelector('#inp'); const t = i.value.tri
 // Antes de gastar una consulta, Handy pregunta
 function askCredit(nuevo, yes, no) {
   const u = me();
+  if (UPLUS()) return yes();
   if (u.cr <= 0) { useCredit(nuevo); if (no) no(true); return; }
   say(`${nuevo ? 'Esto es un problema nuevo. ' : ''}¿Usamos 1 consulta? Te ${u.cr === 1 ? 'queda' : 'quedan'} <b>${u.cr}</b>.`);
   chips([['Sí, usar 1 consulta', () => { say('Sí, usar 1 consulta', 'u'); yes(); }, 'p'], ['No', () => { say('No', 'u'); if (no) no(); say('Dale, no gasté nada.'); }]]);
@@ -2040,7 +2053,7 @@ function go(txt, isReply) {
   const h = HARD.find(x => x.re.test(t));
   // Después de un freno de seguridad, insistir no destraba nada (y no gasta consultas)
   if (CH.hard && !isReply && INSIST.test(t) && (!h || h.rubro === CH.rubro)) { CH.resp.push(txt); return insist(CH.hardH); }
-  if (!CH.started && me().cr <= 0) { useCredit(false); return; }
+  if (!CH.started && !UPLUS() && me().cr <= 0) { useCredit(false); return; }
   if (CH.started && h && !isReply && CH.topic !== 'hard:' + h.rubro) { if (!useCredit(true)) return; resetTopic(); CH.h = []; }
   if (img) CH.img = img;
   CH.resp.push(txt || '(foto)');
@@ -2051,7 +2064,7 @@ function go(txt, isReply) {
 /* ---------- Handy responde sobre la app (sin gastar consultas) ---------- */
 const APP_Q = /d[oó]nde|c[oó]mo (hago|puedo|se|cambio|veo|encuentro|borro|elimino|cierro|sumo|consigo|edito|uso)|qu[eé] (es|son|significa)|para qu[eé]|no (encuentro|entiendo|s[eé]|veo)|se puede|hay forma/;
 const APP_HELP = [
-  {re:/consulta|cr[eé]dito|anuncio|paquete/, r:'Cada problema nuevo que me contás usa 1 consulta; seguir hablando del mismo problema o preguntarme sobre la app no gasta. Las ves arriba a la derecha y en tu Perfil, donde también podés sumar más mirando un anuncio o con un paquete.', to:'consultas'},
+  {re:/consulta|cr[eé]dito|anuncio|paquete|handygo\s?\+|handygo plus|suscrip/, r:'Cada problema nuevo que me contás usa 1 consulta; seguir hablando del mismo problema o preguntarme sobre la app no gasta. Las ves arriba a la derecha y en tu Perfil, donde podés sumar más mirando un anuncio o pasarte a HandyGo+, la suscripción mensual con consultas ilimitadas y sin publicidad.', to:'consultas'},
   {re:/foto( de perfil)?|mi nombre|mis datos|editar (el )?perfil|cambiar (mi )?(barrio|zona|usuario)|nombre de usuario/, r:'Tus datos y tu foto los cambiás en Perfil → Editar perfil.', to:'editar'},
   {re:/contrase[ñn]a|clave/, r:'Si no te acordás la contraseña, en la pantalla de ingreso tocá “Me olvidé la contraseña” y te mandamos un mail para crear una nueva.', to:null},
   {re:/presupuesto|pedido|profesional|prestador|turno|arreglos?\b/, r:'Todo lo que pediste a un profesional está en Arreglos: ahí ves los presupuestos que te llegan, elegís uno y coordinás el turno. Los que resolviste vos también quedan ahí, en Resueltos.', to:'arreglos'},
@@ -2547,6 +2560,9 @@ function pedir() {
   }, 2500 + i * 2800));
 }
 
+// Marcas de herramientas adheridas: aparecen como recomendadas por Handy
+const BRAND = {n:'Kirvo Herramientas', d:'Llaves, destornilladores y cinta de teflón con garantía de por vida.'};
+const brandRec = () => `<div class="ad brand" style="margin-top:16px"><span class="lg">K</span><div style="min-width:0"><span class="eyebrow">Recomendado por Handy · marca adherida</span><div><b>${esc(BRAND.n)}</b> · ${esc(BRAND.d)}</div></div></div>`;
 /* ============================================================
    MATERIALES
    ============================================================ */
@@ -2558,6 +2574,7 @@ function vMat() {
    <h2>${esc(tut.n)}</h2>
    <p class="mut small" style="margin:4px 0 0">Mostrale esta pantalla al ferretero o pedilo con el nombre que figura abajo de cada cosa.</p>
    <div class="list" style="margin-top:16px">${tut.mat.map(([ic, n, a]) => `<div class="card mat"><span class="ic">${ico(ic)}</span><div style="min-width:0"><h3>${esc(n)}</h3><span class="ask">${esc(a)}</span></div></div>`).join('')}</div>
+   ${brandRec()}
    <button class="btn p w" style="margin-top:16px" data-a="ferre" data-v="mat">${ico('pin')} Ver ferreterías cerca</button>`);
 }
 /* ---------- mapa real: MapLibre + OpenFreeMap (estilo limpio) + OpenStreetMap (gratis, sin claves) ---------- */
@@ -2611,7 +2628,7 @@ async function loadStores(c) {
     clearTimeout(to);
     const d = await r.json(); if (!r.ok || !d.ok) throw new Error('places');
     st = d.items.map(x => ({...x, d:dist(c, x)})).sort((a, b) => a.d - b.d);
-    // Comercios adheridos a HandyGo+: se destacan en el mapa y aparecen primero entre los cercanos
+    // Comercios adheridos a HandyGo: se destacan en el mapa y aparecen primero entre los cercanos
     const hash = t => [...String(t)].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
     st.forEach(x => { x.ad = hash(x.n + x.lat) % 4 === 0; });
     if (st.length && !st.slice(0, 6).some(x => x.ad)) st[Math.min(1, st.length - 1)].ad = true;
@@ -2740,7 +2757,7 @@ function vJob() {
   if (isU && j.estado === 'nuevo') {
     const B = bestOf(j);
     h += `<div class="sec"><h3 class="sh">Presupuestos recibidos</h3>`
-      + (j.offers.length ? `<div class="list offers">${j.offers.map((o, i) => { const p = provInfo(o.pid); const best = j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i); return `<div class="card offer2">
+      + (j.offers.length ? `<div class="list offers">${j.offers.map((o, i) => [o, i]).sort((a, b) => (provInfo(b[0].pid).plus ? 1 : 0) - (provInfo(a[0].pid).plus ? 1 : 0)).map(([o, i]) => { const p = provInfo(o.pid); const best = j.offers.length > 1 && (B.precio === i || B.cal === i || B.turno === i); return `<div class="card offer2">
        ${best ? `<span class="tag obest ${B.precio === i ? 'y' : 'b'}">${B.precio === i ? 'Mejor precio' : B.cal === i ? 'Mejor calificado' : 'Puede antes'}</span>` : ''}
        <div class="oh">${avatar(p.n, p.foto)}<div class="on"><h3>${esc(p.n)}</h3><div class="small">${stars(p.s)} <span class="mut">· ${p.v} reseñas</span></div><div class="small mut">${p.y} años de experiencia</div></div>
          <div class="op"><span>Presupuesto</span><b class="price">${money(o.precio)}</b></div></div>
@@ -3039,7 +3056,7 @@ function vNeg() {
     ${item('agenda', 'n_agenda', 'cal', 'Agenda', tur ? `${tur} turno${tur === 1 ? '' : 's'} confirmado${tur === 1 ? '' : 's'}` : 'Tus turnos y tu disponibilidad', tur ? `<span class="cnt num">${tur}</span>` : '')}
     ${item('precios', 'n_precios', 'box', 'Precios y condiciones', p.vis || p.min ? [p.vis ? `Visita ${money(p.vis)}` : '', p.min ? `Mínimo ${money(p.min)}` : ''].filter(Boolean).join(' · ') : 'Visita, trabajo mínimo y qué incluís')}
     ${item('resenas', 'n_resenas', 'star', 'Reseñas', p.rev.length ? `${String(avg(p)).replace('.', ',')} ★ · ${p.rev.length} reseña${p.rev.length === 1 ? '' : 's'}` : 'Lo que opinan tus clientes', sinResp ? `<span class="cnt num">${sinResp}</span>` : '')}
-    ${item('plus', 'n_plus', 'star', 'HandyGo+', p.plus ? 'Activo · prioridad y sello de confianza' : 'Prioridad en pedidos y sello de confianza', p.plus ? '<span class="tag plus">Activo</span>' : '')}
+    ${item('plus', 'n_plus', 'star', 'HandyGo+', p.plus ? 'Activo · aparecés primero y sello de verificado' : 'Aparecé primero y sumá el sello de verificado', p.plus ? '<span class="tag plus">Activo</span>' : '')}
    </div>`);
 }
 ACT.neg = v => { NEXT_ANIM = 'right'; V.tab = 'neg'; V.neg = v; V.job = null; render(); };
@@ -3083,16 +3100,14 @@ function vResenas() {
     <div class="card stack" style="margin-top:12px">${rev.map(([r, i]) => `<div class="review"><span class="stars">${'★'.repeat(r.s)}</span> <b>${esc(r.from)}</b>${r.c ? `<div class="small mut">${esc(r.c)}</div>` : ''}${r.resp ? `<div class="reply"><b>Tu respuesta</b>${esc(r.resp)}</div>` : ''}<button class="textlink" style="margin-top:6px" data-a="replyRev" data-v="${i}">${r.resp ? 'Editar respuesta' : 'Responder'}</button></div>`).join('')}</div>` : ''}`);
 }
 function plusBody() {
-  const u = me(), on = !!u.plus, inZona = DB.jobs.filter(j => j.rubro === u.rubro).length;
+  const u = me(), on = !!u.plus;
   const li = (ic, t, d) => `<li><span class="wi">${ico(ic)}</span><div><b>${t}</b><span class="small mut">${d}</span></div></li>`;
-  return `${on ? `<div class="card" style="margin-top:16px;background:var(--priSoft);box-shadow:none"><b>Tu suscripción está activa.</b><div class="small mut">Ya tenés el sello y la prioridad en los pedidos.</div></div>
-      <h3 class="sh" style="margin-top:16px">Demanda en tu zona</h3><div class="stat" style="margin-top:8px"><div class="card"><b class="num">${inZona}</b><span>pedidos de ${esc(u.rubro.toLowerCase())} este mes</span></div><div class="card"><b>${esc(u.zona.split(',')[0])}</b><span>tu zona</span></div></div>` : ''}
+  return `${on ? `<div class="card" style="margin-top:16px;background:var(--priSoft);box-shadow:none"><b>Tu suscripción está activa.</b><div class="small mut">Ya aparecés primero y tenés el sello de verificado de HandyGo.</div></div>` : ''}
     <ul class="whylist" style="margin-top:16px">
-      ${li('inbox', 'Prioridad en los pedidos', 'Los pedidos nuevos de tu rubro te llegan antes que al resto.')}
-      ${li('shield', 'Sello de perfil de alta confianza', 'Tu perfil y tus presupuestos se muestran con el sello HandyGo+.')}
-      ${li('eye', 'Estadísticas de tu zona', 'Qué se pide más, en qué barrios y en qué momento del año.')}
+      ${li('inbox', 'Aparecés primero', 'Cuando un cliente compara presupuestos, el tuyo se muestra arriba de todo.')}
+      ${li('shield', 'Sello de verificado de HandyGo', 'Tu perfil y tus presupuestos se muestran con el sello HandyGo+.')}
     </ul>
-    <p class="hint">HandyGo no cobra comisión por tus trabajos: lo que cobrás es todo tuyo.</p>
+    <p class="hint">Suscripción mensual. HandyGo no cobra comisión por tus trabajos: lo que cobrás es todo tuyo.</p>
     ${on ? `<button class="btn g w" style="margin-top:16px" data-a="plusOff">Dar de baja</button>` : `<button class="btn p w" style="margin-top:16px" data-a="plusOn">Probar 30 días gratis</button><p class="hint" style="text-align:center">Podés darte de baja cuando quieras.</p>`}`;
 }
 function vPlus() {
@@ -3327,6 +3342,7 @@ function vHerr() {
   view(`${casaBackBtn()}
    <h2 style="margin:12px 0 12px">Herramientas básicas</h2>
    <div class="kitgrid" style="margin-top:16px">${KIT.map((x, i) => `<button class="card kititem" data-a="kitInfo" data-v="${i}">${kitImg(x, 'lg')}<b>${esc(x.n)}</b></button>`).join('')}</div>
+   ${brandRec()}
    <button class="btn w" style="margin-top:16px" data-a="ferre" data-v="casa">${ico('pin')} Ver ferreterías cerca</button>`);
 }
 ACT.kitInfo = i => {
@@ -3335,6 +3351,7 @@ ACT.kitInfo = i => {
     <h2 style="margin:16px 0 8px">${esc(x.n)}</h2>
     <p style="margin:0">${esc(x.para)}</p>
     <div class="card mat" style="margin-top:16px;box-shadow:none;background:var(--sunk)"><div style="min-width:0"><span class="small mut">Cómo pedirla en la ferretería</span><div style="font-weight:600;margin-top:4px">${esc(x.pedir)}</div></div></div>
+    ${brandRec()}
     <button class="btn g w" style="margin-top:16px" data-a="close">Cerrar</button>`);
 };
 function vFerre() {
@@ -3345,7 +3362,7 @@ function vFerre() {
     <div id="mapBox" class="mapbox"></div>
     <div class="row" style="margin-top:12px;flex-wrap:nowrap"><button class="btn sm" data-a="locate" id="locBtn" style="flex:none">${ico('pin')} ${LOC ? 'Actualizar ubicación' : 'Usar mi ubicación'}</button><span class="hint" id="locMsg" style="margin:0">${LOC ? 'Mostrando lo que hay cerca tuyo' : 'Mostrando el centro de CABA'}</span></div>
     <div class="list" id="ferList" style="margin-top:12px"></div></div>
-   <div class="sec"><div class="ad"><span class="lg">G</span><div style="min-width:0"><span class="eyebrow">Publicidad</span><div><b>Grifería Marelo</b> · Cueritos, flexibles y sifones con garantía de 2 años.</div></div></div></div>`);
+   ${UPLUS() ? '' : `<div class="sec"><div class="ad"><span class="lg">G</span><div style="min-width:0"><span class="eyebrow">Publicidad</span><div><b>Grifería Marelo</b> · Cueritos, flexibles y sifones con garantía de 2 años.</div></div></div></div>`}`);
   initMap();
 }
 ACT.mantDone = id => { closeSheet(); const u = me(), S = SEASONS[seasonNow()], t = S.tasks.find(x => x.id === id);
@@ -3363,7 +3380,7 @@ function vPer() {
   if (t === 'u') {
     const js = DB.jobs.filter(j => j.uid === u.id);
     view(`<div style="display:flex;gap:16px;align-items:center">${avatar(u.nombre, u.foto, 'lg')}<div style="min-width:0;flex:1"><h2 style="margin:0">${esc(u.nombre)}</h2><span class="mut small">${u.usuario ? '@' + esc(u.usuario) + ' · ' : ''}${esc(u.mail)} · ${esc(u.zona)}</span></div></div>
-     <div class="card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px"><div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button></div>
+     <div class="card" style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;gap:12px">${u.plus ? `<div><b>Consultas ilimitadas</b><div class="small mut">HandyGo+ · sin publicidad</div></div><button class="btn g sm" data-a="credits">Ver plan</button>` : `<div><b class="num">${u.cr} consultas</b><div class="small mut">Plan gratuito</div></div><button class="btn y sm" data-a="credits">Sumar</button>`}</div>
      <button class="card casaitem" style="margin-top:12px" data-a="casaFicha"><span class="ci">${ico('home')}</span><span class="ct"><b>Tu casa</b><span class="small mut">${esc(casaTxt(u) || 'Contale a Handy cómo es · opcional')}</span></span>${ico('back').replace('<svg', '<svg class="go"')}</button>
      ${tail()}`);
   } else vPerProv();
@@ -3442,9 +3459,11 @@ ACT.legal = () => sheet(`<span class="eyebrow">Versión ${LEGAL_V}</span><h2>Té
   <h3>Consultas al asistente</h3>
   <p>Cada problema distinto usa una consulta. Las consultas no son reembolsables ni se pueden transferir a otra cuenta.</p>
   <h3>Cómo se sostiene HandyGo</h3>
-  <ul><li>Consultas extra: las primeras 3 son gratis; después podés ver un anuncio o comprar un paquete.</li>
+  <ul><li>Consultas: las primeras 3 son gratis y podés sumar más viendo un anuncio.</li>
+  <li>HandyGo+, una suscripción mensual opcional: para usuarios, con consultas ilimitadas y sin publicidad; para profesionales, para aparecer primero y sumar el sello de verificado.</li>
+  <li>Comercios y ferreterías adheridos, que se destacan en el mapa con el sello de HandyGo.</li>
+  <li>Marcas de herramientas adheridas, que aparecen como recomendadas por Handy.</li>
   <li>Anuncios de comercios, siempre marcados como “Publicidad”.</li>
-  <li>HandyGo+, una suscripción opcional para profesionales.</li>
   <li>HandyGo no cobra comisión por los trabajos: el pago se arregla entre vos y el profesional.</li></ul>
   <h3>Qué datos guardamos</h3>
   <ul><li>Tu cuenta: nombre, mail, barrio, celular si lo cargás y, si la cargás, tu dirección y foto.</li>

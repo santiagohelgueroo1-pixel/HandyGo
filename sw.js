@@ -1,5 +1,5 @@
 // HandyGo · service worker: guarda la app para que abra rápido y sin señal.
-const CACHE = 'handygo-v56';
+const CACHE = 'handygo-v57';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 // Las ilustraciones fijas se guardan la primera vez que se ven (después cargan al instante, aun sin señal)
 // Librerías externas con versión fija: se descargan una sola vez y quedan guardadas
